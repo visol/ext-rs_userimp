@@ -1,4 +1,6 @@
 <?php
+namespace Visol\RsUserimp\Service;
+
 /***************************************************************
 *  Copyright notice
 *
@@ -51,7 +53,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * @return	string	HTML content
  */
-class tx_rsuserimp {
+class UserImporterService {
 
 	var $previewNum;
 	var $CSVhasTitle;

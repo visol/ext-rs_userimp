@@ -11,4 +11,4 @@ $MCONF["access"] = "user,group";
 $MCONF["script"] = "index.php";
 
 $MLANG["default"]["tabs_images"]["tab"] = "moduleicon.gif";
-$MLANG["default"]["ll_ref"] = "LLL:EXT:rs_userimp/Resources/Private/Lanuggae/locallang_mod.xlf";
+$MLANG["default"]["ll_ref"] = "LLL:EXT:rs_userimp/Resources/Private/Language/locallang_mod.xlf";
