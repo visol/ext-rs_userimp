@@ -1,0 +1,23 @@
+# cat=basic/enable; type=boolean; label= Use recycler: After the import session, the CSV file gets physically deleted. You may choose to use the recycler instead (if available).
+	useRecycler = 1
+
+# cat=basic/enable; type=boolean; label= Create drop file (experimental): If you want the tool to create a CSV file with dropped out (skipped) users, check this option. You may then download and edit this file and import  skipped users in a second session.
+	createDropFile = 0
+
+# cat=basic/advanced/2; type=int [0-600]; label= Rollback - Safety Timespan: Enter the maximum number of minutes a rollback of a previously imported file may be allowed. It might be necessary to rollback the whole import process if you encounter some mapping errors right after you imported new users. The rollback feature deletes all imported users. It is not a good idea to allow the roolback forever, since after some time, your newly created users may have created content. So the rollback feature of a specific import session is only allowed during the next x minutes specified here. 0 means unlimited (rollbacks are allowed at any time) and IS NOT ADVISED AT ALL!!!
+	rollbackSafetyTimespan = 300
+
+# cat=basic/advanced/2; type=int [0-5]; label= Rollback - Data Preview Rows: Enter the maximum number of users you want to have  displayed in the info box.
+	rollbackPreviewRows = 3
+
+# cat=basic/advanced/2; type=boolean; label= Rollback - Delete DB Records: Normally, when deleting records in the TYPO3 database, those records are only marked deleted while the records are still kept in the DB. Rolled back import sessions may blow up the database unnecessarily, so you may choose to actually delete those records (users).
+	rollbackDeleteFromDB = 0
+
+# cat=basic/advanced/140; type=int [0-3]; label= Garbage Collection - Trigger Timer: To prevent flooding of the upload area and the database, aged out rollback session data are marked deleted and old drop files get physically deleted once the entered time (in days) has elapsed. You may disable the garbage collection by entering 0 here.
+	garbageCollectionTriggerTime = 3
+
+# cat=basic/advanced/200; type=text; label= Unique Identifier - fe_users: Specify a list of comma separared DB fields which may  serve as a unique identifier for imported fe_users. If you choose to update existing user records, you may specify one of those values to be the unique identifier. Imported users are checked against this identifier and corresponding datasets are updated and all others are inserted. It should go without saying that entered fields really identify a single dataset. Reasonable default values seem to be name,email,username.
+	uniqueIdentifierListFE = name,email,username
+
+# cat=basic/advanced/210; type=text; label= Unique Identifier - tt_address: Specify a list of comma separared DB fields which may serve as a unique identifier for imported tt_address datasets. If you choose to update existing address records, you may specify one of those values to be the unique identifier. Imported datasets are checked against this identifier and corresponding datasets are updated and all others are inserted. It should go without saying that entered fields really identify a single dataset. Reasonable default values seem to be name,email,username.
+	uniqueIdentifierListTT = email,name
