@@ -21,74 +21,26 @@
 	*
 	*  This copyright notice MUST APPEAR in all copies of the script!
 	***************************************************************/
-	/**
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+
+/**
 	 * Module 'import' for the 'rs_userimp' extension.
 	 * @author	Rainer Sudhoelter <r.sudhoelter (at) web.de>
 	 *	@comment Parts of this class (presets handling) are derived from SYSEXT:impexp written by Kasper Skarhoe
 	 */
-	/**
-	 * [CLASS/FUNCTION INDEX of SCRIPT]
-	 *
-	 *
-	 *
-	 *   93: class tx_rsuserimp_module1 extends t3lib_SCbase
-	 *
-	 *              SECTION: Main functions
-	 *  108:     function init()
-	 *  120:     function menuConfig()
-	 *  141:     function main()
-	 *
-	 *              SECTION: General JavaScript functions
-	 *  198:     function jumpToUrl(URL)
-	 *  208:     function swapPresetSelectFields()
-	 *  256:     function toggle()
-	 *  277:     function toggleSelector (data)
-	 *  293:     function toggleOptions(id)
-	 *  310:     function showHideFields(id, status)
-	 *
-	 *              SECTION: Output functions
-	 *  366:     function printContent()
-	 *  377:     function moduleContent()
-	 * 1002:     function getFEuserFolder ()
-	 * 1020:     function getTTsysFolder ()
-	 * 1037:     function getFEuserGroup ()
-	 * 1053:     function getRollbackDataSets ()
-	 * 1073:     function getRollbackDataSet ($uid)
-	 * 1092:     function fieldSelector($n)
-	 * 1112:     function checkUpload()
-	 * 1143:     function getPresets()
-	 * 1161:     function processPresets(&$inData)
-	 * 1265:     function getPreset($uid)
-	 *
-	 *              SECTION: Generel Helper functions
-	 * 1281:     function userTempFolder()
-	 * 1300:     function makeSaveForm($inData, &$row)
-	 * 1357:     function renderMultipleSelector($prefix,$allValues,$postData,$reverse=0,$id='')
-	 * 1408:     function renderSelectBox($prefix,$value,$optValues,$id='',$JSfunction='')
-	 * 1432:     function gc($garbageCollectionTriggerTimer,$rollbackSafetyTimespan)
-	 *
-	 * TOTAL FUNCTIONS: 26
-	 * (This index is automatically created/updated by the extension "extdeveval")
-	 *
-	 */
 
 	unset($MCONF);
 	require_once ('conf.php');
-	require_once ($BACK_PATH.'init.php');
-	require_once ($BACK_PATH.'template.php');
-	require_once (PATH_t3lib.'class.t3lib_scbase.php');
-	require_once (PATH_t3lib.'class.t3lib_basicfilefunc.php');
-	require_once (PATH_t3lib.'class.t3lib_extfilefunc.php');
-	require_once(t3lib_extMgm::extPath('rs_userimp').'mod1/class.tx_rsuserimp.php');
-	$LANG->includeLLFile('EXT:rs_userimp/mod1/locallang.php');
+	require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('rs_userimp').'mod1/class.tx_rsuserimp.php');
+	$GLOBALS['LANG']->includeLLFile('EXT:rs_userimp/mod1/locallang.php');
 
-	$BE_USER->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
+	$GLOBALS['BE_USER']->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 
 	/**
 	 * Extends the "ScriptClasses" for backend modules to hold this module
 	 *
 	 */
-	class tx_rsuserimp_module1 extends t3lib_SCbase {
+	class tx_rsuserimp_module1 extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 		var $pageinfo;
 		var $inData = array();
@@ -106,8 +58,6 @@
 		 */
 		function init()	{
 
-			global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
-
 			parent::init();
 		}
 
@@ -118,12 +68,11 @@
 		 */
 		function menuConfig()	{
 
-			global $LANG;
 			$this->MOD_MENU = Array (
 				"function" => Array (
-					"1" => $LANG->getLL("function1"),
-					"2" => $LANG->getLL("function2"),
-					"3" => $LANG->getLL("function3"),
+					"1" => $GLOBALS['LANG']->getLL("function1"),
+					"2" => $GLOBALS['LANG']->getLL("function2"),
+					"3" => $GLOBALS['LANG']->getLL("function3"),
 //					"4" => "Export",
 				)
 			);
@@ -139,21 +88,19 @@
 		 */
 		function main() {
 
-			global $BE_USER,$LANG,$BACK_PATH,$TCA_DESCR,$TCA,$CLIENT,$TYPO3_CONF_VARS;
-
 			// Access check!
 			// The page will show only if there is a valid page and if this page may be viewed by the user
-			$this->pageinfo = t3lib_BEfunc::readPageAccess($this->id,$this->perms_clause);
+			$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id,$this->perms_clause);
 			$access = is_array($this->pageinfo) ? 1 : 0;
 
-			if (($this->id && $access) || ($BE_USER->user['admin'] && !$this->id))	{
+			if (($this->id && $access) || ($GLOBALS['BE_USER']->user['admin'] && !$this->id))	{
 
 				// Draw the header.
-				$this->doc = t3lib_div::makeInstance("mediumDoc");
+				$this->doc = GeneralUtility::makeInstance("mediumDoc");
 				$this->doc->backPath = $BACK_PATH;
 
 				// grab input data
-				$this->inData = t3lib_div::_GP('tx_rsuserimp');
+				$this->inData = GeneralUtility::_GP('tx_rsuserimp');
 
 				// load/save/update preset
 				$this->presetContent = $this->processPresets($this->inData);
@@ -219,27 +166,27 @@
 						 */
 						function checkForm () {'.
 						  'if (document.rs_userimp.importStorageFolder.value == "") {
-							 alert("'.$LANG->getLL('f1.tab2.section.storageFolder.error').'");
+							 alert("'.$GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.error').'");
 							 document.rs_userimp.importStorageFolder.style.backgroundColor = "#FFDFDF";
 							 document.rs_userimp.importStorageFolder.focus();
 							 return false;
 						  }'.
 							(($this->inData['settings']['importUserType'] == 'FE' || !($this->inData['settings']['importUserType'])) ?
 							'if (document.rs_userimp.importUserGroup.value == "") {
-							 alert("'.$LANG->getLL('f1.tab2.section.defaultGroup.emptyGroup.error').'");
+							 alert("'.$GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup.error').'");
 							 document.rs_userimp.importUserGroup.style.backgroundColor = "#FFDFDF";
 							 document.rs_userimp.importUserGroup.focus();
 							 return false;
 						  }' :
 						  '').
 						  'if (document.rs_userimp.importStorageFolder.value == "") {
-							 alert("'.$LANG->getLL('f1.tab2.section.storageFolder.error').'");
+							 alert("'.$GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.error').'");
 							 document.rs_userimp.importStorageFolder.style.backgroundColor = "#FFDFDF";
 							 document.rs_userimp.importStorageFolder.focus();
 							 return false;
 						  }
 						  if (document.rs_userimp.enableUpdate.checked == true && document.rs_userimp.uniqueIdentifier.value == "") {
-							 alert("'.$LANG->getLL('f1.tab2.section.uniqueIdentifier.error').'");
+							 alert("'.$GLOBALS['LANG']->getLL('f1.tab2.section.uniqueIdentifier.error').'");
 							 document.rs_userimp.uniqueIdentifier.style.backgroundColor = "#FFDFDF";
 							 document.rs_userimp.uniqueIdentifier.focus();
 							 return false;
@@ -326,32 +273,32 @@
 
 				$this->doc->JScode .= $this->doc->getDynTabMenuJScode();
 
-				$headerSection = $this->doc->getHeader("pages",$this->pageinfo,$this->pageinfo['_thePath'])."<br>".$LANG->sL("LLL:EXT:lang/locallang_core.php:labels.path").": ".t3lib_div::fixed_lgd_pre($this->pageinfo['_thePath'],50);
+				$headerSection = $this->doc->getHeader("pages",$this->pageinfo,$this->pageinfo['_thePath'])."<br>".$GLOBALS['LANG']->sL("LLL:EXT:lang/locallang_core.php:labels.path").": ". GeneralUtility::fixed_lgd_pre($this->pageinfo['_thePath'],50);
 
-				$this->content .= $this->doc->startPage($LANG->getLL("title"));
-				$this->content .= $this->doc->header($LANG->getLL("title"));
-				$this->content .= $this->doc->section('',$this->doc->funcMenu('',t3lib_BEfunc::getFuncMenu($this->id,"SET[function]",$this->MOD_SETTINGS['function'],$this->MOD_MENU['function'])));
+				$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
+				$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
+				$this->content .= $this->doc->section('',$this->doc->funcMenu('',\TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id,"SET[function]",$this->MOD_SETTINGS['function'],$this->MOD_MENU['function'])));
 				$this->content .= $this->doc->spacer(5);
 
 				if (is_array($this->presetContent)) {
-					$this->content .= $this->doc->section($LANG->getLL('f1.tab2.section.presets'),$this->presetContent[0],0,1,$this->presetContent[1]);
+					$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab2.section.presets'),$this->presetContent[0],0,1,$this->presetContent[1]);
 				}
 
 				// Render content:
 				$this->moduleContent();
 
 				// ShortCut
-				if ($BE_USER->mayMakeShortcut())	{
+				if ($GLOBALS['BE_USER']->mayMakeShortcut())	{
 					$this->content.=$this->doc->spacer(5).$this->doc->section("",$this->doc->makeShortcutIcon("id",implode(",",array_keys($this->MOD_MENU)),$this->MCONF['name']));
 				}
 				$this->content.=$this->doc->spacer(5);
 			} else {
 				// If no access or if ID == zero
-				$this->doc = t3lib_div::makeInstance("mediumDoc");
+				$this->doc = GeneralUtility::makeInstance("mediumDoc");
 				$this->doc->backPath = $BACK_PATH;
 
-				$this->content .= $this->doc->startPage($LANG->getLL("title"));
-				$this->content .= $this->doc->header($LANG->getLL("title"));
+				$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
+				$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
 				$this->content .= $this->doc->spacer(5);
 			}
 		}
@@ -380,8 +327,6 @@
 		 */
 		function moduleContent()	{
 
-			global $LANG, $TCA, $TCA_DESCR, $BE_USER;
-
 			// get configuration values from ext_conf_template.txt
 			$userimpConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['rs_userimp']);
 			$useRecycler = $userimpConf['useRecycler'];
@@ -396,7 +341,8 @@
 
 			// check if we have a file upload or have an already existing file
 			$newFile = $this->checkUpload();
-			
+
+			
 			// check if we already have an uploaded file
 			if ($this->inData['settings']['uploadfile'] && file_exists($this->inData['settings']['uploadfile'])) {
 				$absFile = $this->inData['settings']['uploadfile'];
@@ -414,17 +360,17 @@
 			if (!file_exists($absFile)) $this->inData = '';
 
 			if ($newFile && !file_exists($newFile)) {
-				$this->content .= $this->doc->section($LANG->getLL('f1.tab1.section.error'),$LANG->getLL('f1.tab1.section.error.description'),0,1,3);
+				$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab1.section.error'),$GLOBALS['LANG']->getLL('f1.tab1.section.error.description'),0,1,3);
 			}
 
 			switch((string)$this->MOD_SETTINGS['function'])	{
 
 				// print security message
 				case 3:
-					$content .= $this->doc->section($LANG->getLL('f3.securityNote'),'',0,1,1);
+					$content .= $this->doc->section($GLOBALS['LANG']->getLL('f3.securityNote'),'',0,1,1);
 					$content .= '<table border="0" width="100%" align="center" bgcolor="' . $this->doc->bgColor4 . '">';
 					$content .= '<tr>
-									<td>'.$LANG->getLL('f3.securityNote.message').'</td>
+									<td>'.$GLOBALS['LANG']->getLL('f3.securityNote.message').'</td>
 								 </tr>';
 					$content .= '</table>';
 					$this->content .= $content;
@@ -433,7 +379,7 @@
 				// rollback function
 				case 2:
 // temporary hack
-$this->inData = t3lib_div::_GP('tx_rsuserimp');				
+$this->inData = GeneralUtility::_GP('tx_rsuserimp');
 					// if the rollback button was pressed...
 					if (is_array($this->inData['rollback'])) {
 						// get the ID of the rollback session ...
@@ -450,7 +396,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 // currently, they get deleted but i'm not sure what to do here...
 							if ($rollbackDeleteFromDB) {
 								$GLOBALS['TYPO3_DB']->exec_DELETEquery($data['db_table'],'uid='.$user.' AND pid='.$data['target_pid']);
-								$BE_USER->writelog(1,3,0,'','UID %s deleted by CSV rollback action',Array($user));
+								$GLOBALS['BE_USER']->writelog(1,3,0,'','UID %s deleted by CSV rollback action',Array($user));
 							} else {
 								$GLOBALS['TYPO3_DB']->exec_UPDATEquery($data['db_table'],'uid='.$user,array('deleted'=>'1'));
 							}
@@ -464,10 +410,10 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 					if (!empty($rollbackData)) {
 						$content .= '<table name="sessionlist" id="sessionlist" border="0" width="100%" cellspacing="1" cellpadding="2" align="center" bgcolor="' . $this->doc->bgColor2 . '">';
 						$content .= '<tr>
-										<td><strong>'.$LANG->getLL('f2.session').'</strong></td>
-										<td><strong>'.$LANG->getLL('f2.date').'</strong></td>
-										<td><strong>'.$LANG->getLL('f2.title').'</strong></td>
-										<td><strong>'.$LANG->getLL('f2.status').'</strong></td>
+										<td><strong>'.$GLOBALS['LANG']->getLL('f2.session').'</strong></td>
+										<td><strong>'.$GLOBALS['LANG']->getLL('f2.date').'</strong></td>
+										<td><strong>'.$GLOBALS['LANG']->getLL('f2.title').'</strong></td>
+										<td><strong>'.$GLOBALS['LANG']->getLL('f2.status').'</strong></td>
 									</tr>';
 
 						$rowcount = 0;
@@ -484,43 +430,43 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 							if ($GLOBALS['TYPO3_DB']->sql_affected_rows() == 1) {
 								$username = $row[0];
 							} elseif ($GLOBALS['TYPO3_DB']->sql_affected_rows() == 0) {
-								$username = $LANG->getLL('f2.importedBy.deleted',1);
+								$username = $GLOBALS['LANG']->getLL('f2.importedBy.deleted',1);
 							} else {
-								$username = $LANG->getLL('f2.importedBy.unknown',1);
+								$username = $GLOBALS['LANG']->getLL('f2.importedBy.unknown',1);
 							}
 
-							$infoBlock = '<strong>'.$LANG->getLL('f2.importSummary',1).'</strong>:<br>
+							$infoBlock = '<strong>'.$GLOBALS['LANG']->getLL('f2.importSummary',1).'</strong>:<br>
 							<div align="left">
 								<table cellpadding="0px" cellspacing="0px" border="0">
 									<tr>
-										<td>'.$LANG->getLL('f2.importFile',1).'</td>
+										<td>'.$GLOBALS['LANG']->getLL('f2.importFile',1).'</td>
 										<td width="10pt"></td>
 										<td>'.$session['file'].'</td>
 									</tr>
 									<tr>
-										<td>'.$LANG->getLL('f2.importedBy',1).'</td>
+										<td>'.$GLOBALS['LANG']->getLL('f2.importedBy',1).'</td>
 										<td width="10pt"></td>
 										<td>'.$username.' [UID '.$session['user_uid'].']</td>
 									</tr>
 									<tr>
-										<td>'.$LANG->getLL('f2.userType',1).'</td>
+										<td>'.$GLOBALS['LANG']->getLL('f2.userType',1).'</td>
 										<td width="10pt"></td>
 										<td>'.$session['db_table'].'</td>
 									</tr>
 									<tr>
-										<td>'.$LANG->getLL('f2.usersImported',1).'</td>
+										<td>'.$GLOBALS['LANG']->getLL('f2.usersImported',1).'</td>
 										<td width="10pt"></td>
 										<td>'.$session['num_imp'].'</td>
 									</tr>
 									<tr>
-										<td>'.$LANG->getLL('f2.usersUpdated',1).'</td>
+										<td>'.$GLOBALS['LANG']->getLL('f2.usersUpdated',1).'</td>
 										<td width="10pt"></td>
 										<td>'.$session['num_upd'].'</td>
 									</tr>									
 									<tr>
-										<td>'.$LANG->getLL('f2.usersDropped',1).'</td>
+										<td>'.$GLOBALS['LANG']->getLL('f2.usersDropped',1).'</td>
 										<td width="10pt"></td>
-										<td>'.$session['num_drop'].(!empty($session['dropfile']) && is_file($session['dropfile']) ? ' [<a href="/uploads/tx_rsuserimp/'.basename($session['dropfile']).'">'.$LANG->getLL('f1.tab5.downloadFile').'</a>]' : '').'</td>
+										<td>'.$session['num_drop'].(!empty($session['dropfile']) && is_file($session['dropfile']) ? ' [<a href="/uploads/tx_rsuserimp/'.basename($session['dropfile']).'">'.$GLOBALS['LANG']->getLL('f1.tab5.downloadFile').'</a>]' : '').'</td>
 									</tr>
 								</table>
 							</div>';
@@ -528,7 +474,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 							$previewNum = ($rollbackPreviewRows < count($info)) ? $rollbackPreviewRows : count($info);
 
 							if ($previewNum > 0) {
-								$infoBlock .= '<br><strong>'.$LANG->getLL('f2.sampleData',1).'</strong><br><br>';
+								$infoBlock .= '<br><strong>'.$GLOBALS['LANG']->getLL('f2.sampleData',1).'</strong><br><br>';
 
 								for ($i = 0 ; $i<$previewNum ; $i++) {
 									$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery($session['unique_identifier'],$session['db_table'],'uid='.$info[$i].' AND deleted=0');
@@ -537,16 +483,16 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 									if ($GLOBALS['TYPO3_DB']->sql_affected_rows() == 1) {
 										$infoBlock .= $row[0].' [UID '.$info[$i].']<br>';
 									} elseif ($GLOBALS['TYPO3_DB']->sql_affected_rows() == 0) {
-										$infoBlock .= sprintf($LANG->getLL('f2.userAlreadyDeleted'),$info[$i]).'<br>';
+										$infoBlock .= sprintf($GLOBALS['LANG']->getLL('f2.userAlreadyDeleted'),$info[$i]).'<br>';
 									} else {
-										$infoBlock .= $LANG->getLL('f2.unknownError').'<br>';
+										$infoBlock .= $GLOBALS['LANG']->getLL('f2.unknownError').'<br>';
 									}
 								}
 								$infoBlock .= '[...]<br>';
 							}
 
 							$infoBlock .= '<div align="right">
-													<input type="submit" onclick="return confirm(\''.$LANG->getLL('f2.rollback.sure',1).'\');" name="tx_rsuserimp[rollback]['.$session['uid'].']" value="Roll back" '.((((mktime() < $rollbacktime) || $rollbackSafetyTimespan == 0) && $session['active'] == 1) ? '' : 'disabled').'/>
+													<input type="submit" onclick="return confirm(\''.$GLOBALS['LANG']->getLL('f2.rollback.sure',1).'\');" name="tx_rsuserimp[rollback]['.$session['uid'].']" value="Roll back" '.((((mktime() < $rollbacktime) || $rollbackSafetyTimespan == 0) && $session['active'] == 1) ? '' : 'disabled').'/>
 												</div>';
 
 							$colorcount = ($colorcount == 1) ? 0: 1;
@@ -557,21 +503,21 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 												';
 							$content .= '<tr' . $tr_params . ' id="sessionrow_'.$rowcount.'" name="sessionrow" style="cursor: pointer;">
 											<td valign="top"><strong>'.$session['uid'].'</td>
-											<td valign="top">'.t3lib_befunc::dateTimeAge($session['crdate'],1).'</td>
+											<td valign="top">'.\TYPO3\CMS\Backend\Utility\BackendUtility::dateTimeAge($session['crdate'],1).'</td>
 											<td valign="top">'.$session['title'].'</td>';
 
 							$now = mktime();
 
 							if ($now < $rollbacktime || $rollbackSafetyTimespan == 0) {
 								if ($session['active'] == 1) {
-									$content .= '<td valign="top">'.sprintf($LANG->getLL('f2.sessionRollback'),t3lib_befunc::dateTimeAge($rollbacktime,1)).'</td>';
+									$content .= '<td valign="top">'.sprintf($GLOBALS['LANG']->getLL('f2.sessionRollback'),\TYPO3\CMS\Backend\Utility\BackendUtility::dateTimeAge($rollbacktime,1)).'</td>';
 								}
 
 								if ($session['active'] == 0) {
-									$content .= '<td valign="top">'.$LANG->getLL('f2.sessionRolledBack').'</td>';
+									$content .= '<td valign="top">'.$GLOBALS['LANG']->getLL('f2.sessionRolledBack').'</td>';
 								}
 							} elseif ($now >= $rollbacktime) {
-									$content .= '<td valign="top">'.sprintf($LANG->getLL('f2.sessionExpired'),t3lib_befunc::dateTimeAge($rollbacktime,1)).'</td>';
+									$content .= '<td valign="top">'.sprintf($GLOBALS['LANG']->getLL('f2.sessionExpired'),\TYPO3\CMS\Backend\Utility\BackendUtility::dateTimeAge($rollbacktime,1)).'</td>';
 							}
 
 							$content .= '</tr>';
@@ -582,7 +528,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 						} //end foreach
 						$content .= '</table>';
 					} else { //if not empty rollbackData
-							$this->content.= $this->doc->section($LANG->getLL('f2.noSessionFound'),'',0,1,1);
+							$this->content.= $this->doc->section($GLOBALS['LANG']->getLL('f2.noSessionFound'),'',0,1,1);
 					}
 
 					$this->content .= $content;
@@ -595,10 +541,10 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 				/***** file uplod ********/
 				/**** TAB 1 data *****/
 
-					$additionalMandatoryFields = isset($this->inData['settings']['extraFields']) ? $this->inData['settings']['extraFields'] : ''; //array_unique(t3lib_div::trimExplode(',',$userimpConf['additionalMandatoryFields'],1));
+					$additionalMandatoryFields = isset($this->inData['settings']['extraFields']) ? $this->inData['settings']['extraFields'] : ''; //array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$userimpConf['additionalMandatoryFields'],1));
 
 					// create and initialize instance of our import object
-					$mapper = t3lib_div::makeInstance("tx_rsuserimp");
+					$mapper = GeneralUtility::makeInstance("tx_rsuserimp");
 
 					$mapper->userType = isset($this->inData['settings']['importUserType']) ? $this->inData['settings']['importUserType'] : $mapper->userType;
 					$mapper->setUserTypeDefaultData();
@@ -614,49 +560,49 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab1.section.importFile').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab1.section.importFile').'</td>
 						</tr>';
 
 					$tempDir = $this->userTempFolder();
 					$row[] = '
 						<tr class="bgColor4">
-							<td><strong>'.$LANG->getLL('f1.tab1.section.importFile.importFile').'</strong></td>
+							<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab1.section.importFile.importFile').'</strong></td>
 							<td>'.
-								$LANG->getLL('importFile').'<br/>
+								$GLOBALS['LANG']->getLL('importFile').'<br/>
 								<input type="file" name="upload_1" size="30" '.($_POST['importNow'] ? 'disabled' : '').'/><br/>
 								<input type="hidden" name="file[upload][1][target]" value="'.htmlspecialchars($tempDir).'" '.($_POST['importNow'] ? 'disabled' : '').'/>
 								<input type="hidden" name="file[upload][1][data]" value="1" />
-								'.$LANG->getLL('f1.tab1.section.importFile.overwriteFile').'
+								'.$GLOBALS['LANG']->getLL('f1.tab1.section.importFile.overwriteFile').'
 								<input type="checkbox" name="tx_rsuserimp[preset][overwriteExistingFiles]" value="1"'.(isset($this->inData['preset']['overwriteExistingFiles']) ? ' checked="checked"' : '').' '.($_POST['importNow'] ? 'disabled' : '').'/><br/>
 								<div align="right"><input type="submit" value="Upload" '.($_POST['importNow'] ? 'disabled' : '').'/></div>
 							</td>
 						</tr>';
 
 					if (!empty($absFile) && file_exists($absFile)) {
-						$currentFileInfo = t3lib_basicFileFunctions::getTotalFileInfo($absFile);
+						$currentFileInfo = \TYPO3\CMS\Core\Utility\File\BasicFileUtility::getTotalFileInfo($absFile);
 						$currentFile = $currentFileInfo['file'];
-						$curentFileSize = t3lib_basicFileFunctions::formatSize($currentFileInfo['size']);
+						$curentFileSize = \TYPO3\CMS\Core\Utility\File\BasicFileUtility::formatSize($currentFileInfo['size']);
 						$currentFileMessage = $currentFile.' ('.$curentFileSize.')';
 					} else {
-						$currentFileMessage = $LANG->getLL('f1.tab1.section.importFile.emptyImportFile');
+						$currentFileMessage = $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.emptyImportFile');
 					}
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab1.section.importFile.currentImportFile').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab1.section.importFile.currentImportFile').'</strong></td>
 								<td><div align="left"><strong>'.$currentFileMessage.'</strong></div></td>
 							</tr>';
 
 					//now compose TAB menu array for TAB1
 					$menuItems[] = array(
-						'label' => $LANG->getLL('f1.tab1'),
+						'label' => $GLOBALS['LANG']->getLL('f1.tab1'),
 						'content' => '
 							<table border="0" cellpadding="1" cellspacing="1" width="100%">
 								'.implode('
 								',$row).'
 							</table>
 						',
-						'description' => $LANG->getLL('f1.tab1.description'),
+						'description' => $GLOBALS['LANG']->getLL('f1.tab1.description'),
 						'linkTitle' => '',
 						'stateIcon' => file_exists($absFile) ? -1 : 2
 					);
@@ -672,24 +618,24 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab2.section.userType').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.userType').'</td>
 						</tr>';
 
 					// define options for usertype dropdown menu
 					$opt = array(
-						'FE'=>$LANG->getLL('f1.tab2.constants.FE'),
-						'TT'=>$LANG->getLL('f1.tab2.constants.TT')
+						'FE'=>$GLOBALS['LANG']->getLL('f1.tab2.constants.FE'),
+						'TT'=>$GLOBALS['LANG']->getLL('f1.tab2.constants.TT')
 						);
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.userType.label').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.userType.label').'</strong></td>
 								<td>'.$this->renderSelectBox('tx_rsuserimp[settings][importUserType]',(isset($this->inData['settings']['importUserType']) ? $this->inData['settings']['importUserType'] : ''),$opt,'',"onchange='submit()'").'</td>
 							</tr>';
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab2.section.storageFolder').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder').'</td>
 						</tr>';
 
 					// fe_users
@@ -719,7 +665,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 						$row[] = '
 							<tr class="tableheader bgColor5">
-								<td colspan="2">'.$LANG->getLL('f1.tab2.section.defaultGroup').'</td>
+								<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup').'</td>
 							</tr>';
 					} // end user specific settings
 
@@ -727,13 +673,13 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.storageFolder.label').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.label').'</strong></td>
 								<td>'.$this->renderSelectBox('tx_rsuserimp[settings][importStorageFolder]',(isset($this->inData['settings']['importStorageFolder']) ? $this->inData['settings']['importStorageFolder'] : ''),$opt,'importStorageFolder').'</td>
 							</tr>';
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab2.section.defaultGroup').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup').'</td>
 						</tr>';
 
 					$preopt = $this->getFEuserGroup();
@@ -744,22 +690,22 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 							$opt = $opt + array($val['uid'] => $val['title'].' [UID '.$val['uid'].']');
 						}
 					} else {
-						$opt = array(''=>$LANG->getLL('f1.tab2.section.defaultGroup.emptyGroup'));
+						$opt = array(''=>$GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup'));
 					}
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.defaultGroup.label').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.label').'</strong></td>
 								<td>'.$this->renderMultipleSelector('tx_rsuserimp[settings][importUserGroup]',$opt,(isset($this->inData['settings']['importUserGroup']) ? $this->inData['settings']['importUserGroup'] : ''),1,'importUserGroup').'</td>
 							</tr>';
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab2.section.generalSettings.userupdate').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.userupdate').'</td>
 						</tr>';
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.userupdate.description').'</td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.userupdate.description').'</td>
 								<td><input onChange="toggle();" type="checkbox" id="enableUpdate" name="tx_rsuserimp[settings][enableUpdate]" value="1"'.(isset($this->inData['settings']['enableUpdate']) ? ' checked="checked"' : '').' '.($_POST['importNow'] ? 'disabled' : '').'/></td>
 							</tr>';
 
@@ -788,38 +734,38 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.uniqueIdentifier.label').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.uniqueIdentifier.label').'</strong></td>
 								<td>'.$this->renderSelectBox('tx_rsuserimp[settings][uniqueIdentifier]',(isset($this->inData['settings']['uniqueIdentifier']) ? $this->inData['settings']['uniqueIdentifier'] : ''),$opt,'uniqueIdentifier','').'</td>
 							</tr>';
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab2.section.generalSettings').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings').'</td>
 						</tr>';
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.firstRowHasFieldnames').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.firstRowHasFieldnames').'</strong></td>
 								<td><input type="checkbox" name="tx_rsuserimp[settings][firstRowHasFieldnames]" value="1"'.(isset($this->inData['settings']['firstRowHasFieldnames']) ? ' checked="checked"' : '').' '.($_POST['importNow'] ? 'disabled' : '').'/></td>
 							</tr>';
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.enableAutoRename').'</td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.enableAutoRename').'</td>
 								<td><input type="checkbox" id="enableAutoRename" name="tx_rsuserimp[settings][enableAutoRename]" value="1"'.(isset($this->inData['settings']['enableAutoRename']) ? ' checked="checked"' : '').' '.($_POST['importNow'] ? 'disabled' : '').'/></td>
 							</tr>';
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.enableAutoValues').'</td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.enableAutoValues').'</td>
 								<td><input type="checkbox" id="enableAutoValues" name="tx_rsuserimp[settings][enableAutoValues]" value="1"'.(isset($this->inData['settings']['enableAutoValues']) ? ' checked="checked"' : '').' '.($_POST['importNow'] ? 'disabled' : '').'/></td>
 							</tr>';
 
 					// define options for fieldDelimiter dropdown menu
-					$opt = array(';'=>$LANG->getLL('f1.tab2.constants.semicolon'),','=>$LANG->getLL('f1.tab2.constants.comma'),':'=>$LANG->getLL('f1.tab2.constants.colon'),'TAB'=>$LANG->getLL('f1.tab2.constants.tab'));
+					$opt = array(';'=>$GLOBALS['LANG']->getLL('f1.tab2.constants.semicolon'),','=>$GLOBALS['LANG']->getLL('f1.tab2.constants.comma'),':'=>$GLOBALS['LANG']->getLL('f1.tab2.constants.colon'),'TAB'=>$GLOBALS['LANG']->getLL('f1.tab2.constants.tab'));
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.fieldDelimiter').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.fieldDelimiter').'</strong></td>
 								<td>'.$this->renderSelectBox('tx_rsuserimp[settings][fieldDelimiter]',(isset($this->inData['settings']['fieldDelimiter']) ? $this->inData['settings']['fieldDelimiter'] : ''),$opt).'</td>
 							</tr>';
 
@@ -829,45 +775,45 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.fieldEncaps').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.fieldEncaps').'</strong></td>
 								<td>'.$this->renderSelectBox('tx_rsuserimp[settings][fieldEncaps]',(isset($this->inData['settings']['fieldEncaps']) ? $this->inData['settings']['fieldEncaps'] : ''),$opt).'</td>
 							</tr>';
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.previewNum').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.previewNum').'</strong></td>
 								<td><input type="select" name="tx_rsuserimp[settings][maxPreview]" value="'.htmlspecialchars( ((isset($this->inData['settings']['maxPreview']) && ($this->inData['settings']['maxPreview']>=0)) ? $this->inData['settings']['maxPreview'] : '3')).'" size="2" maxlength="2" '.($_POST['importNow'] ? 'disabled' : '').'></td>
 							</tr>';
 
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab2.section.generalSettings.additionalMandatoryFields').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.additionalMandatoryFields').'</td>
 						</tr>';
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.additionalMandatoryFields.description').'</strong></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.additionalMandatoryFields.description').'</strong></td>
 								<td>'.$this->renderMultipleSelector('tx_rsuserimp[settings][extraFields]',$dbFieldsDefault,(isset($this->inData['settings']['extraFields'])?$this->inData['settings']['extraFields']:'')).'</td>
 							</tr>';
 
 					$row[] = '
 							<tr class="bgColor4">
-								<td><strong>'.$LANG->getLL('f1.tab2.section.generalSettings.update').'</strong></td>
-								<td><div align="right"><input  onclick="return checkForm()" type="submit" name="tx_rsuserimp[settings][OK]" value="'.$LANG->getLL('f1.tab2.section.generalSettings.update.update',1).'" '.($_POST['importNow'] ? 'disabled' : '').'/></div></td>
+								<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.update').'</strong></td>
+								<td><div align="right"><input  onclick="return checkForm()" type="submit" name="tx_rsuserimp[settings][OK]" value="'.$GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.update.update',1).'" '.($_POST['importNow'] ? 'disabled' : '').'/></div></td>
 							</tr>';
 
 					$this->makeSaveForm($this->inData, $row); //call by reference, alters the array(row) !!!
 
 					//now, compose TAB menu array for TAB2
 					$menuItems[] = array(
-						'label' => $LANG->getLL('f1.tab2'),
+						'label' => $GLOBALS['LANG']->getLL('f1.tab2'),
 						'content' => file_exists($absFile) ? '
 							<table border="0" cellpadding="1" cellspacing="1" width="100%">
 								'.implode('
 								',$row).'
 							</table>
 						' : '',
-						'description' => $LANG->getLL('f1.tab2.description'),
+						'description' => $GLOBALS['LANG']->getLL('f1.tab2.description'),
 						'linkTitle' => '',
 						'toggle' => 0,
 						'stateIcon' => (isset($this->inData['settings']['OK']) && file_exists($absFile)) ? -1 : 0
@@ -913,14 +859,14 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 					}
 
 					$menuItems[] = array(
-						'label' => $LANG->getLL('f1.tab3'),
-						'content' => ((isset($this->inData['settings']['OK'])  || t3lib_div::_GP('map')) && file_exists($absFile)) ? '
+						'label' => $GLOBALS['LANG']->getLL('f1.tab3'),
+						'content' => ((isset($this->inData['settings']['OK'])  || GeneralUtility::_GP('map')) && file_exists($absFile)) ? '
 							<table border="0" cellpadding="1" cellspacing="1" width="100%">
 								'.implode('
 								',$row).'
 							</table>
 						' : '',
-						'description' => $LANG->getLL('f1.tab3.description'),
+						'description' => $GLOBALS['LANG']->getLL('f1.tab3.description'),
 						'linkTitle' => '',
 						'toggle' => 0,
 						'stateIcon' => (!empty($mapper->importOK) || isset($this->inData['fieldmap']['OK'])) ? -1 : 0
@@ -935,7 +881,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 				if (!empty($mapper->importOK)) {
 					$row[] = '
 						<tr class="tableheader bgColor5">
-							<td colspan="2">'.$LANG->getLL('f1.tab4.section.import').'</td>
+							<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab4.section.import').'</td>
 						</tr>';
 
 					$row[] = '
@@ -948,14 +894,14 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 				}
 
 				$menuItems[] = array(
-					'label' => $LANG->getLL('f1.tab4'),
+					'label' => $GLOBALS['LANG']->getLL('f1.tab4'),
 					'content' => !empty($mapper->importOK) ? '
 						<table border="0" cellpadding="1" cellspacing="1" width="100%">
 							'.implode('
 							',$row).'
 						</table>
 					' : '',
-					'description' => $LANG->getLL('f1.tab4.description'),
+					'description' => $GLOBALS['LANG']->getLL('f1.tab4.description'),
 					'linkTitle' => '',
 					'toggle' => 0,
 					'stateIcon' => ($mapper->importNow == 'TRUE') ? -1 : 0
@@ -969,7 +915,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 				$row[] = '
 					<tr class="tableheader bgColor5">
-						<td colspan="2">'.$LANG->getLL('f1.tab5').'</td>
+						<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab5').'</td>
 					</tr>';
 
 				$row[] = '
@@ -978,7 +924,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 					</tr>';
 
 				$menuItems[] = array(
-					'label' => $LANG->getLL('f1.tab5'),
+					'label' => $GLOBALS['LANG']->getLL('f1.tab5'),
 					'content' => !empty($msg) ?
 						'<table border="0" cellpadding="1" cellspacing="1" width="100%">
 						'.implode('
@@ -1060,12 +1006,10 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 */
 		function getRollbackDataSets () {
 
-			global $BE_USER;
-
 			$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 					'*',
 					'tx_rsuserimp_sessions',
-					'user_uid='.$BE_USER->user['uid'].' AND DELETED=0',
+					'user_uid='.$GLOBALS['BE_USER']->user['uid'].' AND DELETED=0',
 					'uid DESC',
 					''
 				);
@@ -1079,8 +1023,6 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 * @return	string		returns the session dataset as list
 		 */
 		function getRollbackDataSet ($uid) {
-
-			global $BE_USER;
 
 				list($result) = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 					'target_pid,db_table,session_data',
@@ -1119,14 +1061,12 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 */
 		function checkUpload()	{
 
-			global $FILEMOUNTS,$TYPO3_CONF_VARS,$BE_USER,$LANG;
-
-			$file = t3lib_div::_GP('file');
+			$file = GeneralUtility::_GP('file');
 
 			// Initializing:
-			$this->fileProcessor = t3lib_div::makeInstance('t3lib_extFileFunctions');
-			$this->fileProcessor->init($FILEMOUNTS, $TYPO3_CONF_VARS['BE']['fileExtensions']);
-			$this->fileProcessor->init_actionPerms($BE_USER->user['fileoper_perms']);
+			$this->fileProcessor = GeneralUtility::makeInstance('TYPO3\CMS\Core\Utility\File\ExtendedFileUtility');
+			$this->fileProcessor->init($FILEMOUNTS, $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
+			$this->fileProcessor->init_actionPerms($GLOBALS['BE_USER']->user['fileoper_perms']);
 			$this->fileProcessor->dontCheckForUnique = ($this->inData['preset']['overwriteExistingFiles']) ? 1 : 0;
 
 			if (is_array($FILEMOUNTS) && !empty($FILEMOUNTS)) {
@@ -1139,14 +1079,14 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 				// this throws a error message because we have no rights to upload files
 				// to our extension's own upload folder
 				// further investigation needed
-				$file['upload']['1']['target'] = t3lib_div::getFileAbsFileName('uploads/tx_rsuserimp/');
+				$file['upload']['1']['target'] = GeneralUtility::getFileAbsFileName('uploads/tx_rsuserimp/');
 			}
 
 			// Checking referer / executing:
-			$refInfo = parse_url(t3lib_div::getIndpEnv('HTTP_REFERER'));
-			$httpHost = t3lib_div::getIndpEnv('TYPO3_HOST_ONLY');
+			$refInfo = parse_url(GeneralUtility::getIndpEnv('HTTP_REFERER'));
+			$httpHost = GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 
-			if ($httpHost != $refInfo['host'] && $this->vC != $BE_USER->veriCode() && !$TYPO3_CONF_VARS['SYS']['doNotCheckReferer'])	{
+			if ($httpHost != $refInfo['host'] && $this->vC != $GLOBALS['BE_USER']->veriCode() && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer'])	{
 				$this->fileProcessor->writeLog(0,2,1,'Referer host "%s" and server host "%s" did not match!',array($refInfo['host'],$httpHost));
 			} else {
 				$this->fileProcessor->start($file);
@@ -1180,8 +1120,6 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 */
 		function processPresets(&$inData)	{
 
-			global $LANG;
-
 			$err = FALSE;
 			$file = $inData['settings']['uploadfile'];
 
@@ -1201,9 +1139,9 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 							'preset_data' => serialize($inData_temp)
 						);
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_rsuserimp_presets','uid='.intval($preset['uid']),$fields_values);
-						$msg = sprintf($LANG->getLL('f1.tab2.section.presets.save.created'),$preset['uid']);
+						$msg = sprintf($GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.created'),$preset['uid']);
 					} else {
-						$msg = $LANG->getLL('f1.tab2.section.presets.save.notOwner');
+						$msg = $GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.notOwner');
 						$err = TRUE;
 					}
 				} else {
@@ -1216,7 +1154,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 						'preset_data' => serialize($inData_temp)
 					);
 					$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_rsuserimp_presets',$fields_values);
-					$msg = sprintf($LANG->getLL('f1.tab2.section.presets.save.created'),$inData['preset']['savetitle']);
+					$msg = sprintf($GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.created'),$inData['preset']['savetitle']);
 				}
 			}
 
@@ -1227,14 +1165,14 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 				if (is_array($preset))	{
 					if ($GLOBALS['BE_USER']->isAdmin() || $preset['user_uid'] === $GLOBALS['BE_USER']->user['uid'])	{
 						$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_rsuserimp_presets','uid='.intval($preset['uid']));
-							$msg = sprintf($LANG->getLL('f1.tab2.section.presets.delete.deleted'),$preset['title'],$inData['preset']['select']);
+							$msg = sprintf($GLOBALS['LANG']->getLL('f1.tab2.section.presets.delete.deleted'),$preset['title'],$inData['preset']['select']);
 							$inData['preset']['select'] = '0';
 					} else {
-						$msg = $LANG->getLL('f1.tab2.section.presets.delete.notOwner');
+						$msg = $GLOBALS['LANG']->getLL('f1.tab2.section.presets.delete.notOwner');
 						$err = TRUE;
 					}
 				} else {
-					$msg = $LANG->getLL('f1.tab2.section.presets.delete.noSelection');
+					$msg = $GLOBALS['LANG']->getLL('f1.tab2.section.presets.delete.noSelection');
 					$err = TRUE;
 				}
 			}
@@ -1256,16 +1194,16 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 								$inData['list'] = array_merge((array)$inData['list'], $inData_temp['list']);
 							}
 						} else {
-							$msg = sprintf($LANG->getLL('f1.tab2.section.presets.load.loaded'),$preset['title'],$preset['uid']);
+							$msg = sprintf($GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.loaded'),$preset['title'],$preset['uid']);
 							$inData = array_merge($inData,$inData_temp);
 							$inData['settings']['uploadfile'] = $file;
 						}
 					} else {
-						$msg = $LANG->getLL('f1.tab2.section.presets.load.noData');
+						$msg = $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.noData');
 						$err = TRUE;
 					}
 				} else {
-					$msg = $LANG->getLL('f1.tab2.section.presets.load.noSelection');
+					$msg = $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.noSelection');
 					$err = TRUE;
 				}
 			}
@@ -1302,9 +1240,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 * @return	string		Absolute path to first "_temp_" folder of the current user, otherwise blank.
 		 */
 		function userTempFolder() {
-		//	if ($session['dropfile'] && t3lib_div::validPathStr($session['dropfile']) && t3lib_div::isFirstPartOfStr($session['dropfile'],PATH_site.'uploads/tx_rsuserimp/') ) {
-			global $FILEMOUNTS;
-
+		//	if ($session['dropfile'] && \TYPO3\CMS\Core\Utility\GeneralUtility::validPathStr($session['dropfile']) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($session['dropfile'],PATH_site.'uploads/tx_rsuserimp/') ) {
 			foreach($FILEMOUNTS as $filePathInfo) {
 				$tempFolder = $filePathInfo['path'].'_temp_/';
 				if (@is_dir($tempFolder))	{
@@ -1322,12 +1258,10 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 */
 		function makeSaveForm($inData, &$row) {
 
-			global $LANG;
-
 			// Presets:
 			$row[] = '
 				<tr class="tableheader bgColor5">
-					<td colspan="2">'.$LANG->getLL('f1.tab2.section.presets',1).'</td>
+					<td colspan="2">'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets',1).'</td>
 				</tr>';
 
 			$presets = $this->getPresets();
@@ -1343,26 +1277,26 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 
 			$row[] = '
 				<tr class="bgColor4">
-					<td><strong>'.$LANG->getLL('f1.tab2.section.presets.load',1).'</strong></td>
+					<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.load',1).'</strong></td>
 					<td>
-						<class="tableheader bgColor4">'.$LANG->getLL('f1.tab2.section.presets.load.select',1).'</class><br/>
+						<class="tableheader bgColor4">'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.select',1).'</class><br/>
 						'.$this->renderSelectBox('tx_rsuserimp[preset][select]',(isset($inData['preset']['select']) ?
 						// JavaScript to check fields swapPresetSelectFields()
 						$inData['preset']['select'] : ''),$opt,'swapfield').'
 						<br/>
-						<input type="submit" value="'.$LANG->getLL('f1.tab2.section.presets.load.load',1).'" name="tx_rsuserimp[preset][load]" '.($_POST['importNow'] ? 'disabled' : '').'/>
-						<input type="submit" value="'.$LANG->getLL('f1.tab2.section.presets.load.delete',1).'" name="tx_rsuserimp[preset][delete]" onclick="return confirm(\''.$LANG->getLL('f1.tab2.section.presets.load.delete.sure',1).'\');" '.($_POST['importNow'] ? 'disabled' : '').'/>
+						<input type="submit" value="'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.load',1).'" name="tx_rsuserimp[preset][load]" '.($_POST['importNow'] ? 'disabled' : '').'/>
+						<input type="submit" value="'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.delete',1).'" name="tx_rsuserimp[preset][delete]" onclick="return confirm(\''.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.delete.sure',1).'\');" '.($_POST['importNow'] ? 'disabled' : '').'/>
 					</td>
 				</tr>
 				<tr class="bgColor4">
-					<td><strong>'.$LANG->getLL('f1.tab2.section.presets.save',1).'</strong></td>
+					<td><strong>'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.save',1).'</strong></td>
 					<td>
-						'.$LANG->getLL('f1.tab2.section.presets.save.label',1).'<br/>
-						'.$LANG->getLL('f1.tab2.section.presets.save.name',1).'
+						'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.label',1).'<br/>
+						'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.name',1).'
 						<input type="text" name="tx_rsuserimp[preset][savetitle]" value="'.htmlspecialchars(isset($inData['preset']['savetitle']) ? $inData['preset']['savetitle'] : '').'" '.($_POST['importNow'] ? 'disabled' : '').'/><br/>'.
-						//	.$LANG->getLL('f1.tab2.section.presets.save.public',1).
+						//	.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.public',1).
 						//	'<input type="checkbox" name="tx_rsuserimp[preset][public]" value="1"'.($inData['preset']['public'] ? ' checked="checked"' : '').' '.($_POST['importNow'] ? 'disabled' : '').'/><br/>
-						'<div align="right"><input type="submit" value="'.$LANG->getLL('f1.tab2.section.presets.save.save',1).'" name="tx_rsuserimp[preset][save]" onclick="return swapPresetSelectFields();" '.($_POST['importNow'] ? 'disabled' : '').'/></div>
+						'<div align="right"><input type="submit" value="'.$GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.save',1).'" name="tx_rsuserimp[preset][save]" onclick="return swapPresetSelectFields();" '.($_POST['importNow'] ? 'disabled' : '').'/></div>
 					</td>
 				</tr>';
 		}
@@ -1378,8 +1312,6 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 * @return	string		HTML select element
 		 */
 		function renderMultipleSelector($prefix,$allValues,$postData,$reverse=0,$id='')	{
-
-			global $LANG;
 
 			if ($reverse) {
 				$optValues = array();
@@ -1413,7 +1345,7 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 					$opt[] = '<option value="'.htmlspecialchars($v).'"'.$sel.'>'.htmlspecialchars($v).'</option>';
 				}
 			}
-			return '<select id="'.$id.'" name="'.$prefix.'[]" multiple="multiple" '.(($_POST['importNow'] || ( (isset($this->inData['settings']['importUserType']) && ($this->inData['settings']['importUserType'] == 'TT')) && $id === 'importUserGroup') ) ? 'disabled' : '').' size="'.t3lib_div::intInRange(count($opt),2,6).'">'.implode('',$opt).'</select>';
+			return '<select id="'.$id.'" name="'.$prefix.'[]" multiple="multiple" '.(($_POST['importNow'] || ( (isset($this->inData['settings']['importUserType']) && ($this->inData['settings']['importUserType'] == 'TT')) && $id === 'importUserGroup') ) ? 'disabled' : '').' size="'. GeneralUtility::intInRange(count($opt),2,6).'">'.implode('',$opt).'</select>';
 		}
 
 		/**
@@ -1454,17 +1386,15 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 		 */
 		function gc($garbageCollectionTriggerTimer,$rollbackSafetyTimespan) {
 
-			global $BE_USER, $FILEMOUNTS, $TYPO3_CONF_VARS;
-
 			$now = mktime();
 
 			if (TYPO3_DLOG) {
-				t3lib_div::devLog('Entering garbage collection routine at '.strftime("%d.%m.%Y - %H:%M:%S",$now), 'rs_userimp',-1);
+				GeneralUtility::devLog('Entering garbage collection routine at '.strftime("%d.%m.%Y - %H:%M:%S",$now), 'rs_userimp',-1);
 			}
 
 			if ($garbageCollectionTriggerTimer == 0) {
-				t3lib_div::devLog('TriggerTimer disabled, exiting garbage collection', 'rs_userimp',1);
-				t3lib_div::devLog('Leaving garbage collection routine at '.strftime("%d.%m.%Y - %H:%M:%S",mktime()), 'rs_userimp',-1);
+				GeneralUtility::devLog('TriggerTimer disabled, exiting garbage collection', 'rs_userimp',1);
+				GeneralUtility::devLog('Leaving garbage collection routine at '.strftime("%d.%m.%Y - %H:%M:%S",mktime()), 'rs_userimp',-1);
 				return;
 			} else {
 				$garbageCollectionTriggerTimer = $garbageCollectionTriggerTimer * 24 * 60 * 60; //time in days
@@ -1475,31 +1405,31 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 			if (!empty($rollbackData)) {
 				foreach ($rollbackData as $session) {
 					if (TYPO3_DLOG) {
-						t3lib_div::devLog('Session '.$session['uid'].' created '.strftime("%d.%m.%Y - %H:%M:%S",$session['crdate']), 'rs_userimp',-1);
+						GeneralUtility::devLog('Session '.$session['uid'].' created '.strftime("%d.%m.%Y - %H:%M:%S",$session['crdate']), 'rs_userimp',-1);
 					}
 
 					if ($rollbackSafetyTimespan == 0) {
 						if (TYPO3_DLOG) {
-							t3lib_div::devLog('Rollback safety timer disabled', 'rs_userimp',-1);
+							GeneralUtility::devLog('Rollback safety timer disabled', 'rs_userimp',-1);
 						}
 					 } else {
 						$ageOutTime = $session['crdate']+60*$rollbackSafetyTimespan;
 						if (TYPO3_DLOG) {
-							t3lib_div::devLog('Age out timer for session '.$session['uid'].' set to '.strftime("%d.%m.%Y - %H:%M:%S",$ageOutTime), 'rs_userimp',-1);
-							t3lib_div::devLog('Delete timer for session '.$session['uid'].' set to '.strftime("%d.%m.%Y - %H:%M:%S",$garbageCollectionTriggerTimer+$session['crdate']), 'rs_userimp',-1);
+							GeneralUtility::devLog('Age out timer for session '.$session['uid'].' set to '.strftime("%d.%m.%Y - %H:%M:%S",$ageOutTime), 'rs_userimp',-1);
+							GeneralUtility::devLog('Delete timer for session '.$session['uid'].' set to '.strftime("%d.%m.%Y - %H:%M:%S",$garbageCollectionTriggerTimer+$session['crdate']), 'rs_userimp',-1);
 						}
 					 }
 
 					if (($ageOutTime < $now) && $session['active'] ) {
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_rsuserimp_sessions','uid='.$session['uid'],array('active'=>'0'));
-						t3lib_div::devLog('Inactivated aged out session '.$session['uid'], 'rs_userimp',1);
+						GeneralUtility::devLog('Inactivated aged out session '.$session['uid'], 'rs_userimp',1);
 					}
 				}
 			}
 			$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 					'uid,crdate,dropfile',
 					'tx_rsuserimp_sessions',
-					'user_uid='.$BE_USER->user['uid'].' AND active=0',
+					'user_uid='.$GLOBALS['BE_USER']->user['uid'].' AND active=0',
 					'uid DESC',
 					''
 					);
@@ -1508,13 +1438,13 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 				foreach ($result as $session) {
 					if ( ($session['crdate']+$garbageCollectionTriggerTimer) <= $now) {
 						$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_rsuserimp_sessions','uid='.$session['uid'],array('deleted'=>'1'));
-						t3lib_div::devLog('Deleted aged out session '.$session['uid'], 'rs_userimp',1);
-						if ($session['dropfile'] && t3lib_div::validPathStr($session['dropfile']) && t3lib_div::isFirstPartOfStr($session['dropfile'],PATH_site.'uploads/tx_rsuserimp/') ) {
+						GeneralUtility::devLog('Deleted aged out session '.$session['uid'], 'rs_userimp',1);
+						if ($session['dropfile'] && GeneralUtility::validPathStr($session['dropfile']) && GeneralUtility::isFirstPartOfStr($session['dropfile'],PATH_site.'uploads/tx_rsuserimp/') ) {
 							// unlink (delete) associated drop file
 							if (is_file($session['dropfile']) && @unlink($session['dropfile'])) {
-								t3lib_div::devLog('Deleted drop file '.$session['dropfile'], 'rs_userimp',1);
+								GeneralUtility::devLog('Deleted drop file '.$session['dropfile'], 'rs_userimp',1);
 							} else {
-								t3lib_div::devLog('Unable to delete drop file '.$session['dropfile'].' (file not found?).', 'rs_userimp',3);
+								GeneralUtility::devLog('Unable to delete drop file '.$session['dropfile'].' (file not found?).', 'rs_userimp',3);
 							}
 						}
 					}
@@ -1522,18 +1452,18 @@ $this->inData = t3lib_div::_GP('tx_rsuserimp');
 			}
 
 			if (TYPO3_DLOG) {
-				t3lib_div::devLog('Leaving garbage collection routine at '.strftime("%d.%m.%Y - %H:%M:%S",mktime()), 'rs_userimp',-1);
+				GeneralUtility::devLog('Leaving garbage collection routine at '.strftime("%d.%m.%Y - %H:%M:%S",mktime()), 'rs_userimp',-1);
 			}
 			return;
 		} // end gc
 	} //end class definition
 
-	if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/rs_userimp/mod1/index.php'])	{
-		include_once($TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/rs_userimp/mod1/index.php']);
+	if (defined('TYPO3_MODE') && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/rs_userimp/mod1/index.php'])	{
+		include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]['XCLASS']['ext/rs_userimp/mod1/index.php']);
 	}
 
 	// Make instance:
-	$SOBE = t3lib_div::makeInstance("tx_rsuserimp_module1");
+	$SOBE = GeneralUtility::makeInstance("tx_rsuserimp_module1");
 	$SOBE->init();
 
 	// Include files?

@@ -21,49 +21,13 @@
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Main class for the 'rs_userimp' extension.
  * TODO: bad word blocker
  *
  * @author	Rainer Sudhoelter <r.sudhoelter (at) web.de>
- */
-
-/**
- * [CLASS/FUNCTION INDEX of SCRIPT]
- *
- *
- *
- *   92: class tx_rsuserimp
- *
- *              SECTION: Section 1
- *  137:     function tx_rsuserimp()
- *  158:     function init()
- *  172:     function setUserTypeDefaultData()
- *
- *              SECTION: Section 2
- *  300:     function readCSV()
- *  323:     function readSamplesFromCSV()
- *  351:     function getColumnNamesFromCSV()
- *  373:     function getColumnNamesFromDB()
- *  394:     function removeNoMapFields($dbFields)
- *  411:     function createImportForm()
- *  428:     function createMappingForm ()
- *  477:     function evaluateMappingForm ()
- *  556:     function createSelector($x)
- *  598:     function fieldSelector($n)
- *
- *              SECTION: Section 3
- *  629:     function importUsers ()
- *  864:     function generateCustomValue($main,$config,$row)
- *  911:     function checkUserDataFE (&$user,&$importUser)
- * 1026:     function checkUserDataTT (&$user,$importUser)
- * 1040:     function checkUserDataBE (&$user,$importUser)
- * 1058:     function _fputcsv($fileName, $dataArray, $delimiter, $enclosure)
- *
- * TOTAL FUNCTIONS: 19
- * (This index is automatically created/updated by the extension "extdeveval")
- *
  */
 
 /**
@@ -81,7 +45,6 @@
  * @package rs_userimp
  */
 
- require_once(PATH_t3lib.'class.t3lib_div.php');
 
 /**
  * Class tx_userimp: a generic user importer based on formated text files.
@@ -145,7 +108,7 @@ class tx_rsuserimp {
 		$this->useRecycler = 1;	// 0 = no, 1 = if available, 2 = always
 		$this->previewNum = 3;
 		$this->CSVhasTitle = TRUE;
-		$this->importNow = t3lib_div::_POST('importNow') ? 'TRUE' : 'FALSE';
+		$this->importNow = GeneralUtility::_POST('importNow') ? 'TRUE' : 'FALSE';
 	} //end  constructor
 
 	/**
@@ -171,8 +134,6 @@ class tx_rsuserimp {
 	 */
 	function setUserTypeDefaultData() {
 
-		global $TCA;
-
 		$now = mktime();
 
 		switch((string)$this->userType)	{
@@ -195,7 +156,7 @@ class tx_rsuserimp {
 					'tstamp' => $now
 					);
 
-				$this->userTypeDB = $TCA['tt_address']['feInterface']['fe_admin_fieldList'];
+				$this->userTypeDB = $GLOBALS['TCA']['tt_address']['feInterface']['fe_admin_fieldList'];
 				$this->userTypeDBTable = 'tt_address';
 
 				$this->uniqueUserIdentifier = 'email';
@@ -238,7 +199,7 @@ class tx_rsuserimp {
 					'crdate' 	=> $now
 					);
 
-				$this->userTypeDB = $TCA['fe_users']['feInterface']['fe_admin_fieldList'];
+				$this->userTypeDB = $GLOBALS['TCA']['fe_users']['feInterface']['fe_admin_fieldList'];
 				$this->userTypeDBTable = 'fe_users';
 				
 				$this->uniqueUserIdentifier = 'username';				
@@ -280,7 +241,7 @@ class tx_rsuserimp {
 					'crdate' => $now
 					);
 
-				$this->userTypeDB = $TCA['be_users'];
+				$this->userTypeDB = $GLOBALS['TCA']['be_users'];
 				$this->userTypeDBTable = 'be_users';
 			break;
 		}
@@ -357,7 +318,6 @@ class tx_rsuserimp {
 	 */
 	function getColumnNamesFromCSV() {
 
-		global $LANG;
 		$num = count($this->CSV[0]);
 
 		if ($this->CSVhasTitle) {
@@ -365,14 +325,14 @@ class tx_rsuserimp {
 			$this->CSV = array_slice($this->CSV, 1); //delete first row
 		} else {
 			for ($n = 0; $n < $this->columnNumCSV; $n++) {
-				$myheader[$this->CSV[0][$n]] = $LANG->getLL('f1.tab3.mapper.fieldset2.field').sprintf("[%02s]",$n);
+				$myheader[$this->CSV[0][$n]] = $GLOBALS['LANG']->getLL('f1.tab3.mapper.fieldset2.field').sprintf("[%02s]",$n);
 			}
 		}
 		return $myheader;
 	}
 
 	/**
-	 * Reads DB columns (fieldnames) from the DB using $TCA.
+	 * Reads DB columns (fieldnames) from the DB using $GLOBALS['TCA'].
 	 * Also, disallowed mapping fields are removed by calling removeNoMapFields(&$fields).
 	 * The fieldnames are needed during the mapping session to support the user some in his mapping task.
 	 *
@@ -380,11 +340,9 @@ class tx_rsuserimp {
 	 */
 	function getColumnNamesFromDB() {
 
-		global $TCA;
-
 		/**
 		 * This was the initial way of getting available DB table fields for table fe_users:
-		 * $dbFields = array_keys($TCA['fe_users']['columns']);
+		 * $dbFields = array_keys($GLOBALS['TCA']['fe_users']['columns']);
 		 * Didn't work on 3.8.0rc1 systems, so it had to be changed to the following
 		 */
 		$dbFields = explode(',',$this->userTypeDB);
@@ -430,11 +388,9 @@ class tx_rsuserimp {
 	 */
 	function createImportForm() {
 
-		global $LANG;
-
-		$content = $LANG->getLL('f1.tab4.section.import.label').'
+		$content = $GLOBALS['LANG']->getLL('f1.tab4.section.import.label').'
 				<div align="right">
-					<input type="submit" name="importNow" value="'.$LANG->getLL('f1.tab4.section.import.import',1).'" '.(t3lib_div::_POST('importNow') ? 'disabled' : '').' onclick="return confirm(\''.$LANG->getLL('f1.tab4.section.import.sure',1).'\');">
+					<input type="submit" name="importNow" value="'.$GLOBALS['LANG']->getLL('f1.tab4.section.import.import',1).'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' onclick="return confirm(\''.$GLOBALS['LANG']->getLL('f1.tab4.section.import.sure',1).'\');">
 				</div>';
 		return $content;
 	}
@@ -447,11 +403,9 @@ class tx_rsuserimp {
 	 */
 	function createMappingForm () {
 
-		global $LANG;
-
 		$content = '';
 		$content .= '<fieldset>';
-		$content .= '<legend align=left><b>'.$LANG->getLL('f1.tab3.mapper.fieldset1').'</b></legend>';
+		$content .= '<legend align=left><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.fieldset1').'</b></legend>';
 
 		if ($this->inData['fieldname']) {
 			$map = array();
@@ -459,16 +413,16 @@ class tx_rsuserimp {
 		}
 
 		if (!$this->inData['import']) {
-			$content .= '<div align="right"><input type="submit" name="map" value="'.$LANG->getLL('f1.tab3.mapper.import').'" '.(t3lib_div::_POST('importNow') ? 'disabled' : '').'></div>';
+			$content .= '<div align="right"><input type="submit" name="map" value="'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.import').'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'></div>';
 			$content .= '<table style="font-size : 8pt;" width="100%" border=0 callpading=0 cellspacing=0>';
 			$i = 0;
 
 			$content .= '<tr style="background-color:#FFE79F;">
 								<td><b>#</b></td>
-								<td><b>'.$LANG->getLL('f1.tab3.mapper.description').'</b></td>'.
-								(($this->enableAutoValues) ? '<td><b>'.$LANG->getLL('f1.tab3.mapper.auto').'</b></td>' : '').
-								'<td><b>'.$LANG->getLL('f1.tab3.mapper.mapping').'</b></td>
-								<td><b>'.$LANG->getLL('f1.tab3.mapper.values').'</b></td>
+								<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.description').'</b></td>'.
+								(($this->enableAutoValues) ? '<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.auto').'</b></td>' : '').
+								'<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.mapping').'</b></td>
+								<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.values').'</b></td>
 							</tr>';
 
 			foreach ($this->columnNamesFromCSV as $key) {
@@ -477,13 +431,13 @@ class tx_rsuserimp {
 				$content .= '<tr style="background-color:'.$bg.'; border-top : 1px dotted #a3a3a3;">'.
 								'<td>'.$i.'</td>'.
 								'<td>'.$key.'</td>';
-				$content .= (($this->enableAutoValues) ? '<td><input '.(t3lib_div::_POST('importNow') ? 'disabled' : '').' onclick="toggleOptions('.$i.')" type="checkbox" name="tx_rsuserimp[autoval]['.$i.']" '.( ($this->inData[autoval][$i] == 'on') ? ' checked ':'').'/></td>' : '');
+				$content .= (($this->enableAutoValues) ? '<td><input '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' onclick="toggleOptions('.$i.')" type="checkbox" name="tx_rsuserimp[autoval]['.$i.']" '.( ($this->inData[autoval][$i] == 'on') ? ' checked ':'').'/></td>' : '');
 				$content .= $this->createSelector ($i);
 				$content .= '</tr>';
 				$i++;
 			}
 
-			$content .= '</table><div align="right"><input type="submit" name="map" value="'.$LANG->getLL('f1.tab3.mapper.import').'" '.(t3lib_div::_POST('importNow') ? 'disabled' : '').'></div>';
+			$content .= '</table><div align="right"><input type="submit" name="map" value="'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.import').'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'></div>';
 			$content .= '</fieldset>';
 		}
 		return $content;
@@ -496,8 +450,6 @@ class tx_rsuserimp {
 	 * @return	string		HTML content
 	 */
 	function evaluateMappingForm () {
-
-		global $LANG;
 
 		// merge mandatory and userdefined mandatory mapping fields
 		if (!empty($this->additionalMandatoryFields)) {
@@ -527,12 +479,12 @@ class tx_rsuserimp {
 		if ($y != 0) {
 			// do we have mapping entries ???
 			if (!$this->inData['import']) {
-				$content .= sprintf($LANG->getLL('f1.tab3.mapper.message.info'),$x,$m,$y);
+				$content .= sprintf($GLOBALS['LANG']->getLL('f1.tab3.mapper.message.info'),$x,$m,$y);
 			}
 
 			// do we have multiple mappings for a distinct field?
 			if ($x != $y) {
-				$content .= ' - '.$LANG->getLL('f1.tab3.mapper.message.error').$msg.'<br>';
+				$content .= ' - '.$GLOBALS['LANG']->getLL('f1.tab3.mapper.message.error').$msg.'<br>';
 			} else {
 				// mapping seems to be OK, continue with import button or map additional values
 				if (!$this->inData['import']) {
@@ -543,10 +495,10 @@ class tx_rsuserimp {
 					}
 					if (!empty($mandatoryFieldError)) {
 						$this->importOK = FALSE;
-						$content .= $LANG->getLL('f1.tab3.mapper.message.provideMandatory').' <b>'.implode(', ',$mandatoryFieldError).'</b>';
+						$content .= $GLOBALS['LANG']->getLL('f1.tab3.mapper.message.provideMandatory').' <b>'.implode(', ',$mandatoryFieldError).'</b>';
 					} else {
 						$this->importOK = TRUE;
-						$content .=	$LANG->getLL('f1.tab3.mapper.message.allMandatoryYes');
+						$content .=	$GLOBALS['LANG']->getLL('f1.tab3.mapper.message.allMandatoryYes');
 					}
 				}
 
@@ -577,12 +529,10 @@ class tx_rsuserimp {
 	 */
 	function createSelector($x) {
 
-		global $LANG;
-
 		$content = '';
 
 		if (empty($this->columnNamesFromCSV[$x])) {
- 			$header[$x] = $LANG->getLL('f1.tab3.mapper.field') . $x;
+ 			$header[$x] = $GLOBALS['LANG']->getLL('f1.tab3.mapper.field') . $x;
 		} else {
 			$header[$x] = $this->columnNamesFromCSV[$x];
 		}
@@ -605,7 +555,7 @@ class tx_rsuserimp {
 		if (isset($this->enableAutoValues)) {
 			$content .= '</div>';
 			$content .= '<div style="display: none" id="rsdivoff_'.$x.'">';
-			$content .= '<input name="tx_rsuserimp[customValue]['.$x.']" type="text"'.(t3lib_div::_POST('importNow') ? 'disabled' : '').' value="'.$this->inData[customValue][$x].'" /></div>';
+			$content .= '<input name="tx_rsuserimp[customValue]['.$x.']" type="text"'.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' value="'.$this->inData[customValue][$x].'" /></div>';
 		}
 		$content .= '</td>';
 		return $content;
@@ -619,10 +569,8 @@ class tx_rsuserimp {
 	 */
 	function fieldSelector($n) {
 
-		global $LANG;
-
-		$box = '<select style="display: block" name="tx_rsuserimp[fieldmap]['.$n.']" '.' size="1" '.(t3lib_div::_POST('importNow') ? 'disabled' : '').'>'."\n";
-		$box .= '<option value="">'.$LANG->getLL('f1.tab3.mapper.mapsTo').'</option>'."\n";
+		$box = '<select style="display: block" name="tx_rsuserimp[fieldmap]['.$n.']" '.' size="1" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'>'."\n";
+		$box .= '<option value="">'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.mapsTo').'</option>'."\n";
 		foreach ($this->columnNamesFromDB as $key => $value) {
 			$box.='<option value="' . $value. '"';
 			if ($this->inData['fieldmap'][$n] == $value) {
@@ -650,8 +598,6 @@ class tx_rsuserimp {
 	 */
 	function importUsers () {
 
-		global $BE_USER, $LANG, $FILEMOUNTS;
-
 		// we need the UIDs of existing users later if we want to update users
 		// unfortunately, sql_insert_id() doesn't work for SQL UPDATE statements 
 		// even though the MySQL reference handbook tells you so...
@@ -676,7 +622,7 @@ class tx_rsuserimp {
 		 */
 		if (is_array($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rs_userimp']['beforeImportHook'])) {
 			foreach($GLOBALS['TYPO3_CONF_VARS']['EXTCONF']['rs_userimp']['beforeImportHook'] as $_classRef) {
-				$_procObj = & t3lib_div::getUserObj($_classRef);
+				$_procObj = & GeneralUtility::getUserObj($_classRef);
 				$CSV = $_procObj->manipulateData($CSV, $this);
 			}
 		}
@@ -740,7 +686,7 @@ class tx_rsuserimp {
 				break;
 
 				default:
-					die($LANG->getLL('f1.tab5.error.unknownFatalError'));
+					die($GLOBALS['LANG']->getLL('f1.tab5.error.unknownFatalError'));
 			}
 
 			// the user array has now only valid values
@@ -752,23 +698,23 @@ class tx_rsuserimp {
 				while (in_array($v1[$this->uniqueUserIdentifier], $users)) {
 					if (!$this->enableAutoRename && !$this->enableUpdate) {
 						$msg = array();
-						$msg[] = $LANG->getLL('f1.tab5.error.duplicateUserName');
+						$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.duplicateUserName');
 						$importUser = FALSE;
 						// jump out of while
 						break 1;
 					} elseif ($this->enableUpdate) {
 						//$msg = array();
-						//$msg[] = ;//$LANG->getLL('f1.tab5.error.duplicateUserName');
+						//$msg[] = ;//$GLOBALS['LANG']->getLL('f1.tab5.error.duplicateUserName');
 						$updateUser = TRUE;
 						break 1;
 					} elseif ($this->enableAutoRename) {
 						// rename current import users
 						$newName = $v1[$this->uniqueUserIdentifier].'0';
-//						$msg[] = $LANG->getLL('f1.tab5.error.renamed');
+//						$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.renamed');
 						// check for max value
 						if ( strlen($newName) > 39 ) {
 							$msg = array();
-							$msg[] = $LANG->getLL('f1.tab5.error.userNameTooLong');
+							$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.userNameTooLong');
 							$importUser = FALSE;
 							// jump out of while
 							break 1;
@@ -792,8 +738,8 @@ class tx_rsuserimp {
 
 					$res = $GLOBALS['TYPO3_DB']->exec_UPDATEquery($this->userTypeDBTable,($this->uniqueUserIdentifier."='".$main[$m][$this->uniqueUserIdentifier]."'"),$v1);
 					// set uid
-					$BE_USER->writelog(1,1,0,'','User %s [UID %s] updated by CSV import action',array($v1['username'],$uid,));
-					$content .= '<b><font color="#76CF67">'.sprintf($LANG->getLL('f1.tab5.userUpdated'),$v1[$this->uniqueUserIdentifier],$userIDS[$m]).'</font></b> '.(!empty($msg) ? implode(',',$msg) : '').'<br />';
+					$GLOBALS['BE_USER']->writelog(1,1,0,'','User %s [UID %s] updated by CSV import action',array($v1['username'],$uid,));
+					$content .= '<b><font color="#76CF67">'.sprintf($GLOBALS['LANG']->getLL('f1.tab5.userUpdated'),$v1[$this->uniqueUserIdentifier],$userIDS[$m]).'</font></b> '.(!empty($msg) ? implode(',',$msg) : '').'<br />';
 					$u++;
 					// BEWARE: updated users are  added to the rollback dataset!!!
 					$rollbackDataTemp[] = $uid;
@@ -806,21 +752,21 @@ class tx_rsuserimp {
 					$res = $GLOBALS['TYPO3_DB']->exec_INSERTquery($this->userTypeDBTable,$v1);
 					// get uid
 					$uid = $GLOBALS['TYPO3_DB']->sql_insert_id();
-					$BE_USER->writelog(1,1,0,'','User %s [UID %s] created by CSV import action',array($v1[$this->uniqueUserIdentifier],$uid,));
+					$GLOBALS['BE_USER']->writelog(1,1,0,'','User %s [UID %s] created by CSV import action',array($v1[$this->uniqueUserIdentifier],$uid,));
 					$users[] = $v1[$this->uniqueUserIdentifier];
 					$i++;
-					$content .= '<b><font color="#76CF67">'.sprintf($LANG->getLL('f1.tab5.userInserted'),$v1[$this->uniqueUserIdentifier],$v1['name'],$uid).'</font></b> '.(!empty($msg) ? implode(',',$msg) : '').'<br />';
+					$content .= '<b><font color="#76CF67">'.sprintf($GLOBALS['LANG']->getLL('f1.tab5.userInserted'),$v1[$this->uniqueUserIdentifier],$v1['name'],$uid).'</font></b> '.(!empty($msg) ? implode(',',$msg) : '').'<br />';
 					$rollbackDataTemp[] = $uid;
 				}
 			} else {
 				$export[] = $CSV[$m];
-				$content .= '<b><font color="red">'.sprintf($LANG->getLL('f1.tab5.userSkipped'),$v1[$this->uniqueUserIdentifier],$uid).'</font></b>'.(!empty($msg) ? implode(',',$msg) : '').'<br />';
+				$content .= '<b><font color="red">'.sprintf($GLOBALS['LANG']->getLL('f1.tab5.userSkipped'),$v1[$this->uniqueUserIdentifier],$uid).'</font></b>'.(!empty($msg) ? implode(',',$msg) : '').'<br />';
 				$j++;
 			}
 		$m++;
 		} //end foreach
 
-		$content = '<b>'.sprintf($LANG->getLL('f1.tab5.usersImported'),$m,$i,$u,$j).'</b><br>'.$content;
+		$content = '<b>'.sprintf($GLOBALS['LANG']->getLL('f1.tab5.usersImported'),$m,$i,$u,$j).'</b><br>'.$content;
 
 		/**
 		 *	If createDropFile is set, create a drop file which holds all skipped users.
@@ -828,7 +774,7 @@ class tx_rsuserimp {
 		 * by simply using the previous preset (mapping).
 		 */
 		if ($this->createDropFile && is_array($export)) {
-			$fileInfo = t3lib_basicFileFunctions::getTotalFileInfo($this->file);
+			$fileInfo = \TYPO3\CMS\Core\Utility\File\BasicFileUtility::getTotalFileInfo($this->file);
 
 			$newFileName = 'DROPPED_'.$fileInfo['file'];
 
@@ -836,24 +782,24 @@ class tx_rsuserimp {
 			$fileContent[0][] = $this->columnNamesFromCSV;
 			$fileContent = array_merge($fileContent[0],$export);
 
-			$newAbsFile = t3lib_div::getFileAbsFileName('uploads/tx_rsuserimp/' . 'DROPPED_'.$fileInfo['file']); //PATH_site.'typo3temp/'.$newFileName;
+			$newAbsFile = GeneralUtility::getFileAbsFileName('uploads/tx_rsuserimp/' . 'DROPPED_'.$fileInfo['file']); //PATH_site.'typo3temp/'.$newFileName;
 			$newRelFile = '/uploads/tx_rsuserimp/'.$newFileName;
 
 			_fputcsv($newAbsFile, $fileContent, $this->fieldDelimiter, $this->fieldEncaps);
 
-			$content .= '<div align="center"><a href="'.$newRelFile.'">'.$LANG->getLL('f1.tab5.downloadFile').'</a>';
+			$content .= '<div align="center"><a href="'.$newRelFile.'">'.$GLOBALS['LANG']->getLL('f1.tab5.downloadFile').'</a>';
 		}
 
 		if (!empty($rollbackDataTemp)) {
-			$fileInfo = t3lib_basicFileFunctions::getTotalFileInfo($this->file);
+			$fileInfo = \TYPO3\CMS\Core\Utility\File\BasicFileUtility::getTotalFileInfo($this->file);
 			$file = $fileInfo['file'];
 
 			$rollbackDataSets = implode(",", $rollbackDataTemp);
 			$rollbackData = array (
 				'crdate' => time(),
 				'target_pid' => $this->defaultUserData['pid'],
-				'user_uid' => $BE_USER->user['uid'],
-				'title' => 'Import session of user '.$BE_USER->user['username'].' [UID '.$BE_USER->user['uid'].']: '.$i.' users imported to PID '.$this->defaultUserData['pid'],
+				'user_uid' => $GLOBALS['BE_USER']->user['uid'],
+				'title' => 'Import session of user '.$GLOBALS['BE_USER']->user['username'].' [UID '.$GLOBALS['BE_USER']->user['uid'].']: '.$i.' users imported to PID '.$this->defaultUserData['pid'],
 				'usertype' => $this->userType,
 				'db_table' => $this->userTypeDBTable,
 				'unique_identifier' => $this->uniqueUserIdentifier,
@@ -876,10 +822,9 @@ class tx_rsuserimp {
 		$FILE = array();
 
 		$FILE['delete'][] = array('data'=>$this->file);
-
-		$fileProcessor = t3lib_div::makeInstance('t3lib_extFileFunctions');
-		$fileProcessor->init($FILEMOUNTS, $TYPO3_CONF_VARS['BE']['fileExtensions']);
-		$fileProcessor->init_actionPerms($BE_USER->user['fileoper_perms']);
+		$fileProcessor = GeneralUtility::makeInstance('TYPO3\CMS\Core\Utility\File\ExtendedFileUtility');
+		$fileProcessor->init($FILEMOUNTS, $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
+		$fileProcessor->init_actionPerms($GLOBALS['BE_USER']->user['fileoper_perms']);
 		// use recycler: 0 = no, 1 = if available, 2 = always
 		$fileProcessor->useRecycler = $this->useRecycler;
 
@@ -969,32 +914,30 @@ class tx_rsuserimp {
 	 */
 	function checkUserDataFE (&$user,&$importUser) {
 
-		global $LANG;
-
 		/* knock out conditions - default mandatory fields */
 
 		$importUser = TRUE;
 
 		if ( empty($user[$this->uniqueUserIdentifier]) ) { // check for empty username value
-			$error[] = $LANG->getLL('f1.tab5.error.emptyUserName');//'empty username';
+			$error[] = $GLOBALS['LANG']->getLL('f1.tab5.error.emptyUserName');//'empty username';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
 
 		if ( strlen($user['username']) > 50 ) { // check for max username value
-			$error[] = $LANG->getLL('f1.tab5.error.userNameTooLong');//'username too long';
+			$error[] = $GLOBALS['LANG']->getLL('f1.tab5.error.userNameTooLong');//'username too long';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
 
 		if ( empty($user['password']) ) { // check for empty password value
-			$error[] = $LANG->getLL('f1.tab5.error.emptyPassword');//'empty password';
+			$error[] = $GLOBALS['LANG']->getLL('f1.tab5.error.emptyPassword');//'empty password';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
 
 		if ( strlen($user['password']) > 39 ) { // check for max password value
-			$error[] = $LANG->getLL('f1.tab5.error.passwordTooLong');//'password too long';
+			$error[] = $GLOBALS['LANG']->getLL('f1.tab5.error.passwordTooLong');//'password too long';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
@@ -1003,7 +946,7 @@ class tx_rsuserimp {
 		if (!empty($this->additionalMandatoryFields)) {
 			foreach ($this->additionalMandatoryFields as $value) {
 				if ( empty($user[$value]) ) {
-					$error[] = sprintf($LANG->getLL('f1.tab5.error.emptyMandatory'),$value); // empty user-defined mandatory field
+					$error[] = sprintf($GLOBALS['LANG']->getLL('f1.tab5.error.emptyMandatory'),$value); // empty user-defined mandatory field
 					$importUser = FALSE;
 					$fatalError = TRUE;
 				}
@@ -1013,33 +956,33 @@ class tx_rsuserimp {
 		/* These are recoverable conditions */
 		if ( !$fatalError && $this->enableAutoRename ) {
 			if ( strlen($user['password']) != strlen(ereg_replace(' ','',$user['password'])) ) { // check for space in password
-				$msg[] = $LANG->getLL('f1.tab5.corrected.WSP'); //'corrected whitespace in password';
+				$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.corrected.WSP'); //'corrected whitespace in password';
 				$user['password'] = ereg_replace(' ', '', $user['password']); // replace spaces
 			}
 			if ( strlen($user['username']) != strlen(ereg_replace(' ','',$user['username'])) ) { // check for space in password
-				$msg[] = $LANG->getLL('f1.tab5.corrected.WSU'); //'corrected whitespace in username';
+				$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.corrected.WSU'); //'corrected whitespace in username';
 				$user['username'] = ereg_replace(' ', '', $user['username']); // replace spaces
 			}
 		}
 
 		/* knock out conditions if $this->enableAutoRename is NOT set*/
 		if ( !$fatalError && !$this->enableAutoRename && strlen($user['username']) != strlen(ereg_replace(' ','',$user['username'])) ) { // check for space in username
-			$msg[] = $LANG->getLL('f1.tab5.error.WSU'); //'whitespace in username';
+			$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.WSU'); //'whitespace in username';
 			$importUser = FALSE;
 		}
 
 		if ( !$fatalError && !$this->enableAutoRename && strtolower($user['username']) != $user['username'] ) { // check for uppercase username values
-			$msg[] = $LANG->getLL('f1.tab5.error.UCU'); //'uppercase in username';
+			$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.UCU'); //'uppercase in username';
 			$importUser = FALSE;
 		}
 
 		if ( !$fatalError && !$this->enableAutoRename && strlen($user['password']) != strlen(ereg_replace(' ','',$user['password'])) ) { // check for space in password
-			$msg[] = $LANG->getLL('f1.tab5.error.WSP'); //'whitespace in password';
+			$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.WSP'); //'whitespace in password';
 			$importUser = FALSE;
 		}
 
 		if ( !$fatalError && !$this->enableAutoRename && strtolower($user['password']) != $user['password'] ) { // check for uppercase password values
-			$msg[] = $LANG->getLL('f1.tab5.error.UCP'); //'uppercase in password';
+			$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.error.UCP'); //'uppercase in password';
 			$importUser = FALSE;
 		}
 
@@ -1047,13 +990,13 @@ class tx_rsuserimp {
 
 		if ( !$fatalError && $this->enableAutoRename ) {
 			if ( strtolower($user['username']) != $user['username'] ) { // check for uppercase username values
-				$msg[] = $LANG->getLL('f1.tab5.corrected.UCU'); //'corrected uppercase in username';
+				$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.corrected.UCU'); //'corrected uppercase in username';
 				$user['username'] = strtolower($user['username']);
 				$importUser = TRUE;
 			}
 
 			if ( strtolower($user['password']) != $user['password'] ) { // check for uppercase password values
-				$msg[] = $LANG->getLL('f1.tab5.corrected.UCP'); //'corrected uppercase in password';
+				$msg[] = $GLOBALS['LANG']->getLL('f1.tab5.corrected.UCP'); //'corrected uppercase in password';
 				$user['password'] = strtolower($user['password']);
 				$importUser = TRUE;
 			}
@@ -1062,11 +1005,11 @@ class tx_rsuserimp {
 		/* Generate the content string */
 
 		if ($fatalError) {
-			$content = !empty($error) ? $LANG->getLL('f1.tab5.error').implode(', ',$error) : '';
+			$content = !empty($error) ? $GLOBALS['LANG']->getLL('f1.tab5.error').implode(', ',$error) : '';
 		}
 
 		if (!empty($msg)) {
-			$content = $LANG->getLL('f1.tab5.warning').implode(', ',$msg);
+			$content = $GLOBALS['LANG']->getLL('f1.tab5.warning').implode(', ',$msg);
 		}
 
 		return $content;
@@ -1126,14 +1069,14 @@ function _fputcsv($fileName, $dataArray, $delimiter, $enclosure) {
 	$line .= "\n";
 	$writeDelimiter = FALSE;
 	}
-	if (t3lib_div::writeFile($fileName,$line)) {
+	if (GeneralUtility::writeFile($fileName,$line)) {
 		//	print_r('success');
 	} else {
 		//	print_r('error');
 	}
 }
 
-if (defined("TYPO3_MODE") && $TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/rs_userimp/mod1/class.tx_rsuserimp.php"])	{
-	include_once($TYPO3_CONF_VARS[TYPO3_MODE]["XCLASS"]["ext/rs_userimp/mod1/class.tx_rsuserimp.php"]);
+if (defined("TYPO3_MODE") && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]["XCLASS"]["ext/rs_userimp/mod1/class.tx_rsuserimp.php"])	{
+	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]["XCLASS"]["ext/rs_userimp/mod1/class.tx_rsuserimp.php"]);
 }
 ?>
