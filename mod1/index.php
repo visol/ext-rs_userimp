@@ -32,8 +32,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 	unset($MCONF);
 	require_once ('conf.php');
 	require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('rs_userimp').'mod1/class.tx_rsuserimp.php');
-	$GLOBALS['LANG']->includeLLFile('EXT:rs_userimp/mod1/locallang.php');
-
+	$GLOBALS['LANG']->includeLLFile('EXT:rs_userimp/Resources/Private/Language/locallang.xlf');
 	$GLOBALS['BE_USER']->modAccess($MCONF,1);	// This checks permissions and exits if the users has no permission for entry.
 
 	/**

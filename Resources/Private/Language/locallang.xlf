@@ -1,0 +1,1010 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<xliff version="1.0">
+	<file source-language="en" datatype="plaintext" original="messages" date="2015-07-07T22:23:55Z" product-name="rs_userimp">
+		<header/>
+		<body>
+			<trans-unit id="title" xml:space="preserve">
+				<source>
+				Import TYPO3 users from file
+			</source>
+			</trans-unit>
+			<trans-unit id="function1" xml:space="preserve">
+				<source>
+
+				Import Users
+
+			</source>
+			</trans-unit>
+			<trans-unit id="function2" xml:space="preserve">
+				<source>
+
+				Rollback Import
+
+			</source>
+			</trans-unit>
+			<trans-unit id="function3" xml:space="preserve">
+				<source>
+
+				Security Note
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1" xml:space="preserve">
+				<source>
+
+				Import File
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.description" xml:space="preserve">
+				<source>
+
+				Please select an import file from your local computer. This file is supposed to hold user information in
+				pure text format.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.defaultSettings" xml:space="preserve">
+				<source>
+
+				General settings
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.importFile" xml:space="preserve">
+				<source>
+
+				Import file
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.importFile.currentImportFile" xml:space="preserve">
+				<source>
+
+				Current file:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.importFile.emptyImportFile" xml:space="preserve">
+				<source>
+
+				[no file choosen]
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.importFile.importFile" xml:space="preserve">
+				<source>
+
+				Choose a file from your local computer:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.importFile.overwriteFile" xml:space="preserve">
+				<source>
+
+				Overwrite existing files:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.loadSettings" xml:space="preserve">
+				<source>
+
+				Load presets
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.error" xml:space="preserve">
+				<source>
+
+				File upload error
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab1.section.error.description" xml:space="preserve">
+				<source>
+
+				File upload failed, please review your user settings. Possible reasons for this error: you don't have
+				access rights to the upload folder or the folder fileadmin\_temp_ does not exist. Please correct this.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2" xml:space="preserve">
+				<source>
+
+				Import Settings
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.BE" xml:space="preserve">
+				<source>
+
+				BE (backend users)
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.colon" xml:space="preserve">
+				<source>
+
+				Colon [:]
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.comma" xml:space="preserve">
+				<source>
+
+				Comma [,]
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.FE" xml:space="preserve">
+				<source>
+
+				FE (frontend users)
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.semicolon" xml:space="preserve">
+				<source>
+
+				Semicolon [;]
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.tab" xml:space="preserve">
+				<source>
+
+				TAB
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.TT" xml:space="preserve">
+				<source>
+
+				tt_address (addresses)
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.description" xml:space="preserve">
+				<source>
+
+				Please review the settings for this import process. You may also load a previously saved preset.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.defaultGroup" xml:space="preserve">
+				<source>
+
+				Usergroup
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup" xml:space="preserve">
+				<source>
+
+				[ERROR: no FE usergroups]
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup.error" xml:space="preserve">
+				<source>
+
+				Error: Please select one or more usergroups first!
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.defaultGroup.label" xml:space="preserve">
+				<source>
+
+				Please select a usergroup for the imported users:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings" xml:space="preserve">
+				<source>
+
+				General settings
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.additionalMandatoryFields" xml:space="preserve">
+				<source>
+
+				Additional Mandatory Fields
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.additionalMandatoryFields.description" xml:space="preserve">
+				<source>
+
+				Please specify additional fields which &lt;em&gt;must&lt;/em&gt; be present for each user you want to
+				import [hold STRG to select multiple]:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.enableAutoRename" xml:space="preserve">
+				<source>
+
+				Enable auto-rename :
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.enableAutoValues" xml:space="preserve">
+				<source>
+
+				Enable auto-values :
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.fieldDelimiter" xml:space="preserve">
+				<source>
+
+				Field delimiter (data fields are separated by...):
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.fieldEncaps" xml:space="preserve">
+				<source>
+
+				Field encapsulation character (data fiels are encapsed with...):
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.firstRowHasFieldnames" xml:space="preserve">
+				<source>
+
+				First row of import file has fieldnames:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.previewNum" xml:space="preserve">
+				<source>
+
+				Preview lines (number of preview rows for the mapping process):
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.update" xml:space="preserve">
+				<source>
+
+				Update settings:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.update.update" xml:space="preserve">
+				<source>
+
+				Update
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.userupdate" xml:space="preserve">
+				<source>
+
+				Update existing users
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.userupdate.description" xml:space="preserve">
+				<source>
+
+				Support updates (existing users will be updated instead of added):
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets" xml:space="preserve">
+				<source>
+
+				Presets
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.delete.deleted" xml:space="preserve">
+				<source>
+
+				Preset %s [UID %s] deleted.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.delete.noSelection" xml:space="preserve">
+				<source>
+
+				Error: No preset selected for deletion.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.delete.notOwner" xml:space="preserve">
+				<source>
+
+				Error: You are not the owner of this preset.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load" xml:space="preserve">
+				<source>
+
+				Load preset:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.delete" xml:space="preserve">
+				<source>
+
+				Delete
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.delete.sure" xml:space="preserve">
+				<source>
+
+				Do you really want to delete this preset?
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.load" xml:space="preserve">
+				<source>
+
+				Load
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.loaded" xml:space="preserve">
+				<source>
+
+				Preset %s [UID %s] loaded.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.noData" xml:space="preserve">
+				<source>
+
+				Error: The preset was empty.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.noSelection" xml:space="preserve">
+				<source>
+
+				Error: No preset selected.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.load.select" xml:space="preserve">
+				<source>
+
+				Choose a previously saved preset:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save" xml:space="preserve">
+				<source>
+
+				Save preset:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save.created" xml:space="preserve">
+				<source>
+
+				Preset %s saved.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save.label" xml:space="preserve">
+				<source>
+
+				Save new preset:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save.name" xml:space="preserve">
+				<source>
+
+				Name:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save.notOwner" xml:space="preserve">
+				<source>
+
+				Error: You are not the owner of this preset.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save.public" xml:space="preserve">
+				<source>
+
+				Publicly available:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.presets.save.save" xml:space="preserve">
+				<source>
+
+				Save
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.storageFolder" xml:space="preserve">
+				<source>
+
+				Storage Folder
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.storageFolder.error" xml:space="preserve">
+				<source>
+
+				Error: No storage folder selected!
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.storageFolder.label" xml:space="preserve">
+				<source>
+
+				Please select the storage folder for the imported users:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.uniqueIdentifier.error" xml:space="preserve">
+				<source>
+
+				Error: No uniqueIdentifier selected!
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.uniqueIdentifier.label" xml:space="preserve">
+				<source>
+
+				Specify the field which determines the uniqueness of imported users:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.userType" xml:space="preserve">
+				<source>
+
+				User type
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.userType.label" xml:space="preserve">
+				<source>
+
+				Which type of TYPO3 users do you want to import:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3" xml:space="preserve">
+				<source>
+
+				Field mapping
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.description" xml:space="preserve">
+				<source>
+
+				Please map CSV to DB data fields. You have to map at least a username and password field and all other
+				fields you marked as mandatory..
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper" xml:space="preserve">
+				<source>
+
+				Field mapping
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.auto" xml:space="preserve">
+				<source>
+
+				AV
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.description" xml:space="preserve">
+				<source>
+
+				Description
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.field" xml:space="preserve">
+				<source>
+
+				Field
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.fieldset1" xml:space="preserve">
+				<source>
+
+				Field mapping
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.fieldset2" xml:space="preserve">
+				<source>
+
+				Please review your field mapping
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.fieldset2.error" xml:space="preserve">
+				<source>
+
+				Field mapping error
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.fieldset2.field" xml:space="preserve">
+				<source>
+
+				Field_
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.import" xml:space="preserve">
+				<source>
+
+				Update and Preview
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.mapping" xml:space="preserve">
+				<source>
+
+				Mapping
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.mapsTo" xml:space="preserve">
+				<source>
+
+				Maps to...
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.message.allMandatoryNo" xml:space="preserve">
+				<source>
+
+				, &lt;strong&gt;but not all mandatory fields mapped.&lt;/strong&gt;
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.message.allMandatoryYes" xml:space="preserve">
+				<source>
+
+				and all mandatory fields mapped.&lt;br /&gt; &lt;strong&gt;You may now proceed with the import or
+				continue to map more fields.&lt;/strong&gt;
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.message.error" xml:space="preserve">
+				<source>
+
+				please review your field mapping for
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.message.info" xml:space="preserve">
+				<source>
+
+				Mapped %s out of %s fields, %s unique
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.message.provideMandatory" xml:space="preserve">
+				<source>
+
+				- please provide mapping for the following mandatory field(s):
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab3.mapper.values" xml:space="preserve">
+				<source>
+
+				Value
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab4" xml:space="preserve">
+				<source>
+
+				CSV Import
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab4.description" xml:space="preserve">
+				<source>
+
+				Ends the workflow by importing the given CSV file to the database.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab4.section.import" xml:space="preserve">
+				<source>
+
+				Import CSV file
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab4.section.import.import" xml:space="preserve">
+				<source>
+
+				IMPORT
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab4.section.import.label" xml:space="preserve">
+				<source>
+
+				All necessary information for the import process have been entered.&lt;br /&gt;By clicking on the &lt;strong&gt;Import&lt;/strong&gt;
+				button below, you end the import workflow and the CSV file is read into the database.&lt;br /&gt;Import
+				errors are displayed in the &lt;em&gt;Messages&lt;/em&gt; tab.&lt;br /&gt; From here you may also go
+				back to the &lt;em&gt;Field mapping&lt;/em&gt; tab and correct your settings.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Attention:&lt;/strong&gt;
+				By clicking &lt;strong&gt;Import&lt;/strong&gt; you actually end the workflow, i.e. all mapping data and
+				import settings are lost beyond this point. &lt;strong&gt;It might be a good idea to save your settings
+				as a preset!&lt;/strong&gt;
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab4.section.import.sure" xml:space="preserve">
+				<source>
+
+				Do you really want to import this file?
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5" xml:space="preserve">
+				<source>
+
+				Errors and Messages
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.corrected.UCP" xml:space="preserve">
+				<source>
+
+				corrected uppercase in password
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.corrected.UCU" xml:space="preserve">
+				<source>
+
+				corrected uppercase in username
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.corrected.WSP" xml:space="preserve">
+				<source>
+
+				corrected whitespace in password
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.corrected.WSU" xml:space="preserve">
+				<source>
+
+				corrected whitespace in username
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.corrected.renamed" xml:space="preserve">
+				<source>
+
+				renamed user
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.description" xml:space="preserve">
+				<source>
+
+				Displays import messages and import errors.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.downloadFile" xml:space="preserve">
+				<source>
+
+				Download drop file (Right-click, save as...)
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error" xml:space="preserve">
+				<source>
+
+				Fatal Error:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.duplicateUserName" xml:space="preserve">
+				<source>
+
+				username already exists
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.emptyMandatory" xml:space="preserve">
+				<source>
+
+				empty %s
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.emptyPassword" xml:space="preserve">
+				<source>
+
+				empty password
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.emptyUserName" xml:space="preserve">
+				<source>
+
+				empty username
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.passwordTooLong" xml:space="preserve">
+				<source>
+
+				username too long
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.UCP" xml:space="preserve">
+				<source>
+
+				uppercase in password
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.UCU" xml:space="preserve">
+				<source>
+
+				uppercase in username
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.unknownFatalError" xml:space="preserve">
+				<source>
+
+				Unknown fatal error...
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.userNameTooLong" xml:space="preserve">
+				<source>
+
+				username too long
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.WSP" xml:space="preserve">
+				<source>
+
+				whitespace in password
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.error.WSU" xml:space="preserve">
+				<source>
+
+				whitespace in username
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.userInserted" xml:space="preserve">
+				<source>
+
+				Imported %s (%s) as user with UID %s.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.userUpdated" xml:space="preserve">
+				<source>
+
+				Updated user %s [UID %s].
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.usersImported" xml:space="preserve">
+				<source>
+
+				%s users read, %s new, %s upated, %s skipped.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.userSkipped" xml:space="preserve">
+				<source>
+
+				User %s [UID %s] skipped:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f1.tab5.warning" xml:space="preserve">
+				<source>
+
+				Warning:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.date" xml:space="preserve">
+				<source>
+
+				Date
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.importedBy" xml:space="preserve">
+				<source>
+
+				Imported by:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.importedBy.deleted" xml:space="preserve">
+				<source>
+
+				Deleted user
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.importedBy.unknown" xml:space="preserve">
+				<source>
+
+				Unknown user
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.importFile" xml:space="preserve">
+				<source>
+
+				Import file:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.importSummary" xml:space="preserve">
+				<source>
+
+				Import Summary
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.noSessionFound" xml:space="preserve">
+				<source>
+
+				No active import sessions found...
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.rollback.sure" xml:space="preserve">
+				<source>
+
+				Do you really want to roll back this import session? This cannot be undone!!!
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.sampleData" xml:space="preserve">
+				<source>
+
+				Sample data of imported users:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.session" xml:space="preserve">
+				<source>
+
+				Session
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.sessionExpired" xml:space="preserve">
+				<source>
+
+				Rollback feature expired (latest possible rollback time was &lt;strong&gt;&lt;font color=&quot;#cc0000&quot;&gt;%s&lt;/font&gt;&lt;/strong&gt;)
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.sessionRollback" xml:space="preserve">
+				<source>
+
+				Import may be rolled back until &lt;strong&gt;&lt;font color=&quot;#00aa00&quot;&gt;%s&lt;/font&gt;&lt;/strong&gt;.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.sessionRolledBack" xml:space="preserve">
+				<source>
+
+				Session expired or already rolled back.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.status" xml:space="preserve">
+				<source>
+
+				Rollback Status
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.title" xml:space="preserve">
+				<source>
+
+				Description
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.unknownError" xml:space="preserve">
+				<source>
+
+				Unknown error.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.userAlreadyDeleted" xml:space="preserve">
+				<source>
+
+				User with UID %s already deleted.
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.usersDropped" xml:space="preserve">
+				<source>
+
+				Users dropped:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.usersImported" xml:space="preserve">
+				<source>
+
+				Users imported:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.usersUpdated" xml:space="preserve">
+				<source>
+
+				Users updated:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f2.userType" xml:space="preserve">
+				<source>
+
+				User type:
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f3.securityNote" xml:space="preserve">
+				<source>
+
+				Security Note
+
+			</source>
+			</trans-unit>
+			<trans-unit id="f3.securityNote.message" xml:space="preserve">
+				<source>
+
+				&lt;p&gt;Before you use the import tool please make sure that you have really &lt;strong&gt;understood&lt;/strong&gt;
+				all available safety timers and rollback settings:&lt;/p&gt;&lt;br /&gt;&lt;p&gt;&lt;strong&gt;Rollback
+				- Safety Timespan:&lt;/strong&gt; sets the timespan [in minutes] in which you may rollback previous
+				import sessions. After that you are &lt;em&gt;no longer&lt;/em&gt; able to do so and import sessions are
+				only displayed in the overview. You may disable this safety setting by entering a value of 0. THIS IS
+				NOT RECOMMENDED AT ALL&lt;/p&gt;&lt;br /&gt;&lt;p&gt;&lt;strong&gt;Garbage Collection - Trigger Timer:&lt;/strong&gt;
+				after this timespan [in days] aged out import sessions get deleted (along with all involved import and
+				temporary files) and are no longer displayed in the overview. You may disable the garbage collection by
+				setting this value to 0.&lt;/p&gt;&lt;br /&gt;&lt;p&gt;&lt;strong&gt;Rollback - Delete DB Records:&lt;/strong&gt;
+				determines whether previously imported users get &lt;em&gt;physically deleted&lt;/em&gt; during a
+				rollback or just get &lt;em&gt;marked deleted&lt;/em&gt;. TYPO3 usernames must be unique and even if you
+				won't see marked deleted users, they are still present in the DB - hence you cannot use such a username!&lt;/p&gt;&lt;br
+				/&gt;&lt;p align=&quot;center&quot;&gt;&lt;b&gt;If you are still uncertain about any of these settings
+				please read the corresponding section in the extension manual! You have been warned.&lt;/b&gt;&lt;/p&gt;
+
+			</source>
+			</trans-unit>
+		</body>
+	</file>
+</xliff>
