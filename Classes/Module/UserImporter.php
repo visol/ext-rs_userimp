@@ -1,34 +1,27 @@
 <?php
 namespace Visol\RsUserimp\Module;
 
-/***************************************************************
- *  Copyright notice
+/**
+ * This file is part of the TYPO3 CMS project.
  *
- *  (c) 2005 Rainer Sudhoelter <r.sudhoelter (at) web.de>
- *  All rights reserved
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
  *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
  *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
+ * The TYPO3 project - inspiring people to share!
+ */
+use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Module 'import' for the 'rs_userimp' extension.
- * @author    Rainer Sudhoelter <r.sudhoelter (at) web.de>
- * @comment Parts of this class (presets handling) are derived from SYSEXT:impexp written by Kasper Skarhoe
+ *
+ * @author Rainer Sudhoelter <r.sudhoelter (at) web.de>
+ * @author Lorenz Ulrich <lorenz.ulrich@visol.ch> TYPO3 6.2+ Compatibility
+ * @comment Parts of this class (presets handling) are derived from SYSEXT:impexp written by Kasper Skårhøj
  */
 
 /**
@@ -37,9 +30,15 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
-	var $pageinfo;
-	var $inData = array();
-	var $presetContent;
+	protected $pageinfo;
+	protected $inData = array();
+	protected $presetContent;
+
+	/**
+	 * @var \TYPO3\CMS\Core\Utility\File\ExtendedFileUtility
+	 */
+	protected $fileProcessor;
+
 	/*****************************
 	 *
 	 * Main functions
@@ -88,11 +87,11 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $this->perms_clause);
 		$access = is_array($this->pageinfo) ? 1 : 0;
 
-		if (($this->id && $access) || ($GLOBALS['BE_USER']->user['admin'] && !$this->id)) {
+		if (($this->id && $access) || ($this->getBackendUserAuthentication()->user['admin'] && !$this->id)) {
 
 			// Draw the header.
 			$this->doc = GeneralUtility::makeInstance("TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate");
-			$this->doc->backPath = $BACK_PATH;
+			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 
 			// grab input data
 			$this->inData = GeneralUtility::_GP('tx_rsuserimp');
@@ -124,7 +123,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 			// Include some JavaScript
 			$this->doc->JScode = '
-					<script language="javascript" type="text/javascript">
+					<script>
 						script_ended = 0;
 						/*****************************
 						 *
@@ -260,10 +259,10 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 							}
 						}
 					</script>
-					<script src="scripts.js" type="text/javascript" language="Javascript" charset="iso-8859-1"></script>';
+					<script src="scripts.js"></script>';
 
 			$this->doc->postCode = '
-					<script language="javascript" type="text/javascript">
+					<script>
 						script_ended = 1;
 						if (top.fsMod) top.fsMod.recentIds["web"] = ' . intval($this->id) . ';
 					</script>';
@@ -285,14 +284,14 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			$this->moduleContent();
 
 			// ShortCut
-			if ($GLOBALS['BE_USER']->mayMakeShortcut()) {
+			if ($this->getBackendUserAuthentication()->mayMakeShortcut()) {
 				$this->content .= $this->doc->spacer(5) . $this->doc->section("", $this->doc->makeShortcutIcon("id", implode(",", array_keys($this->MOD_MENU)), $this->MCONF['name']));
 			}
 			$this->content .= $this->doc->spacer(5);
 		} else {
 			// If no access or if ID == zero
 			$this->doc = GeneralUtility::makeInstance("TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate");
-			$this->doc->backPath = $BACK_PATH;
+			$this->doc->backPath = $GLOBALS['BACK_PATH'];
 
 			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
 			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
@@ -312,7 +311,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 * @return    void        prints HTML content
 	 */
 	function printContent() {
-
 		$this->content .= $this->doc->endPage();
 		echo $this->content;
 	}
@@ -333,32 +331,41 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$rollbackPreviewRows = $userimpConf['rollbackPreviewRows'];
 		$rollbackDeleteFromDB = $userimpConf['rollbackDeleteFromDB'];
 
-		//garbage collection
+		// garbage collection
 		$this->gc($garbageCollectionTriggerTimer, $rollbackSafetyTimespan);
 
 		// check if we have a file upload or have an already existing file
-		$newFile = $this->checkUpload();
-
+		$newFileObject = $this->checkUpload();
 
 		// check if we already have an uploaded file
-		if ($this->inData['settings']['uploadfile'] && file_exists($this->inData['settings']['uploadfile'])) {
-			$absFile = $this->inData['settings']['uploadfile'];
+		$uploadedFileUid = (int)$this->inData['settings']['uploadedFileUid'];
+		if ($uploadedFileUid > 0) {
+			$existingFileObject = $this->getResourceFactory()->getInstance()->getFileObject($uploadedFileUid);
+			if ($existingFileObject instanceof File) {
+				$fileObject = $existingFileObject;
+			}
 		}
 
 		// there seems to be a new upload file
-		if (!empty($newFile)) {
+		if ($newFileObject instanceof File) {
 			// set current file to new value
-			$absFile = $this->inData['settings']['uploadfile'] = $newFile;
-			// and whipe out old module data to start new session
+			$fileObject = $newFileObject;
+			// and wipe out old module data to start new session
 			$this->inData = '';
 		}
 
 		// always check if the file is present
-		if (!file_exists($absFile)) $this->inData = '';
+		if (!is_object($fileObject) || !file_exists($fileObject->getForLocalProcessing(FALSE))) $this->inData = '';
 
-		if ($newFile && !file_exists($newFile)) {
+		if ($newFileObject instanceof File && !file_exists($newFileObject->getForLocalProcessing(FALSE))) {
 			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab1.section.error'), $GLOBALS['LANG']->getLL('f1.tab1.section.error.description'), 0, 1, 3);
 		}
+
+		if ($fileObject instanceof File) {
+			$fileAbsolutePathAndName = $fileObject->getForLocalProcessing(FALSE);
+		}
+
+		$content = '';
 
 		switch ((string)$this->MOD_SETTINGS['function']) {
 
@@ -389,11 +396,11 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					}
 					foreach ($candidates as $user) {
 // how shall we handle updated users: are they to be deleted during rollback since
-// they have been there before they were updatet so they are not our "own" users...
+// they have been there before they were updated so they are not our "own" users...
 // currently, they get deleted but i'm not sure what to do here...
 						if ($rollbackDeleteFromDB) {
 							$GLOBALS['TYPO3_DB']->exec_DELETEquery($data['db_table'], 'uid=' . $user . ' AND pid=' . $data['target_pid']);
-							$GLOBALS['BE_USER']->writelog(1, 3, 0, '', 'UID %s deleted by CSV rollback action', Array($user));
+							$this->getBackendUserAuthentication()->writelog(1, 3, 0, '', 'UID %s deleted by CSV rollback action', Array($user));
 						} else {
 							$GLOBALS['TYPO3_DB']->exec_UPDATEquery($data['db_table'], 'uid=' . $user, array('deleted' => '1'));
 						}
@@ -535,7 +542,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 			case 1:
 				/***** start ********/
-				/***** file uplod ********/
+				/***** file upload ********/
 				/**** TAB 1 data *****/
 
 				$additionalMandatoryFields = isset($this->inData['settings']['extraFields']) ? $this->inData['settings']['extraFields'] : ''; //array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$userimpConf['additionalMandatoryFields'],1));
@@ -554,7 +561,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$dbFieldsDefault = array_unique(array_diff($dbFieldsDefault, $mapper->mandatoryFields));
 
 				$row[] = '
-						<input type="hidden" name="tx_rsuserimp[settings][uploadfile]" value="' . $absFile . '" />';
+						<input type="hidden" name="tx_rsuserimp[settings][uploadedFileUid]" value="' . ($fileObject instanceof File ? $fileObject->getUid() : '') . '" />';
 
 				$row[] = '
 						<tr class="tableheader bgColor5">
@@ -576,11 +583,10 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 							</td>
 						</tr>';
 
-				if (!empty($absFile) && file_exists($absFile)) {
-					$currentFileInfo = \TYPO3\CMS\Core\Utility\File\BasicFileUtility::getTotalFileInfo($absFile);
-					$currentFile = $currentFileInfo['file'];
-					$curentFileSize = \TYPO3\CMS\Core\Utility\File\BasicFileUtility::formatSize($currentFileInfo['size']);
-					$currentFileMessage = $currentFile . ' (' . $curentFileSize . ')';
+				if (!empty($fileAbsolutePathAndName) && file_exists($fileAbsolutePathAndName)) {
+					$currentFileInfo = $fileObject->getStorage()->getFileInfo($fileObject);
+					$currentFileSize = \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($currentFileInfo['size']);
+					$currentFileMessage = $currentFileInfo['name'] . ' (' . $currentFileSize . ')';
 				} else {
 					$currentFileMessage = $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.emptyImportFile');
 				}
@@ -602,7 +608,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 						',
 					'description' => $GLOBALS['LANG']->getLL('f1.tab1.description'),
 					'linkTitle' => '',
-					'stateIcon' => file_exists($absFile) ? -1 : 2
+					'stateIcon' => file_exists($fileAbsolutePathAndName) ? -1 : 2
 				);
 
 				/**** TAB 1 data *****/
@@ -638,7 +644,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 				// fe_users
 				if ($mapper->userType == 'FE') {
-					$preopt = $this->getFEuserFolder();
+					$preopt = $this->getFrontendUserFolders();
 					$opt = array('' => '');
 
 					foreach ($preopt as $val) {
@@ -646,7 +652,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					}
 				} else if ($mapper->userType == 'TT') {
 					// tt_address
-					$preopt = $this->getTTsysFolder();
+					$preopt = $this->getSysFolders();
 					$opt = array('' => '');
 
 					foreach ($preopt as $val) {
@@ -654,7 +660,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					}
 				} else {
 					// be_users
-					$preopt = $this->getTTsysFolder();
+					$preopt = $this->getSysFolders();
 					$opt = array('' => '');
 
 					foreach ($preopt as $val) {
@@ -682,7 +688,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup') . '</td>
 						</tr>';
 
-				$preopt = $this->getFEuserGroup();
+				$preopt = $this->getFrontendUserGroups();
 
 				if (!empty($preopt)) {
 					$opt = array();
@@ -809,7 +815,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				//now, compose TAB menu array for TAB2
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab2'),
-					'content' => file_exists($absFile) ? '
+					'content' => file_exists($fileAbsolutePathAndName) ? '
 							<table border="0" cellpadding="1" cellspacing="1" width="100%">
 								' . implode('
 								', $row) . '
@@ -818,7 +824,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					'description' => $GLOBALS['LANG']->getLL('f1.tab2.description'),
 					'linkTitle' => '',
 					'toggle' => 0,
-					'stateIcon' => (isset($this->inData['settings']['OK']) && file_exists($absFile)) ? -1 : 0
+					'stateIcon' => (isset($this->inData['settings']['OK']) && file_exists($fileAbsolutePathAndName)) ? -1 : 0
 				);
 				/**** TAB 2 data *****/
 
@@ -830,7 +836,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 				if (isset($this->inData['settings']['OK'])) {
 					// playing around with the import object
-					$mapper->file = $absFile;
+					$mapper->file = $fileAbsolutePathAndName;
 					$mapper->userType = $this->inData['settings']['importUserType'];
 					$mapper->previewNum = $this->inData['settings']['maxPreview'];
 					$mapper->CSVhasTitle = $this->inData['settings']['firstRowHasFieldnames'];
@@ -862,7 +868,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab3'),
-					'content' => ((isset($this->inData['settings']['OK']) || GeneralUtility::_GP('map')) && file_exists($absFile)) ? '
+					'content' => ((isset($this->inData['settings']['OK']) || GeneralUtility::_GP('map')) && file_exists($fileAbsolutePathAndName)) ? '
 							<table border="0" cellpadding="1" cellspacing="1" width="100%">
 								' . implode('
 								', $row) . '
@@ -955,7 +961,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 *
 	 * @return    array
 	 */
-	function getFEuserFolder() {
+	function getFrontendUserFolders() {
 		$feFolders = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'uid,title',
 			'pages',
@@ -973,7 +979,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 *
 	 * @return    array
 	 */
-	function getTTsysFolder() {
+	function getSysFolders() {
 		$feFolders = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'uid,title',
 			'pages',
@@ -990,7 +996,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 *
 	 * @return    array
 	 */
-	function getFEuserGroup() {
+	function getFrontendUserGroups() {
 		$importUserGroup = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'uid,title,description',
 			'fe_groups',
@@ -1011,7 +1017,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'*',
 			'tx_rsuserimp_sessions',
-			'user_uid=' . $GLOBALS['BE_USER']->user['uid'] . ' AND DELETED=0',
+			'user_uid=' . $this->getBackendUserAuthentication()->user['uid'] . ' AND DELETED=0',
 			'uid DESC',
 			''
 		);
@@ -1057,44 +1063,43 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	}
 
 	/**
-	 * Checks if a file has been uploaded and returns the complete physical fileinfo if so.
+	 * Checks if a file has been uploaded. If so, create a File object and return it.
 	 *
-	 * @return    string        the complete physical file name, including path info.
+	 * @return File|NULL
 	 */
-	function checkUpload() {
+	protected function checkUpload() {
 
 		$file = GeneralUtility::_GP('file');
 
 		// Initializing:
 		$this->fileProcessor = GeneralUtility::makeInstance('TYPO3\CMS\Core\Utility\File\ExtendedFileUtility');
-		$this->fileProcessor->init($FILEMOUNTS, $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
-		$this->fileProcessor->init_actionPerms($GLOBALS['BE_USER']->user['fileoper_perms']);
+		$this->fileProcessor->init(array(), $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
+		$this->fileProcessor->setActionPermissions();
+
 		$this->fileProcessor->dontCheckForUnique = ($this->inData['preset']['overwriteExistingFiles']) ? 1 : 0;
 
-		if (is_array($FILEMOUNTS) && !empty($FILEMOUNTS)) {
-			// we have a filemount
-			// do something here
-		} else {
-			// we don't have a valid file mount
-			// should be fixed
-
-			// this throws a error message because we have no rights to upload files
-			// to our extension's own upload folder
-			// further investigation needed
-			$file['upload']['1']['target'] = GeneralUtility::getFileAbsFileName('uploads/tx_rsuserimp/');
-		}
+		/** @var \TYPO3\CMS\Core\Authentication\BackendUserAuthentication $backendUserAuthentication */
+		$backendUserAuthentication = $this->getBackendUserAuthentication();
+		$userTemporaryDirectory = $backendUserAuthentication->getDefaultUploadTemporaryFolder();
+		$storageUid = $userTemporaryDirectory->getStorage()->getUid();
+		$file['upload']['1']['target'] = $storageUid . ':' . $userTemporaryDirectory->getIdentifier();
 
 		// Checking referer / executing:
 		$refInfo = parse_url(GeneralUtility::getIndpEnv('HTTP_REFERER'));
 		$httpHost = GeneralUtility::getIndpEnv('TYPO3_HOST_ONLY');
 
-		if ($httpHost != $refInfo['host'] && $this->vC != $GLOBALS['BE_USER']->veriCode() && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']) {
+		if ($httpHost != $refInfo['host'] && $this->vC != $this->getBackendUserAuthentication()->veriCode() && !$GLOBALS['TYPO3_CONF_VARS']['SYS']['doNotCheckReferer']) {
 			$this->fileProcessor->writeLog(0, 2, 1, 'Referer host "%s" and server host "%s" did not match!', array($refInfo['host'], $httpHost));
 		} else {
 			$this->fileProcessor->start($file);
-			$newfile = $this->fileProcessor->func_upload($file['upload']['1']);
+			/** @var array<\TYPO3\CMS\Core\Resource\File> $newfile */
+			$newFiles = $this->fileProcessor->func_upload($file['upload']['1']);
 		}
-		return $newfile;
+		if ($newFiles[0] instanceof File) {
+			return $newFiles[0];
+		} else {
+			return NULL;
+		}
 	}
 
 	/**
@@ -1107,7 +1112,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$presets = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'*',
 			'tx_rsuserimp_presets',
-			'user_uid=' . intval($GLOBALS['BE_USER']->user['uid']),
+			'user_uid=' . intval($this->getBackendUserAuthentication()->user['uid']),
 			'',
 			'title'
 		);
@@ -1117,24 +1122,24 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	/**
 	 * Manipulates import and mapping presets
 	 *
-	 * @param    array &$indata : array, passed by REFERENCE!
-	 * @return    string    $content: HTML content
+	 * @param array $inData array, passed by REFERENCE!
+	 * @return string    $content: HTML content
 	 */
 	function processPresets(&$inData) {
 
 		$err = FALSE;
-		$file = $inData['settings']['uploadfile'];
+		$fileUid = $inData['settings']['uploadedFileUid'];
 
 		// Save preset
 		if (isset($inData['preset']['save'])) {
 			$preset = $this->getPreset($inData['preset']['select']);
 			// Update existing
 			if (is_array($preset)) {
-				unset($inData_temp['settings']['uploadfile']);
+				unset($inData_temp['settings']['uploadedFileUid']);
 				unset($inData_temp['settings']['OK']);
 				unset($inData['fieldmap']['OK']);
 
-				if ($GLOBALS['BE_USER']->isAdmin() || $preset['user_uid'] === $GLOBALS['BE_USER']->user['uid']) {
+				if ($this->getBackendUserAuthentication()->isAdmin() || $preset['user_uid'] === $this->getBackendUserAuthentication()->user['uid']) {
 					$inData_temp = $inData;
 					$fields_values = array(
 						'title' => $inData['preset']['savetitle'],
@@ -1149,9 +1154,9 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			} else {
 				// Insert new:
 				$inData_temp = $inData;
-				unset($inData_temp['settings']['uploadfile']);
+				unset($inData_temp['settings']['uploadedFileUid']);
 				$fields_values = array(
-					'user_uid' => $GLOBALS['BE_USER']->user['uid'],
+					'user_uid' => $this->getBackendUserAuthentication()->user['uid'],
 					'title' => $inData['preset']['savetitle'],
 					'preset_data' => serialize($inData_temp)
 				);
@@ -1165,7 +1170,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			$preset = $this->getPreset($inData['preset']['select']);
 			// Update existing
 			if (is_array($preset)) {
-				if ($GLOBALS['BE_USER']->isAdmin() || $preset['user_uid'] === $GLOBALS['BE_USER']->user['uid']) {
+				if ($this->getBackendUserAuthentication()->isAdmin() || $preset['user_uid'] === $this->getBackendUserAuthentication()->user['uid']) {
 					$GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_rsuserimp_presets', 'uid=' . intval($preset['uid']));
 					$msg = sprintf($GLOBALS['LANG']->getLL('f1.tab2.section.presets.delete.deleted'), $preset['title'], $inData['preset']['select']);
 					$inData['preset']['select'] = '0';
@@ -1198,7 +1203,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					} else {
 						$msg = sprintf($GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.loaded'), $preset['title'], $preset['uid']);
 						$inData = array_merge($inData, $inData_temp);
-						$inData['settings']['uploadfile'] = $file;
+						$inData['settings']['uploadedFileUid'] = $fileUid;
 					}
 				} else {
 					$msg = $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.noData');
@@ -1273,7 +1278,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			foreach ($presets as $presetCfg) {
 				$opt[$presetCfg['uid']] = $presetCfg['title'] . ' [' . $presetCfg['uid'] . ']';
 				//	($presetCfg['public'] ? ' [Public]' : '').
-				//	($presetCfg['user_uid']===$GLOBALS['BE_USER']->user['uid'] ? ' [Own]' : '');
+				//	($presetCfg['user_uid']===$this->getBackendUserAuthentication()->user['uid'] ? ' [Own]' : '');
 			}
 		}
 
@@ -1431,7 +1436,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows(
 			'uid,crdate,dropfile',
 			'tx_rsuserimp_sessions',
-			'user_uid=' . $GLOBALS['BE_USER']->user['uid'] . ' AND active=0',
+			'user_uid=' . $this->getBackendUserAuthentication()->user['uid'] . ' AND active=0',
 			'uid DESC',
 			''
 		);
@@ -1458,4 +1463,20 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		}
 		return;
 	} // end gc
+
+	/**
+	 * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+	 */
+	protected function getBackendUserAuthentication() {
+		return $GLOBALS['BE_USER'];
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Core\Resource\ResourceFactory
+	 */
+	protected function getResourceFactory() {
+		return GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+	}
+	
+	
 }
