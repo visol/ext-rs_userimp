@@ -152,8 +152,8 @@ class UserImporterService {
 					'tstamp' => $now
 				);
 
-				$this->userTypeDB = $GLOBALS['TCA']['tt_address']['feInterface']['fe_admin_fieldList'];
 				$this->userTypeDBTable = 'tt_address';
+				$this->userTypeDB = $this->getAllowedFieldsForTable($this->userTypeDBTable);
 
 				$this->uniqueUserIdentifier = 'email';
 				break;
@@ -195,8 +195,8 @@ class UserImporterService {
 					'crdate' => $now
 				);
 
-				$this->userTypeDB = $GLOBALS['TCA']['fe_users']['feInterface']['fe_admin_fieldList'];
 				$this->userTypeDBTable = 'fe_users';
+				$this->userTypeDB = $this->getAllowedFieldsForTable($this->userTypeDBTable);
 
 				$this->uniqueUserIdentifier = 'username';
 				break;
@@ -1008,9 +1008,44 @@ class UserImporterService {
 		return;
 	}
 
-} //end class
+	/**
+	 * Check which fields are writable for the current user:
+	 * - The table must be writable for the user
+	 * - Non-exclude fields are allowed by default
+	 * - Exclude fields must be checked
+	 *
+	 * @param $tableName
+	 * @return string comma-separated list of allowed fields
+	 */
+	public function getAllowedFieldsForTable($tableName) {
+		if (!$this->getBackendUserAuthentication()->check('tables_modify', $tableName)) {
+			// table must be writable for user
+			return '';
+		}
+		$allowedColumns = array();
+		foreach ($GLOBALS['TCA'][$tableName]['columns'] as $currentColumn => $config) {
+			if ((!empty($GLOBALS['TCA'][$tableName]['columns'][$currentColumn]['exclude']) && $this->getBackendUserAuthentication()->check('non_exclude_fields', $tableName . ':' . $currentColumn)) || empty($GLOBALS['TCA'][$tableName]['columns'][$currentColumn]['exclude'])) {
+				$allowedColumns[] = $currentColumn;
+			}
+		}
+		return implode(',', $allowedColumns);
+	}
 
-/* General helper functions */
+	/**
+	 * @return \TYPO3\CMS\Core\Database\DatabaseConnection
+	 */
+	public function getDatabaseConnection() {
+		return $GLOBALS['TYPO3_DB'];
+	}
+
+	/**
+	 * @return \TYPO3\CMS\Core\Authentication\BackendUserAuthentication
+	 */
+	protected function getBackendUserAuthentication() {
+		return $GLOBALS['BE_USER'];
+	}
+
+}
 
 /**
  * In contrast to fgetcsv(), fputcsv() is not yet in the PHP 4 core (but in PHP5 CSV).
@@ -1043,8 +1078,3 @@ function _fputcsv($fileName, $dataArray, $delimiter, $enclosure) {
 		//	print_r('error');
 	}
 }
-
-if (defined("TYPO3_MODE") && $GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]["XCLASS"]["ext/rs_userimp/mod1/class.tx_rsuserimp.php"])	{
-	include_once($GLOBALS['TYPO3_CONF_VARS'][TYPO3_MODE]["XCLASS"]["ext/rs_userimp/mod1/class.tx_rsuserimp.php"]);
-}
-?>
