@@ -578,7 +578,7 @@ class UserImporterService {
 		// line counter
 		$n = 0;
 		// $main[] holds all read CSV values
-		$main = array();
+		$users = array();
 		foreach ($CSV as $row) {
 			// we are not working with numerical indexes,
 			// so we need the keys for CSV values
@@ -586,7 +586,7 @@ class UserImporterService {
 				$sub[$key] = $row[$value];
 			}
 			// merge in defaultUserData[]
-			$main[$n] = array_merge($sub, $this->defaultUserData);
+			$users[$n] = array_merge($sub, $this->defaultUserData);
 			// substitute customValues
 			if ($this->enableAutoValues && is_array($this->inData['autoval'])) {
 				// to save time, only defined values get computed
@@ -596,10 +596,10 @@ class UserImporterService {
 					// and later wants to map the original field again (would have been overwritten by then).
 					// the original value is preserved that way and may
 					// be used throughout the whole mapping process.
-					$sub2[$n][$this->inData['fieldmap'][$key2]] = $this->generateCustomValue($main[$n][$this->inData['fieldmap'][$key2]], $this->inData['customValue'][$key2], $row);
+					$sub2[$n][$this->inData['fieldmap'][$key2]] = $this->generateCustomValue($users[$n][$this->inData['fieldmap'][$key2]], $this->inData['customValue'][$key2], $row);
 				}
 				// merge the 2 arrays, $sub2 takes precedence
-				$main[$n] = array_merge($main[$n], $sub2[$n]);
+				$users[$n] = array_merge($users[$n], $sub2[$n]);
 			}
 			unset($sub);
 			$n++;
@@ -611,7 +611,7 @@ class UserImporterService {
 		$u = 0; // total users updated
 
 		// process users one by one
-		foreach ($main as $v1) {
+		foreach ($users as $user) {
 			$msg = array();
 			$importUser = TRUE;
 			$updateUser = FALSE;
@@ -620,15 +620,15 @@ class UserImporterService {
 			// and are passed by REFERENCE
 			switch ((string)$this->userType) {
 				case 'FE':
-					$msg[] = $this->checkUserDataFE($v1, $importUser);
+					$msg[] = $this->checkUserDataFE($user, $importUser);
 					break;
 
 				case 'TT':
-					$msg[] = $this->checkUserDataTT($v1, $importUser);
+					$msg[] = $this->checkUserDataTT($user, $importUser);
 					break;
 
 				case 'BE':
-					$msg[] = $this->checkUserDataBE($v1, $importUser);
+					$msg[] = $this->checkUserDataBE($user, $importUser);
 					break;
 
 				default:
@@ -641,7 +641,7 @@ class UserImporterService {
 			// if we have already users in the DB...
 			if (!empty($users) && $importUser) {
 				// the username already exists
-				while (in_array($v1[$this->uniqueUserIdentifier], $users)) {
+				while (in_array($user[$this->uniqueUserIdentifier], $users)) {
 					if (!$this->enableAutoRename && !$this->enableUpdate) {
 						$msg = array();
 						$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.duplicateUserName');
@@ -655,7 +655,7 @@ class UserImporterService {
 						break 1;
 					} elseif ($this->enableAutoRename) {
 						// rename current import users
-						$newName = $v1[$this->uniqueUserIdentifier] . '0';
+						$newName = $user[$this->uniqueUserIdentifier] . '0';
 //						$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.renamed');
 						// check for max value
 						if (strlen($newName) > 39) {
@@ -665,8 +665,8 @@ class UserImporterService {
 							// jump out of while
 							break 1;
 						} else {
-							$v1[$this->uniqueUserIdentifier] = $newName;
-							$main[$i][$this->uniqueUserIdentifier] = $v1[$this->uniqueUserIdentifier];
+							$user[$this->uniqueUserIdentifier] = $newName;
+							$main[$i][$this->uniqueUserIdentifier] = $user[$this->uniqueUserIdentifier];
 						}
 					}
 				}
@@ -678,35 +678,35 @@ class UserImporterService {
 				if ($updateUser) {
 					// Update existing user
 					// SQL injection prevention
-					foreach ($v1 as $key => $val) {
-						$v1[$key] = $this->getDatabaseConnection()->quoteStr($val, $this->userTypeDBTable);
+					foreach ($user as $key => $val) {
+						$user[$key] = $this->getDatabaseConnection()->quoteStr($val, $this->userTypeDBTable);
 					}
 
-					$res = $this->getDatabaseConnection()->exec_UPDATEquery($this->userTypeDBTable, ($this->uniqueUserIdentifier . "='" . $main[$m][$this->uniqueUserIdentifier] . "'"), $v1);
+					$res = $this->getDatabaseConnection()->exec_UPDATEquery($this->userTypeDBTable, ($this->uniqueUserIdentifier . "='" . $main[$m][$this->uniqueUserIdentifier] . "'"), $user);
 					// set uid
-					$GLOBALS['BE_USER']->writelog(1, 1, 0, '', 'User %s [UID %s] updated by CSV import action', array($v1['username'], $uid,));
-					$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userUpdated'), $v1[$this->uniqueUserIdentifier], $userIDS[$m]) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
+					$GLOBALS['BE_USER']->writelog(1, 1, 0, '', 'User %s [UID %s] updated by CSV import action', array($user['username'], $uid,));
+					$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userUpdated'), $user[$this->uniqueUserIdentifier], $userIDS[$m]) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
 					$u++;
 					// BEWARE: updated users are added to the rollback dataset!!!
 					$rollbackDataTemp[] = $uid;
 				} else {
 					// Insert new user
 					// SQL injection prevention
-					foreach ($v1 as $key => $val) {
-						$v1[$key] = $this->getDatabaseConnection()->quoteStr($val, $this->userTypeDBTable);
+					foreach ($user as $key => $val) {
+						$user[$key] = $this->getDatabaseConnection()->quoteStr($val, $this->userTypeDBTable);
 					}
-					$res = $this->getDatabaseConnection()->exec_INSERTquery($this->userTypeDBTable, $v1);
+					$res = $this->getDatabaseConnection()->exec_INSERTquery($this->userTypeDBTable, $user);
 					// get uid
 					$uid = $this->getDatabaseConnection()->sql_insert_id();
-					$GLOBALS['BE_USER']->writelog(1, 1, 0, '', 'User %s [UID %s] created by CSV import action', array($v1[$this->uniqueUserIdentifier], $uid,));
-					$users[] = $v1[$this->uniqueUserIdentifier];
+					$GLOBALS['BE_USER']->writelog(1, 1, 0, '', 'User %s [UID %s] created by CSV import action', array($user[$this->uniqueUserIdentifier], $uid,));
+					$users[] = $user[$this->uniqueUserIdentifier];
 					$i++;
-					$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userInserted'), $v1[$this->uniqueUserIdentifier], $v1['name'], $uid) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
+					$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userInserted'), $user[$this->uniqueUserIdentifier], $user['name'], $uid) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
 					$rollbackDataTemp[] = $uid;
 				}
 			} else {
 				$export[] = $CSV[$m];
-				$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userSkipped'), $v1[$this->uniqueUserIdentifier], $uid) . '</strong>' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
+				$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userSkipped'), $user[$this->uniqueUserIdentifier], $uid) . '</strong>' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
 				$j++;
 			}
 			$m++;
