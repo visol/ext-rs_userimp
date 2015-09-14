@@ -774,7 +774,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$row[] = '
 							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.previewNum') . '</strong></td>
-								<td><input type="select" name="tx_rsuserimp[settings][maxPreview]" value="' . htmlspecialchars(((isset($this->inData['settings']['maxPreview']) && ($this->inData['settings']['maxPreview'] >= 0)) ? $this->inData['settings']['maxPreview'] : '3')) . '" size="2" maxlength="2" ' . ($_POST['importNow'] ? 'disabled' : '') . '></td>
+								<td><input type="text" name="tx_rsuserimp[settings][maxPreview]" value="' . htmlspecialchars(((isset($this->inData['settings']['maxPreview']) && ($this->inData['settings']['maxPreview'] >= 0)) ? $this->inData['settings']['maxPreview'] : '3')) . '" size="2" maxlength="2" ' . ($_POST['importNow'] ? 'disabled' : '') . '></td>
 							</tr>';
 
 				$row[] = '

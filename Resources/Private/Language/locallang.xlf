@@ -62,7 +62,7 @@
 				<source>Comma [,]</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.FE">
-				<source>FE (frontend users)</source>
+				<source>Frontend Users (fe_users)</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.semicolon">
 				<source>Semicolon [;]</source>
@@ -71,7 +71,7 @@
 				<source>TAB</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.TT">
-				<source>tt_address (addresses)</source>
+				<source>Addresses (tt_address)</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.description">
 				<source>Please review the settings for this import process. You may also load a previously saved preset.</source>
@@ -83,10 +83,10 @@
 				<source>[ERROR: no FE usergroups]</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup.error">
-				<source>Error: Please select one or more usergroups first!</source>
+				<source>Error: Please select one or more user groups first!</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.label">
-				<source>Please select a usergroup for the imported users:</source>
+				<source>Please select a user group for the users to be imported:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings">
 				<source>General settings</source>
@@ -96,7 +96,7 @@
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.additionalMandatoryFields.description">
 				<source>Please specify additional fields which &lt;em&gt;must&lt;/em&gt; be present for each user you want to
-				import [hold STRG to select multiple]:</source>
+				import [hold Ctrl to select multiple]:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoRename">
 				<source>Enable auto rename:</source>
@@ -108,10 +108,10 @@
 				<source>Field delimiter (data fields are separated by...):</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldEncaps">
-				<source>Field encapsulation character (data fiels are encapsed with...):</source>
+				<source>Field encapsulation character (data fields are encapsulated with...):</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.firstRowHasFieldnames">
-				<source>First row of import file has field names:</source>
+				<source>First row of source file contains field names:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.previewNum">
 				<source>Preview lines (number of preview rows for the mapping process):</source>
@@ -126,7 +126,7 @@
 				<source>Update existing users</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.userupdate.description">
-				<source>Support updates (existing users will be updated instead of added):</source>
+				<source>Update existing users instead of adding:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets">
 				<source>Presets</source>
@@ -141,7 +141,7 @@
 				<source>Error: You are not the owner of this preset.</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load">
-				<source>Load preset:</source>
+				<source>Load/delete preset:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.delete">
 				<source>Delete</source>
@@ -192,7 +192,7 @@
 				<source>Error: No storage folder selected!</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.storageFolder.label">
-				<source>Please select the storage folder for the imported users:</source>
+				<source>Please select the storage folder for the users to be imported:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.uniqueIdentifier.error">
 				<source>Error: No uniqueIdentifier selected!</source>
@@ -204,7 +204,7 @@
 				<source>User type</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.userType.label">
-				<source>Which type of TYPO3 users do you want to import:</source>
+				<source>Which type of users do you want to import:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3">
 				<source>Field mapping</source>

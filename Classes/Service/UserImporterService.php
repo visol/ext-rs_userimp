@@ -171,7 +171,7 @@ class UserImporterService {
 				);
 
 				$this->userTypeDBTable = 'tt_address';
-				$this->userTypeDB = $this->getAllowedFieldsForTable($this->userTypeDBTable);
+				$this->setColumnNamesFromDB($this->userTypeDBTable);
 
 				$this->uniqueUserIdentifier = 'email';
 				break;
