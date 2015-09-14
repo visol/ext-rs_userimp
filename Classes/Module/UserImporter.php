@@ -15,6 +15,7 @@ namespace Visol\RsUserimp\Module;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -273,7 +274,9 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$markers['FUNCMENU'] = $this->doc->funcMenu('', \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']));
 
 		if (is_array($this->presetContent)) {
-			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab2.section.presets'), $this->presetContent[0], 0, 1, $this->presetContent[1]);
+			$this->content .= '<h2>' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets') . '</h2>';
+			$this->content .= $this->getFlashMessage($this->presetContent);
+			//$this->content .= 'FOO' . $this->doc->section($GLOBALS['LANG']->getLL('f1.tab2.section.presets'), $this->presetContent[0], 0, 1, $this->presetContent[1]) . 'bar';
 		}
 
 		// Render content
@@ -937,6 +940,23 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	}
 
 	/**
+	 * Transforms a message array to a FlashMessages
+	 *
+	 * @param $data array
+	 * @return string
+	 */
+	public function getFlashMessage($data) {
+		$severity = $data[1] === 1 ? FlashMessage::OK : FlashMessage::ERROR;
+		/** @var $flashMessage FlashMessage */
+		$flashMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+			$data[0],
+			'',
+			$severity
+		);
+		return $flashMessage->render();
+	}
+
+	/**
 	 * Get IDs for allowed fe_users storage. These IDs are needed later on to create a dropdown selector.
 	 * Allowed in this respect means that the module fe_users is installed on that page.
 	 * The IDs are queried from the DB.
@@ -1106,7 +1126,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 * @param array $inData array, passed by REFERENCE!
 	 * @return string    $content: HTML content
 	 */
-	function processPresets(&$inData) {
+	public function processPresets(&$inData) {
 
 		$err = FALSE;
 		$fileUid = $inData['settings']['uploadedFileUid'];
