@@ -99,10 +99,10 @@
 				import [hold STRG to select multiple]:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoRename">
-				<source>Enable auto-rename :</source>
+				<source>Enable auto-rename:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoValues">
-				<source>Enable auto-values :</source>
+				<source>Enable auto-values:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldDelimiter">
 				<source>Field delimiter (data fields are separated by...):</source>
@@ -111,7 +111,7 @@
 				<source>Field encapsulation character (data fiels are encapsed with...):</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.firstRowHasFieldnames">
-				<source>First row of import file has fieldnames:</source>
+				<source>First row of import file has field names:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.previewNum">
 				<source>Preview lines (number of preview rows for the mapping process):</source>

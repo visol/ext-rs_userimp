@@ -355,10 +355,10 @@ class UserImporterService {
 	 *
 	 * @return	string		HTML content
 	 */
-	function createImportForm() {
-		$content = $GLOBALS['LANG']->getLL('f1.tab4.section.import.label').'
+	public function createImportForm() {
+		$content = $GLOBALS['LANG']->getLL('f1.tab4.section.import.label') . '
 				<div align="right">
-					<input type="submit" name="importNow" value="'.$GLOBALS['LANG']->getLL('f1.tab4.section.import.import',1).'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' onclick="return confirm(\''.$GLOBALS['LANG']->getLL('f1.tab4.section.import.sure',1).'\');">
+					<input type="submit" name="importNow" value="' . $GLOBALS['LANG']->getLL('f1.tab4.section.import.import', 1) . '" ' . (GeneralUtility::_POST('importNow') ? 'disabled' : '') . ' onclick="return confirm(\'' . $GLOBALS['LANG']->getLL('f1.tab4.section.import.sure', 1) . '\');">
 				</div>';
 		return $content;
 	}
@@ -367,13 +367,13 @@ class UserImporterService {
 	/**
 	 * Display the mapping form.
 	 *
-	 * @return	string		HTML content
+	 * @return    string        HTML content
 	 */
 	public function createMappingForm() {
 
 		$content = '';
 		$content .= '<fieldset>';
-		$content .= '<legend align=left><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.fieldset1').'</b></legend>';
+		$content .= '<legend align=left><b>' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.fieldset1') . '</b></legend>';
 
 		if ($this->inData['fieldname']) {
 			$map = array();
@@ -381,45 +381,45 @@ class UserImporterService {
 		}
 
 		if (!$this->inData['import']) {
-			$content .= '<div align="right"><input type="submit" name="map" value="'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.import').'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'></div>';
+			$content .= '<div align="right"><input type="submit" name="map" value="' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.import') . '" ' . (GeneralUtility::_POST('importNow') ? 'disabled' : '') . '></div>';
 			$content .= '<table class="typo3-dblist">';
 			$i = 0;
 
 			$content .= '<tr class="t3-row-header">
 								<td><b>#</b></td>
-								<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.description').'</b></td>'.
-								(($this->enableAutoValues) ? '<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.auto').'</b></td>' : '').
-								'<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.mapping').'</b></td>
-								<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.values').'</b></td>
+								<td><b>' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.description') . '</b></td>' .
+				(($this->enableAutoValues) ? '<td><b>' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.auto') . '</b></td>' : '') .
+				'<td><b>' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.mapping') . '</b></td>
+								<td><b>' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.values') . '</b></td>
 							</tr>';
 
 			foreach ($this->columnNamesFromCSV as $key) {
-				$content .= '<tr class="db_list_normal">'.
-								'<td>'.$i.'</td>'.
-								'<td>'.$key.'</td>';
-				$content .= (($this->enableAutoValues) ? '<td><input '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' onclick="toggleOptions('.$i.')" type="checkbox" name="tx_rsuserimp[autoval]['.$i.']" '.( ($this->inData[autoval][$i] == 'on') ? ' checked ':'').'/></td>' : '');
+				$content .= '<tr class="db_list_normal">' .
+					'<td>' . $i . '</td>' .
+					'<td>' . $key . '</td>';
+				$content .= (($this->enableAutoValues) ? '<td><input ' . (GeneralUtility::_POST('importNow') ? 'disabled' : '') . ' onclick="toggleOptions(' . $i . ')" type="checkbox" name="tx_rsuserimp[autoval][' . $i . ']" ' . (($this->inData[autoval][$i] == 'on') ? ' checked ' : '') . '/></td>' : '');
 				$content .= $this->createSelector($i);
 				$content .= '</tr>';
 				$i++;
 			}
 
-			$content .= '</table><div align="right"><input type="submit" name="map" value="'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.import').'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'></div>';
+			$content .= '</table><div align="right"><input type="submit" name="map" value="' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.import') . '" ' . (GeneralUtility::_POST('importNow') ? 'disabled' : '') . '></div>';
 			$content .= '</fieldset>';
 		}
 		return $content;
 	}
 
 	/**
-	 * Check if all necessary mapping information is provided and if we may proceed with 
+	 * Check if all necessary mapping information is provided and if we may proceed with
 	 * the import workflow.
 	 *
-	 * @return	string		HTML content
+	 * @return    string        HTML content
 	 */
-	function evaluateMappingForm () {
+	public function evaluateMappingForm() {
 
 		// merge mandatory and userdefined mandatory mapping fields
 		if (!empty($this->additionalMandatoryFields)) {
-			$this->mandatoryFields = array_unique(array_merge($this->mandatoryFields,$this->additionalMandatoryFields));
+			$this->mandatoryFields = array_unique(array_merge($this->mandatoryFields, $this->additionalMandatoryFields));
 		}
 		$this->importOK = FALSE;
 		$mandatoryFieldError = array();
@@ -432,10 +432,10 @@ class UserImporterService {
 		// delete duplicate values
 		$n = array_unique($n);
 
-		$duplicateMapping = array_diff_assoc($org,$n);
+		$duplicateMapping = array_diff_assoc($org, $n);
 
 		if (!empty($duplicateMapping)) {
-			$msg = ' <b>'.implode(', ',$duplicateMapping).'</b>';
+			$msg = ' <b>' . implode(', ', $duplicateMapping) . '</b>';
 		}
 
 		$y = count($n);
@@ -445,12 +445,12 @@ class UserImporterService {
 		if ($y != 0) {
 			// do we have mapping entries ???
 			if (!$this->inData['import']) {
-				$content .= sprintf($GLOBALS['LANG']->getLL('f1.tab3.mapper.message.info'),$x,$m,$y);
+				$content .= sprintf($GLOBALS['LANG']->getLL('f1.tab3.mapper.message.info'), $x, $m, $y);
 			}
 
 			// do we have multiple mappings for a distinct field?
 			if ($x != $y) {
-				$content .= ' - '.$GLOBALS['LANG']->getLL('f1.tab3.mapper.message.error').$msg.'<br>';
+				$content .= ' - ' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.message.error') . $msg . '<br>';
 			} else {
 				// mapping seems to be OK, continue with import button or map additional values
 				if (!$this->inData['import']) {
@@ -461,10 +461,10 @@ class UserImporterService {
 					}
 					if (!empty($mandatoryFieldError)) {
 						$this->importOK = FALSE;
-						$content .= $GLOBALS['LANG']->getLL('f1.tab3.mapper.message.provideMandatory').' <b>'.implode(', ',$mandatoryFieldError).'</b>';
+						$content .= $GLOBALS['LANG']->getLL('f1.tab3.mapper.message.provideMandatory') . ' <b>' . implode(', ', $mandatoryFieldError) . '</b>';
 					} else {
 						$this->importOK = TRUE;
-						$content .=	$GLOBALS['LANG']->getLL('f1.tab3.mapper.message.allMandatoryYes');
+						$content .= $GLOBALS['LANG']->getLL('f1.tab3.mapper.message.allMandatoryYes');
 					}
 				}
 
@@ -487,39 +487,39 @@ class UserImporterService {
 	}
 
 	/**
-	 * Creates the HTML mapping form which we need to map CSV fields to DB fields. 
+	 * Creates the HTML mapping form which we need to map CSV fields to DB fields.
 	 * Provides data examples read from CSV to support the mapping process.
 	 *
-	 * @param	integer		number of column for which to create a fieldmap
-	 * @return	string		returns a HTML TD element
+	 * @param    integer        number of column for which to create a fieldmap
+	 * @return    string        returns a HTML TD element
 	 */
 	protected function createSelector($x) {
 
 		$content = '';
 
 		if (empty($this->columnNamesFromCSV[$x])) {
- 			$header[$x] = $GLOBALS['LANG']->getLL('f1.tab3.mapper.field') . $x;
+			$header[$x] = $GLOBALS['LANG']->getLL('f1.tab3.mapper.field') . $x;
 		} else {
 			$header[$x] = $this->columnNamesFromCSV[$x];
 		}
 
 		$content .= '<td>';
-		$content .= '<input type="hidden" name="tx_rsuserimp[fieldname]['.$x.']" value="'.$header[$x].'" title="'.$header[$x].'">';
+		$content .= '<input type="hidden" name="tx_rsuserimp[fieldname][' . $x . ']" value="' . $header[$x] . '" title="' . $header[$x] . '">';
 		$content .= $this->fieldSelector($x);
 		$content .= '</td>';
 		// print CSV values in a row
 		$content .= '<td><ol class="import-preview">';
 		if (isset($this->enableAutoValues)) {
-			$content .= '<div id="rsdivon_'.$x.'" style="display: block">';
+			$content .= '<div id="rsdivon_' . $x . '" style="display: block">';
 		}
-		for ($n=0; $n <= ($this->previewNum-1); $n++) {
+		for ($n = 0; $n <= ($this->previewNum - 1); $n++) {
 			$row = $this->CSV[$n];
-			$content .= '<li>'.($this->CSV[$n][$x] ? $this->CSV[$n][$x].'</li>' : '&nbsp;</li>');
+			$content .= '<li>' . ($this->CSV[$n][$x] ? $this->CSV[$n][$x] . '</li>' : '&nbsp;</li>');
 		}
 		if (isset($this->enableAutoValues)) {
 			$content .= '</div>';
-			$content .= '<div style="display: none" id="rsdivoff_'.$x.'">';
-			$content .= '<input name="tx_rsuserimp[customValue]['.$x.']" type="text"'.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' value="'.$this->inData[customValue][$x].'" /></div>';
+			$content .= '<div style="display: none" id="rsdivoff_' . $x . '">';
+			$content .= '<input name="tx_rsuserimp[customValue][' . $x . ']" type="text"' . (GeneralUtility::_POST('importNow') ? 'disabled' : '') . ' value="' . $this->inData[customValue][$x] . '" /></div>';
 		}
 		$content .= '</ul></td>';
 		return $content;
@@ -528,21 +528,21 @@ class UserImporterService {
 	/**
 	 * Creates a HTML select box for the mapping process.
 	 *
-	 * @param	integer		number of column for which to create a HTML selct box element ...
-	 * @return	string		HTML SELECT element
+	 * @param    integer        number of column for which to create a HTML selct box element ...
+	 * @return    string        HTML SELECT element
 	 */
-	function fieldSelector($n) {
+	public function fieldSelector($n) {
 
-		$box = '<select style="display: block" name="tx_rsuserimp[fieldmap]['.$n.']" '.' size="1" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'>'."\n";
-		$box .= '<option value="">'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.mapsTo').'</option>'."\n";
+		$box = '<select style="display: block" name="tx_rsuserimp[fieldmap][' . $n . ']" ' . ' size="1" ' . (GeneralUtility::_POST('importNow') ? 'disabled' : '') . '>' . "\n";
+		$box .= '<option value="">' . $GLOBALS['LANG']->getLL('f1.tab3.mapper.mapsTo') . '</option>' . "\n";
 		foreach ($this->columnNamesFromDB as $key => $value) {
-			$box.='<option value="' . $value. '"';
+			$box .= '<option value="' . $value . '"';
 			if ($this->inData['fieldmap'][$n] == $value) {
 				$box .= ' SELECTED ';
 			}
-			$box .= '>' . $value. '</option>'."\n";
+			$box .= '>' . $value . '</option>' . "\n";
 		}
-		$box.='</select>'."\n";
+		$box .= '</select>' . "\n";
 		return $box;
 	}
 

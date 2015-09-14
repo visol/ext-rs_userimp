@@ -1247,7 +1247,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 *
 	 * @return    string        Absolute path to first "_temp_" folder of the current user, otherwise blank.
 	 */
-	function userTempFolder() {
+	public function userTempFolder() {
 		//	if ($session['dropfile'] && \TYPO3\CMS\Core\Utility\GeneralUtility::validPathStr($session['dropfile']) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($session['dropfile'],PATH_site.'uploads/tx_rsuserimp/') ) {
 		foreach ($this->getBackendUserAuthentication()->getFileMountRecords() as $filePathInfo) {
 			$tempFolder = $filePathInfo['path'] . '_temp_/';
@@ -1264,8 +1264,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 * @param    array &$row : table row accumulation variable. This is filled with table rows.
 	 * @return    void        Sets content in $this->content
 	 */
-	function makeSaveForm($inData, &$row) {
-
+	public function makeSaveForm($inData, &$row) {
 		// Presets:
 		$row[] = '
 				<tr class="t3-row-header">
