@@ -866,25 +866,25 @@ class UserImporterService {
 		$fatalError = FALSE;
 
 		if (empty($user[$this->uniqueUserIdentifier])) { // check for empty username value
-			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.emptyUserName');//'empty username';
+			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.emptyUserName');// 'empty username';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
 
 		if (strlen($user['username']) > 50) { // check for max username value
-			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.userNameTooLong');//'username too long';
+			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.userNameTooLong');// 'username too long';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
 
 		if (empty($user['password'])) { // check for empty password value
-			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.emptyPassword');//'empty password';
+			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.emptyPassword');// 'empty password';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
 
 		if (strlen($user['password']) > 39) { // check for max password value
-			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.passwordTooLong');//'password too long';
+			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.passwordTooLong');// 'password too long';
 			$importUser = FALSE;
 			$fatalError = TRUE;
 		}
@@ -902,18 +902,18 @@ class UserImporterService {
 
 		/* These are recoverable conditions */
 		if (!$fatalError && $this->enableAutoRename) {
-			if (strlen($user['password']) != strlen(ereg_replace(' ', '', $user['password']))) { // check for space in password
-				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSP'); //'corrected whitespace in password';
-				$user['password'] = ereg_replace(' ', '', $user['password']); // replace spaces
+			if (strlen($user['password']) != strlen(preg_replace('/\s+/', '', $user['password']))) { // check for space in password
+				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSP'); // 'corrected whitespace in password';
+				$user['password'] = preg_replace('/\s+/', '', $user['password']); // replace spaces
 			}
-			if (strlen($user['username']) != strlen(ereg_replace(' ', '', $user['username']))) { // check for space in password
+			if (strlen($user['username']) != strlen(preg_replace('/\s+/', '', $user['username']))) { // check for space in password
 				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSU'); //'corrected whitespace in username';
-				$user['username'] = ereg_replace(' ', '', $user['username']); // replace spaces
+				$user['username'] = preg_replace('/\s+/', '', $user['username']); // replace spaces
 			}
 		}
 
 		/* knock out conditions if $this->enableAutoRename is NOT set*/
-		if (!$fatalError && !$this->enableAutoRename && strlen($user['username']) != strlen(ereg_replace(' ', '', $user['username']))) { // check for space in username
+		if (!$fatalError && !$this->enableAutoRename && strlen($user['username']) != strlen(preg_replace('/\s+/', '', $user['username']))) { // check for space in username
 			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.WSU'); //'whitespace in username';
 			$importUser = FALSE;
 		}
@@ -923,28 +923,16 @@ class UserImporterService {
 			$importUser = FALSE;
 		}
 
-		if (!$fatalError && !$this->enableAutoRename && strlen($user['password']) != strlen(ereg_replace(' ', '', $user['password']))) { // check for space in password
+		if (!$fatalError && !$this->enableAutoRename && strlen($user['password']) != strlen(preg_replace('/\s+/', '', $user['password']))) { // check for space in password
 			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.WSP'); //'whitespace in password';
 			$importUser = FALSE;
 		}
 
-		if (!$fatalError && !$this->enableAutoRename && strtolower($user['password']) != $user['password']) { // check for uppercase password values
-			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.UCP'); //'uppercase in password';
-			$importUser = FALSE;
-		}
-
 		/* These conditions may be recovered */
-
 		if (!$fatalError && $this->enableAutoRename) {
 			if (strtolower($user['username']) != $user['username']) { // check for uppercase username values
-				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.UCU'); //'corrected uppercase in username';
+				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.UCU'); // 'corrected uppercase in username';
 				$user['username'] = strtolower($user['username']);
-				$importUser = TRUE;
-			}
-
-			if (strtolower($user['password']) != $user['password']) { // check for uppercase password values
-				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.UCP'); //'corrected uppercase in password';
-				$user['password'] = strtolower($user['password']);
 				$importUser = TRUE;
 			}
 		}
