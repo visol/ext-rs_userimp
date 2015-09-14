@@ -902,10 +902,6 @@ class UserImporterService {
 
 		/* These are recoverable conditions */
 		if (!$fatalError && $this->enableAutoRename) {
-			if (strlen($user['password']) != strlen(preg_replace('/\s+/', '', $user['password']))) { // check for space in password
-				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSP'); // 'corrected whitespace in password';
-				$user['password'] = preg_replace('/\s+/', '', $user['password']); // replace spaces
-			}
 			if (strlen($user['username']) != strlen(preg_replace('/\s+/', '', $user['username']))) { // check for space in password
 				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSU'); //'corrected whitespace in username';
 				$user['username'] = preg_replace('/\s+/', '', $user['username']); // replace spaces
@@ -920,11 +916,6 @@ class UserImporterService {
 
 		if (!$fatalError && !$this->enableAutoRename && strtolower($user['username']) != $user['username']) { // check for uppercase username values
 			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.UCU'); //'uppercase in username';
-			$importUser = FALSE;
-		}
-
-		if (!$fatalError && !$this->enableAutoRename && strlen($user['password']) != strlen(preg_replace('/\s+/', '', $user['password']))) { // check for space in password
-			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.WSP'); //'whitespace in password';
 			$importUser = FALSE;
 		}
 
