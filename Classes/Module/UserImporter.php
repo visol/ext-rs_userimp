@@ -13,6 +13,8 @@ namespace Visol\RsUserimp\Module;
  *
  * The TYPO3 project - inspiring people to share!
  */
+
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -67,7 +69,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				"1" => $GLOBALS['LANG']->getLL("function1"),
 				"2" => $GLOBALS['LANG']->getLL("function2"),
 				"3" => $GLOBALS['LANG']->getLL("function3"),
-//					"4" => "Export",
 			)
 		);
 		parent::menuConfig();
@@ -89,9 +90,12 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 		if (($this->id && $access) || ($this->getBackendUserAuthentication()->user['admin'] && !$this->id)) {
 
-			// Draw the header.
-			$this->doc = GeneralUtility::makeInstance("TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate");
+			// Draw the header
+			$this->doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
 			$this->doc->backPath = $GLOBALS['BACK_PATH'];
+			$this->doc->setModuleTemplate('EXT:rs_userimp/mod1/mod_template.html');
+			$this->doc->form = '<form name="rs_userimp" action="index.php" method="post" enctype="' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'] . '">
+											<input type="hidden" name="id" value="' . $this->id . '" />';
 
 			// grab input data
 			$this->inData = GeneralUtility::_GP('tx_rsuserimp');
@@ -116,10 +120,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			} else {
 				$this->doc->bodyTagAdditions = 'onload="toggle();"';
 			}
-
-			$this->doc->form = '<form name="rs_userimp" action="index.php" method="post" enctype="' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'] . '">
-											<input type="hidden" name="id" value="' . $this->id . '" />';
-
 
 			// Include some JavaScript
 			$this->doc->JScode = '
@@ -267,27 +267,31 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 						if (top.fsMod) top.fsMod.recentIds["web"] = ' . intval($this->id) . ';
 					</script>';
 
-			$this->doc->JScode .= $this->doc->getDynTabMenu();
+			//$this->doc->JScode .= $this->doc->getDynTabMenu();
 
-			$headerSection = $this->doc->getHeader("pages", $this->pageinfo, $this->pageinfo['_thePath']) . "<br>" . $GLOBALS['LANG']->sL("LLL:EXT:lang/locallang_core.php:labels.path") . ": " . GeneralUtility::fixed_lgd_cs($this->pageinfo['_thePath'], 50);
+			$markers = array(
+				'FLASHMESSAGES' => '',
+				'CONTENT' => '',
+			);
 
-			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
-			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
-			$this->content .= $this->doc->section('', $this->doc->funcMenu('', \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function'])));
-			$this->content .= $this->doc->spacer(5);
+			$docHeaderButtons = array(
+				'SHORTCUT' => $this->getBackendUserAuthentication()->mayMakeShortcut() ? $this->doc->makeShortcutIcon("id", implode(",", array_keys($this->MOD_MENU)), $this->MCONF['name']) : ''
+			);
+
+			$markers['FUNCMENU'] = $this->doc->funcMenu('', \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']));
 
 			if (is_array($this->presetContent)) {
 				$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab2.section.presets'), $this->presetContent[0], 0, 1, $this->presetContent[1]);
 			}
 
-			// Render content:
-			$this->moduleContent();
+			// Render content
+			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
+			$markers['CONTENT'] = $this->moduleContent();
 
-			// ShortCut
-			if ($this->getBackendUserAuthentication()->mayMakeShortcut()) {
-				$this->content .= $this->doc->spacer(5) . $this->doc->section("", $this->doc->makeShortcutIcon("id", implode(",", array_keys($this->MOD_MENU)), $this->MCONF['name']));
-			}
-			$this->content .= $this->doc->spacer(5);
+			$this->content = $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
+			$this->content.= $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers, array());
+
+
 		} else {
 			// If no access or if ID == zero
 			$this->doc = GeneralUtility::makeInstance("TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate");
@@ -295,7 +299,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
 			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
-			$this->content .= $this->doc->spacer(5);
 		}
 	}
 
@@ -310,7 +313,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 *
 	 * @return    void        prints HTML content
 	 */
-	function printContent() {
+	public function printContent() {
 		$this->content .= $this->doc->endPage();
 		echo $this->content;
 	}
@@ -318,9 +321,9 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	/**
 	 * Generates the module content
 	 *
-	 * @return    void
+	 * @return string
 	 */
-	function moduleContent() {
+	protected function moduleContent() {
 
 		// get configuration values from ext_conf_template.txt
 		$userimpConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['rs_userimp']);
@@ -372,17 +375,13 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			// print security message
 			case 3:
 				$content .= $this->doc->section($GLOBALS['LANG']->getLL('f3.securityNote'), '', 0, 1, 1);
-				$content .= '<table border="0" width="100%" align="center" bgcolor="' . $this->doc->bgColor4 . '">';
-				$content .= '<tr>
-									<td>' . $GLOBALS['LANG']->getLL('f3.securityNote.message') . '</td>
-								 </tr>';
-				$content .= '</table>';
+				$content .= $GLOBALS['LANG']->getLL('f3.securityNote.message');
 				$this->content .= $content;
 				break;
 
 			// rollback function
 			case 2:
-// temporary hack
+				// temporary hack
 				$this->inData = GeneralUtility::_GP('tx_rsuserimp');
 				// if the rollback button was pressed...
 				if (is_array($this->inData['rollback'])) {
@@ -395,9 +394,9 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 						$candidates = explode(',', $data['session_data']);
 					}
 					foreach ($candidates as $user) {
-// how shall we handle updated users: are they to be deleted during rollback since
-// they have been there before they were updated so they are not our "own" users...
-// currently, they get deleted but i'm not sure what to do here...
+						// how shall we handle updated users: are they to be deleted during rollback since
+						// they have been there before they were updated so they are not our "own" users...
+						// currently, they get deleted but i'm not sure what to do here...
 						if ($rollbackDeleteFromDB) {
 							$GLOBALS['TYPO3_DB']->exec_DELETEquery($data['db_table'], 'uid=' . $user . ' AND pid=' . $data['target_pid']);
 							$this->getBackendUserAuthentication()->writelog(1, 3, 0, '', 'UID %s deleted by CSV rollback action', Array($user));
@@ -439,7 +438,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 							$username = $GLOBALS['LANG']->getLL('f2.importedBy.unknown', 1);
 						}
 
-						$infoBlock = '<strong>' . $GLOBALS['LANG']->getLL('f2.importSummary', 1) . '</strong>:<br>
+						$infoBlock = '<strong>' . $GLOBALS['LANG']->getLL('f2.importSummary', 1) . '</strong>:
 							<div align="left">
 								<table cellpadding="0px" cellspacing="0px" border="0">
 									<tr>
@@ -539,7 +538,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				break;
 
 			// import function
-
 			case 1:
 				/***** start ********/
 				/***** file upload ********/
@@ -564,16 +562,16 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 						<input type="hidden" name="tx_rsuserimp[settings][uploadedFileUid]" value="' . ($fileObject instanceof File ? $fileObject->getUid() : '') . '" />';
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab1.section.importFile') . '</td>
 						</tr>';
 
 				$tempDir = $this->userTempFolder();
 				$row[] = '
-						<tr class="bgColor4">
+						<tr class="db_list_normal">
 							<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.importFile') . '</strong></td>
 							<td>' .
-					$GLOBALS['LANG']->getLL('importFile') . '<br/>
+					$GLOBALS['LANG']->getLL('importFile') . '
 								<input type="file" name="upload_1" size="30" ' . ($_POST['importNow'] ? 'disabled' : '') . '/><br/>
 								<input type="hidden" name="file[upload][1][target]" value="' . htmlspecialchars($tempDir) . '" ' . ($_POST['importNow'] ? 'disabled' : '') . '/>
 								<input type="hidden" name="file[upload][1][data]" value="1" />
@@ -592,16 +590,16 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				}
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.currentImportFile') . '</strong></td>
 								<td><div align="left"><strong>' . $currentFileMessage . '</strong></div></td>
 							</tr>';
 
-				//now compose TAB menu array for TAB1
+				// now compose TAB menu array for TAB1
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab1'),
 					'content' => '
-							<table border="0" cellpadding="1" cellspacing="1" width="100%">
+							<table class="typo3-dblist">
 								' . implode('
 								', $row) . '
 							</table>
@@ -621,7 +619,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$row = array();
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.userType') . '</td>
 						</tr>';
 
@@ -632,13 +630,13 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				);
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.userType.label') . '</strong></td>
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][importUserType]', (isset($this->inData['settings']['importUserType']) ? $this->inData['settings']['importUserType'] : ''), $opt, '', "onchange='submit()'") . '</td>
 							</tr>';
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder') . '</td>
 						</tr>';
 
@@ -668,7 +666,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					}
 
 					$row[] = '
-							<tr class="tableheader bgColor5">
+							<tr class="t3-row-header">
 								<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup') . '</td>
 							</tr>';
 				} // end user specific settings
@@ -678,13 +676,13 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				}
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.label') . '</strong></td>
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][importStorageFolder]', (isset($this->inData['settings']['importStorageFolder']) ? $this->inData['settings']['importStorageFolder'] : ''), $opt, 'importStorageFolder') . '</td>
 							</tr>';
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup') . '</td>
 						</tr>';
 
@@ -700,17 +698,17 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				}
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.label') . '</strong></td>
 								<td>' . $this->renderMultipleSelector('tx_rsuserimp[settings][importUserGroup]', $opt, (isset($this->inData['settings']['importUserGroup']) ? $this->inData['settings']['importUserGroup'] : ''), 1, 'importUserGroup') . '</td>
 							</tr>';
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.userupdate') . '</td>
 						</tr>';
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.userupdate.description') . '</td>
 								<td><input onChange="toggle();" type="checkbox" id="enableUpdate" name="tx_rsuserimp[settings][enableUpdate]" value="1"' . (isset($this->inData['settings']['enableUpdate']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
@@ -741,30 +739,30 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				}
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.uniqueIdentifier.label') . '</strong></td>
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][uniqueIdentifier]', (isset($this->inData['settings']['uniqueIdentifier']) ? $this->inData['settings']['uniqueIdentifier'] : ''), $opt, 'uniqueIdentifier', '') . '</td>
 							</tr>';
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings') . '</td>
 						</tr>';
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.firstRowHasFieldnames') . '</strong></td>
 								<td><input type="checkbox" name="tx_rsuserimp[settings][firstRowHasFieldnames]" value="1"' . (isset($this->inData['settings']['firstRowHasFieldnames']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.enableAutoRename') . '</td>
 								<td><input type="checkbox" id="enableAutoRename" name="tx_rsuserimp[settings][enableAutoRename]" value="1"' . (isset($this->inData['settings']['enableAutoRename']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.enableAutoValues') . '</td>
 								<td><input type="checkbox" id="enableAutoValues" name="tx_rsuserimp[settings][enableAutoValues]" value="1"' . (isset($this->inData['settings']['enableAutoValues']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
@@ -772,7 +770,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				// define options for fieldDelimiter dropdown menu
 				$opt = array(';' => $GLOBALS['LANG']->getLL('f1.tab2.constants.semicolon'), ',' => $GLOBALS['LANG']->getLL('f1.tab2.constants.comma'), ':' => $GLOBALS['LANG']->getLL('f1.tab2.constants.colon'), 'TAB' => $GLOBALS['LANG']->getLL('f1.tab2.constants.tab'));
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.fieldDelimiter') . '</strong></td>
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][fieldDelimiter]', (isset($this->inData['settings']['fieldDelimiter']) ? $this->inData['settings']['fieldDelimiter'] : ''), $opt) . '</td>
 							</tr>';
@@ -782,30 +780,30 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				//	was: $opt = array(''=>"",'"'=>'"',"'"=>"'");
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.fieldEncaps') . '</strong></td>
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][fieldEncaps]', (isset($this->inData['settings']['fieldEncaps']) ? $this->inData['settings']['fieldEncaps'] : ''), $opt) . '</td>
 							</tr>';
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.previewNum') . '</strong></td>
 								<td><input type="select" name="tx_rsuserimp[settings][maxPreview]" value="' . htmlspecialchars(((isset($this->inData['settings']['maxPreview']) && ($this->inData['settings']['maxPreview'] >= 0)) ? $this->inData['settings']['maxPreview'] : '3')) . '" size="2" maxlength="2" ' . ($_POST['importNow'] ? 'disabled' : '') . '></td>
 							</tr>';
 
 				$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.additionalMandatoryFields') . '</td>
 						</tr>';
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.additionalMandatoryFields.description') . '</strong></td>
 								<td>' . $this->renderMultipleSelector('tx_rsuserimp[settings][extraFields]', $dbFieldsDefault, (isset($this->inData['settings']['extraFields']) ? $this->inData['settings']['extraFields'] : '')) . '</td>
 							</tr>';
 
 				$row[] = '
-							<tr class="bgColor4">
+							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.update') . '</strong></td>
 								<td><div align="right"><input  onclick="return checkForm()" type="submit" name="tx_rsuserimp[settings][OK]" value="' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.update.update', 1) . '" ' . ($_POST['importNow'] ? 'disabled' : '') . '/></div></td>
 							</tr>';
@@ -816,7 +814,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab2'),
 					'content' => file_exists($fileAbsolutePathAndName) ? '
-							<table border="0" cellpadding="1" cellspacing="1" width="100%">
+							<table class="typo3-dblist">
 								' . implode('
 								', $row) . '
 							</table>
@@ -862,14 +860,14 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 								<input type=hidden name="tx_rsuserimp[settings][OK]" value="Update">';
 
 					$row[] = '
-								<tr class="bgColor4">' . $mapper->createMappingForm() .
+								<tr class="db_list_normal">' . $mapper->createMappingForm() .
 						'</tr>';
 				}
 
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab3'),
 					'content' => ((isset($this->inData['settings']['OK']) || GeneralUtility::_GP('map')) && file_exists($fileAbsolutePathAndName)) ? '
-							<table border="0" cellpadding="1" cellspacing="1" width="100%">
+							<table class="typo3-dblist">
 								' . implode('
 								', $row) . '
 							</table>
@@ -888,12 +886,12 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 				if (!empty($mapper->importOK)) {
 					$row[] = '
-						<tr class="tableheader bgColor5">
+						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab4.section.import') . '</td>
 						</tr>';
 
 					$row[] = '
-							<tr class="bgColor4"><td>' . $mapper->createImportForm() .
+							<tr class="db_list_normal"><td>' . $mapper->createImportForm() .
 						'</td></tr>';
 				}
 
@@ -904,7 +902,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab4'),
 					'content' => !empty($mapper->importOK) ? '
-						<table border="0" cellpadding="1" cellspacing="1" width="100%">
+						<table class="typo3-dblist">
 							' . implode('
 							', $row) . '
 						</table>
@@ -922,19 +920,19 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$row = array();
 
 				$row[] = '
-					<tr class="tableheader bgColor5">
+					<tr class="t3-row-header">
 						<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab5') . '</td>
 					</tr>';
 
 				$row[] = '
-					<tr class="bgColor4">
+					<tr class="db_list_normal">
 						<td colspan=2>' . $msg . '</td>
 					</tr>';
 
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab5'),
 					'content' => !empty($msg) ?
-						'<table border="0" cellpadding="1" cellspacing="1" width="100%">
+						'<table class="typo3-dblist">
 						' . implode('
 						', $row) . '
 					</table>'
@@ -951,8 +949,9 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$content = $this->doc->getDynTabMenu($menuItems, 'tx_rsuserimp_import', 0, '', 40);
 				$this->content .= $content;
 				break;
-		} // end switch
-	} // end module content
+		}
+		return $this->content;
+	}
 
 	/**
 	 * Get IDs for allowed fe_users storage. These IDs are needed later on to create a dropdown selector.
@@ -1041,19 +1040,18 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	}
 
 	/**
-	 * Creates and returns a HTML select box prefilled with allowed DB column names.
+	 * Creates and returns a HTML select box pre-filled with allowed DB column names.
 	 * This select box is needed for the CSV to DB field mapping process. Each select box is named by the passed integer.
 	 *
-	 * @param    integer        name for the select box
-	 * @return    string        formated HTML select box with DB column names
+	 * @param    integer $name name for the select box
+	 * @return    string        formatted HTML select box with DB column names
 	 */
-	function fieldSelector($n) {
-
-		$box = '<select name="fieldmap[' . $n . ']" ' . ' size="1">' . "\n";
+	function fieldSelector($name) {
+		$box = '<select name="fieldmap[' . $name . ']" ' . ' size="1">' . "\n";
 		$box .= '<option value="">Zuordnung...</option>' . "\n";
 		foreach ($this->columnNamesFromDB as $key => $value) {
 			$box .= '<option value="' . $value . '"';
-			if ($this->inData['fieldmap'][$n] == $value) {
+			if ($this->inData['fieldmap'][$name] == $value) {
 				$box .= ' SELECTED ';
 			}
 			$box .= '>' . $value . '</option>' . "\n";
@@ -1248,7 +1246,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 */
 	function userTempFolder() {
 		//	if ($session['dropfile'] && \TYPO3\CMS\Core\Utility\GeneralUtility::validPathStr($session['dropfile']) && \TYPO3\CMS\Core\Utility\GeneralUtility::isFirstPartOfStr($session['dropfile'],PATH_site.'uploads/tx_rsuserimp/') ) {
-		foreach ($FILEMOUNTS as $filePathInfo) {
+		foreach ($this->getBackendUserAuthentication()->getFileMountRecords() as $filePathInfo) {
 			$tempFolder = $filePathInfo['path'] . '_temp_/';
 			if (@is_dir($tempFolder)) {
 				return $tempFolder;
@@ -1267,7 +1265,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 		// Presets:
 		$row[] = '
-				<tr class="tableheader bgColor5">
+				<tr class="t3-row-header">
 					<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets', 1) . '</td>
 				</tr>';
 
@@ -1283,7 +1281,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		}
 
 		$row[] = '
-				<tr class="bgColor4">
+				<tr class="db_list_normal">
 					<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load', 1) . '</strong></td>
 					<td>
 						<class="tableheader bgColor4">' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.select', 1) . '</class><br/>
@@ -1295,7 +1293,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 						<input type="submit" value="' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.delete', 1) . '" name="tx_rsuserimp[preset][delete]" onclick="return confirm(\'' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets.load.delete.sure', 1) . '\');" ' . ($_POST['importNow'] ? 'disabled' : '') . '/>
 					</td>
 				</tr>
-				<tr class="bgColor4">
+				<tr class="db_list_normal">
 					<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets.save', 1) . '</strong></td>
 					<td>
 						' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets.save.label', 1) . '<br/>

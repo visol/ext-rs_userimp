@@ -1,28 +1,20 @@
 <?php
 namespace Visol\RsUserimp\Service;
 
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2005 Rainer Sudhoelter <r.sudhoelter (at) web.de>
-*  All rights reserved
-*
-*  This script is part of the TYPO3 project. The TYPO3 project is
-*  free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2 of the License, or
-*  (at your option) any later version.
-*
-*  The GNU General Public License can be found at
-*  http://www.gnu.org/copyleft/gpl.html.
-*
-*  This script is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-*  GNU General Public License for more details.
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+/**
+ * This file is part of the TYPO3 CMS project.
+ *
+ * It is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License, either version 2
+ * of the License, or any later version.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.txt file that was distributed with this source code.
+ *
+ * The TYPO3 project - inspiring people to share!
+ */
+
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -30,6 +22,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * TODO: bad word blocker
  *
  * @author	Rainer Sudhoelter <r.sudhoelter (at) web.de>
+ * @author Lorenz Ulrich <lorenz.ulrich@visol.ch> TYPO3 6.2+ Compatibility
  */
 
 /**
@@ -42,9 +35,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * USAGE:
  * The class is intended to be used by creating an instance of it.
- *
- * @author	Rainer Sudhoelter
- * @package rs_userimp
  */
 
 
@@ -55,51 +45,57 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  */
 class UserImporterService {
 
-	var $previewNum;
-	var $CSVhasTitle;
-	var $fieldDelimiter;
-	var $fieldEncaps;
-	var $fieldmap;
-	var $mandatoryFields = array();
-	var $additionalMandatoryFields;
-	var $enableAutoValues;
-	var $enableAutoRename;
-	var $enableUpdate;
-	var $defaultUserData;
-	var $file;
-	var $CSV = array();
-	var $num;
-	var $importOK;
-	var $importNow;
-	var $map;
-	var $columnNamesFromCSV;
-	var $columnNamesFromDB;
-	var $numMap;
-	var $inData = array();
-	var $noMap = array();
-	var $userType;
-	var $userTypeDB;
-	var $userTypeDBTable;
-	var $useRecycler;
-	var $createDropFile;
-	var $uniqueUserIdentifier;
-
-	/*************************
-	 *
-	 * Section 1
-	 *
-	 * Explanation:
-	 * Initialization of class.
-	 *
-	 *************************/
+	public $previewNum;
+	public $CSVhasTitle;
+	public $fieldDelimiter;
+	public $fieldEncaps;
+	public $fieldmap;
+	public $mandatoryFields = array();
+	public $additionalMandatoryFields;
+	public $enableAutoValues;
+	public $enableAutoRename;
+	public $enableUpdate;
+	public $defaultUserData;
+	public $file;
+	public $CSV = array();
+	public $num;
+	public $importOK;
+	public $importNow;
+	public $map;
+	public $columnNamesFromCSV;
+	public $columnNamesFromDB;
+	public $numMap;
+	public $inData = array();
 
 	/**
-	 * Constructor: set default values.
+	 * DB fields that are not supposed to be used for mapping
 	 *
-	 * @return	void		initialize the class with default values
+	 * @var array
 	 */
-	function tx_rsuserimp() {
+	public $noMap = array();
 
+	/**
+	 * FE for Frontend Users, TT for tt_address
+	 *
+	 * @var string
+	 */
+	public $userType;
+	public $userTypeDB;
+	public $userTypeDBTable;
+	public $useRecycler;
+	public $createDropFile;
+
+	/**
+	 * Name of the field to be used for determining if record is unique
+	 *
+	 * @var string
+	 */
+	public $uniqueUserIdentifier;
+
+	/**
+	 * @return \Visol\RsUserimp\Service\UserImporterService
+	 */
+	public function __construct() {
 		$this->userType = 'FE';
 		$this->uniqueUserIdentifier = 'username';
 		$this->enableAutoRename = FALSE;
@@ -111,16 +107,15 @@ class UserImporterService {
 		$this->previewNum = 3;
 		$this->CSVhasTitle = TRUE;
 		$this->importNow = GeneralUtility::_POST('importNow') ? 'TRUE' : 'FALSE';
-	} //end  constructor
+	}
 
 	/**
-	 * Get basic mapping data needed for dropdown menus.
+	 * Get basic mapping data needed for drop-down menus.
 	 * Read in sample CSV data to display during mapping session.
 	 *
 	 * @return	void
 	 */
-	function init() {
-
+	public function init() {
 		$this->setUserTypeDefaultData();
 		$this->CSV = $this->readSamplesFromCSV();
 		$this->columnNumCSV = count($this->CSV[0]);
@@ -134,35 +129,34 @@ class UserImporterService {
 	 *
 	 * @return	void
 	 */
-	function setUserTypeDefaultData() {
+	public function setUserTypeDefaultData() {
 
 		$now = mktime();
 
-		switch((string)$this->userType)	{
+		switch ((string)$this->userType) {
 
 			case 'TT':
 				/**
-				* These fields are removed from the tt_address mapping process.
-				*/
+				 * These fields are removed from the tt_address mapping process.
+				 */
 				$this->noMap = array(
 					'pid',
 					'hidden',
 					'image'
-					);
+				);
 
-				$this->mandatoryFields = array(
-					);
+				$this->mandatoryFields = array();
 
 				$this->defaultUserData = array(
 					'pid' => $this->defaultUserData['pid'],
 					'tstamp' => $now
-					);
+				);
 
 				$this->userTypeDB = $GLOBALS['TCA']['tt_address']['feInterface']['fe_admin_fieldList'];
 				$this->userTypeDBTable = 'tt_address';
 
 				$this->uniqueUserIdentifier = 'email';
-			break;
+				break;
 
 			case 'FE':
 				/**
@@ -170,49 +164,49 @@ class UserImporterService {
 				 * either computed or are set once the user logs in for the first time ...
 				 */
 				$this->noMap = array(
-						'crdate',
-						'cruser_id',
-						'deleted',
-						'disable',
-						'endtime',
-						'fe_cruser_id',
-						'image',
-						'is_online',
-						'lastlogin',
-						'lockToDomain',
-						'pid',
-						'starttime',
-						'TSconfig',
-						'tstamp',
-						'uc',
-						'uid',
-						'usergroup'
-						);
+					'crdate',
+					'cruser_id',
+					'deleted',
+					'disable',
+					'endtime',
+					'fe_cruser_id',
+					'image',
+					'is_online',
+					'lastlogin',
+					'lockToDomain',
+					'pid',
+					'starttime',
+					'TSconfig',
+					'tstamp',
+					'uc',
+					'uid',
+					'usergroup'
+				);
 
 				$this->mandatoryFields = array(
 					'username',
 					'password'
-					);
+				);
 
 				$this->defaultUserData = array(
 					'usergroup' => $this->defaultUserData['usergroup'],
-					'pid' 		=> $this->defaultUserData['pid'],
-					'tstamp' 	=> $now,
-					'crdate' 	=> $now
-					);
+					'pid' => $this->defaultUserData['pid'],
+					'tstamp' => $now,
+					'crdate' => $now
+				);
 
 				$this->userTypeDB = $GLOBALS['TCA']['fe_users']['feInterface']['fe_admin_fieldList'];
 				$this->userTypeDBTable = 'fe_users';
-				
-				$this->uniqueUserIdentifier = 'username';				
-			break;
+
+				$this->uniqueUserIdentifier = 'username';
+				break;
 
 			case 'BE':
 				/**
-				* In preparation for BEuserImp ...
-				* These fields are removed from the mapping process since they are either computed
-				* or are set once the user logs in for the first time ...
-				*/
+				 * In preparation for BEuserImp ...
+				 * These fields are removed from the mapping process since they are either computed
+				 * or are set once the user logs in for the first time ...
+				 */
 				$this->noMap = array(
 					'admin',
 					'allowed_languages',
@@ -229,7 +223,7 @@ class UserImporterService {
 					'starttime',
 					'TSconfig',
 					'userMods'
-					);
+				);
 
 				$this->mandatoryFields = array(
 					'username',
@@ -241,23 +235,14 @@ class UserImporterService {
 					'pid' => '',
 					'tstamp' => $now,
 					'crdate' => $now
-					);
+				);
 
 				$this->userTypeDB = $GLOBALS['TCA']['be_users'];
 				$this->userTypeDBTable = 'be_users';
-			break;
+				break;
 		}
 		return;
 	}
-
-	/*************************
-	 *
-	 * Section 2
-	 *
-	 * Explanation:
-	 * File functions: reading CSV files (partly and as a whole)
-	 *
-	 *************************/
 
 	/**
 	 * Read in the given CSV file. The function is used during the final file import.
@@ -372,16 +357,6 @@ class UserImporterService {
 		}
 		$dbFields = array_values($dbFields);
 	}
-
-	/*************************
-	 *
-	 * Section 3
-	 *
-	 * Explanation:
-	 * HTML helper functions: displays mapping forms and elements
-	 *
-	 *************************/
-
 
 	/**
 	 * Displays the import button for the import form.
@@ -583,15 +558,6 @@ class UserImporterService {
 		$box.='</select>'."\n";
 		return $box;
 	}
-
-	/*************************
-	 *
-	 * Section 4
-	 *
-	 * Explanation:
-	 * The final DB import process.
-	 *
-	 *************************/
 
 	/**
 	 * Import users from CSV after all necessary mapping info has been provided.
