@@ -210,8 +210,7 @@
 				<source>Field mapping</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.description">
-				<source>Please map CSV to DB data fields. You have to map at least a username and password field and all other
-				fields you marked as mandatory..</source>
+				<source>Please map CSV to DB data fields. You have to map at least a username and password field and all other fields you marked as mandatory.</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper">
 				<source>Field mapping</source>

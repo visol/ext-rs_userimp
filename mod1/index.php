@@ -20,7 +20,6 @@ include($GLOBALS['BACK_PATH'] . 'init.php');
 $GLOBALS['LANG']->includeLLFile('EXT:rs_userimp/Resources/Private/Language/locallang.xlf');
 $GLOBALS['BE_USER']->modAccess($MCONF, 1);    // This checks permissions and exits if the users has no permission for entry.
 
-
 // Make instance:
 /** @var \Visol\RsUserimp\Module\UserImporter $SOBE */
 $SOBE = GeneralUtility::makeInstance('Visol\\RsUserimp\\Module\\UserImporter');

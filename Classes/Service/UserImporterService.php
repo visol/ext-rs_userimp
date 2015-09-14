@@ -364,7 +364,6 @@ class UserImporterService {
 	 * @return	string		HTML content
 	 */
 	function createImportForm() {
-
 		$content = $GLOBALS['LANG']->getLL('f1.tab4.section.import.label').'
 				<div align="right">
 					<input type="submit" name="importNow" value="'.$GLOBALS['LANG']->getLL('f1.tab4.section.import.import',1).'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' onclick="return confirm(\''.$GLOBALS['LANG']->getLL('f1.tab4.section.import.sure',1).'\');">
@@ -378,7 +377,7 @@ class UserImporterService {
 	 *
 	 * @return	string		HTML content
 	 */
-	function createMappingForm () {
+	public function createMappingForm() {
 
 		$content = '';
 		$content .= '<fieldset>';
@@ -391,10 +390,10 @@ class UserImporterService {
 
 		if (!$this->inData['import']) {
 			$content .= '<div align="right"><input type="submit" name="map" value="'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.import').'" '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').'></div>';
-			$content .= '<table style="font-size : 8pt;" width="100%" border=0 callpading=0 cellspacing=0>';
+			$content .= '<table class="typo3-dblist">';
 			$i = 0;
 
-			$content .= '<tr style="background-color:#FFE79F;">
+			$content .= '<tr class="t3-row-header">
 								<td><b>#</b></td>
 								<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.description').'</b></td>'.
 								(($this->enableAutoValues) ? '<td><b>'.$GLOBALS['LANG']->getLL('f1.tab3.mapper.auto').'</b></td>' : '').
@@ -403,13 +402,11 @@ class UserImporterService {
 							</tr>';
 
 			foreach ($this->columnNamesFromCSV as $key) {
-				$colorcount = ($colorcount == 1) ? 0: 1;
-				$color = ($colorcount == 1) ? $bg = $this->bg1 : $bg = $this->bg2;
-				$content .= '<tr style="background-color:'.$bg.'; border-top : 1px dotted #a3a3a3;">'.
+				$content .= '<tr class="db_list_normal">'.
 								'<td>'.$i.'</td>'.
 								'<td>'.$key.'</td>';
 				$content .= (($this->enableAutoValues) ? '<td><input '.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' onclick="toggleOptions('.$i.')" type="checkbox" name="tx_rsuserimp[autoval]['.$i.']" '.( ($this->inData[autoval][$i] == 'on') ? ' checked ':'').'/></td>' : '');
-				$content .= $this->createSelector ($i);
+				$content .= $this->createSelector($i);
 				$content .= '</tr>';
 				$i++;
 			}
@@ -504,7 +501,7 @@ class UserImporterService {
 	 * @param	integer		number of column for which to create a fieldmap
 	 * @return	string		returns a HTML TD element
 	 */
-	function createSelector($x) {
+	protected function createSelector($x) {
 
 		$content = '';
 
@@ -519,22 +516,20 @@ class UserImporterService {
 		$content .= $this->fieldSelector($x);
 		$content .= '</td>';
 		// print CSV values in a row
-		$content .= '<td>';
+		$content .= '<td><ol class="import-preview">';
 		if (isset($this->enableAutoValues)) {
 			$content .= '<div id="rsdivon_'.$x.'" style="display: block">';
 		}
 		for ($n=0; $n <= ($this->previewNum-1); $n++) {
 			$row = $this->CSV[$n];
-			$colorcount = ($colorcount == 1) ? 0: 1;
-			$color = ($colorcount == 1) ? $bg=$this->bg1 : $bg=$this->bg2;
-			$content .= '<div style="background-color:'.$bg.'">'.($this->CSV[$n][$x] ? $this->CSV[$n][$x].'</div>' : '&nbsp;</div>');
+			$content .= '<li>'.($this->CSV[$n][$x] ? $this->CSV[$n][$x].'</li>' : '&nbsp;</li>');
 		}
 		if (isset($this->enableAutoValues)) {
 			$content .= '</div>';
 			$content .= '<div style="display: none" id="rsdivoff_'.$x.'">';
 			$content .= '<input name="tx_rsuserimp[customValue]['.$x.']" type="text"'.(GeneralUtility::_POST('importNow') ? 'disabled' : '').' value="'.$this->inData[customValue][$x].'" /></div>';
 		}
-		$content .= '</td>';
+		$content .= '</ul></td>';
 		return $content;
 	}
 

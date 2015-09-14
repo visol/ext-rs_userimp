@@ -53,7 +53,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 * @return    void        standard initialization of BE modul
 	 */
 	function init() {
-
 		parent::init();
 	}
 
@@ -83,223 +82,207 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 */
 	function main() {
 
-		// Access check!
-		// The page will show only if there is a valid page and if this page may be viewed by the user
-		$this->pageinfo = \TYPO3\CMS\Backend\Utility\BackendUtility::readPageAccess($this->id, $this->perms_clause);
-		$access = is_array($this->pageinfo) ? 1 : 0;
+		// Draw the header
+		$this->doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
+		$this->doc->backPath = $GLOBALS['BACK_PATH'];
+		$this->doc->setModuleTemplate('EXT:rs_userimp/mod1/mod_template.html');
+		$this->doc->form = '<form name="rs_userimp" action="index.php" method="post" enctype="' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'] . '">
+										<input type="hidden" name="id" value="' . $this->id . '" />';
 
-		if (($this->id && $access) || ($this->getBackendUserAuthentication()->user['admin'] && !$this->id)) {
+		// grab input data
+		$this->inData = GeneralUtility::_GP('tx_rsuserimp');
 
-			// Draw the header
-			$this->doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
-			$this->doc->backPath = $GLOBALS['BACK_PATH'];
-			$this->doc->setModuleTemplate('EXT:rs_userimp/mod1/mod_template.html');
-			$this->doc->form = '<form name="rs_userimp" action="index.php" method="post" enctype="' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'] . '">
-											<input type="hidden" name="id" value="' . $this->id . '" />';
+		// load/save/update preset
+		$this->presetContent = $this->processPresets($this->inData);
 
-			// grab input data
-			$this->inData = GeneralUtility::_GP('tx_rsuserimp');
+		// check if the the auto feature is enabled and ...
+		if ($this->inData['settings']['enableAutoValues'] == '1') {
+			// ... throw away empty custom values
+			if (isset($this->inData['customValue'])) {
+				$myval = '';
+				foreach ($this->inData['customValue'] as $key => $val) {
+					$myval .= !empty($val) ? $key . ',' : '';
+					if (empty($val)) {
+						unset($this->inData['autoval'][$key]);
+					}
+				}
+				$swapSelectorString = $myval;
+				$this->doc->bodyTagAdditions = 'onload="toggle(); toggleSelector(' . "'" . $swapSelectorString . "'" . ');"';
+			}
+		} else {
+			$this->doc->bodyTagAdditions = 'onload="toggle();"';
+		}
 
-			// load/save/update preset
-			$this->presetContent = $this->processPresets($this->inData);
+		// Include some JavaScript
+		$this->doc->JScode = '
+				<script>
+					script_ended = 0;
+					/*****************************
+					 *
+					 * General JavaScript functions
+					 *
+					 *****************************/
+					/**
+					 * Javascript function:
+					 * redirect to given URL
+					 *
+					 * @param	string		$URL: target URL to switch to
+					 * @return	void
+					 */
+					function jumpToUrl(URL)	{
+						document.location = URL;
+					}
 
-			// check if the the auto feature is enabled and ...
-			if ($this->inData['settings']['enableAutoValues'] == '1') {
-				// ... throw away empty custom values
-				if (isset($this->inData['customValue'])) {
-					$myval = '';
-					foreach ($this->inData['customValue'] as $key => $val) {
-						$myval .= !empty($val) ? $key . ',' : '';
-						if (empty($val)) {
-							unset($this->inData['autoval'][$key]);
+					/**
+					 * Javascript function:
+					 * clears text field if select box is not empty.
+					 *
+					 * @return	void
+					 */
+					function swapPresetSelectFields() {
+						var one = document.rs_userimp.swapfield.value;
+						if(one != "") {
+							document.rs_userimp.swapfield.value = 0;
 						}
 					}
-					$swapSelectorString = $myval;
-					$this->doc->bodyTagAdditions = 'onload="toggle(); toggleSelector(' . "'" . $swapSelectorString . "'" . ');"';
-				}
-			} else {
-				$this->doc->bodyTagAdditions = 'onload="toggle();"';
-			}
 
-			// Include some JavaScript
-			$this->doc->JScode = '
-					<script>
-						script_ended = 0;
-						/*****************************
-						 *
-						 * General JavaScript functions
-						 *
-						 *****************************/
-						/**
-						 * Javascript function:
-						 * redirect to given URL
-						 *
-						 * @param	string		$URL: target URL to switch to
-						 * @return	void
-						 */
-						function jumpToUrl(URL)	{
-							document.location = URL;
+					/**
+					 * Javascript function:
+					 * checks for empty mandatory settings, throws alert if needed.
+					 *
+					 * @return	void
+					 */
+					function checkForm () {' .
+			'if (document.rs_userimp.importStorageFolder.value == "") {
+						 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.error') . '");
+						 document.rs_userimp.importStorageFolder.style.backgroundColor = "#FFDFDF";
+						 document.rs_userimp.importStorageFolder.focus();
+						 return false;
+					  }' .
+			(($this->inData['settings']['importUserType'] == 'FE' || !($this->inData['settings']['importUserType'])) ?
+				'if (document.rs_userimp.importUserGroup.value == "") {
+						 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup.error') . '");
+						 document.rs_userimp.importUserGroup.style.backgroundColor = "#FFDFDF";
+						 document.rs_userimp.importUserGroup.focus();
+						 return false;
+					  }' :
+				'') .
+			'if (document.rs_userimp.importStorageFolder.value == "") {
+						 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.error') . '");
+						 document.rs_userimp.importStorageFolder.style.backgroundColor = "#FFDFDF";
+						 document.rs_userimp.importStorageFolder.focus();
+						 return false;
+					  }
+					  if (document.rs_userimp.enableUpdate.checked == true && document.rs_userimp.uniqueIdentifier.value == "") {
+						 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.uniqueIdentifier.error') . '");
+						 document.rs_userimp.uniqueIdentifier.style.backgroundColor = "#FFDFDF";
+						 document.rs_userimp.uniqueIdentifier.focus();
+						 return false;
+					   }
+					}
+
+					/**
+					 * Javascript function:
+					 * unchecks enableAutovalue checkbox if enableUpdate is checked.
+					 *
+					 * @return	void
+					 */
+					function toggle() {
+
+						if (document.rs_userimp.enableUpdate.checked == true) {
+							document.rs_userimp.enableAutoRename.checked = false;
+							document.rs_userimp.enableAutoRename.disabled = true;
 						}
+						if (document.rs_userimp.enableUpdate.checked == false) {
+							document.rs_userimp.enableAutoRename.disabled = false;
+						}' .
+			($_POST['importNow'] ? '
+						document.rs_userimp.enableAutoRename.disabled = true;'
+				: '') . '
+					}
 
-						/**
-						 * Javascript function:
-						 * clears text field if select box is not empty.
-						 *
-						 * @return	void
-						 */
-						function swapPresetSelectFields() {
-							var one = document.rs_userimp.swapfield.value;
-							if(one != "") {
-								document.rs_userimp.swapfield.value = 0;
-							}
+					/**
+					 * JavaScript function:
+					 * toggles given form fields
+					 *
+					 * @param	string		$data: coma separated list of fields which to toggle
+					 * @return	void
+					 */
+					function toggleSelector (data) {
+						var fields = data.split(",");
+						var num = fields.length;
+						for(i = 0; i < num; i++) {
+							toggleOptions(fields[i]);
 						}
+					}
 
-						/**
-						 * Javascript function:
-						 * checks for empty mandatory settings, throws alert if needed.
-						 *
-						 * @return	void
-						 */
-						function checkForm () {' .
-				'if (document.rs_userimp.importStorageFolder.value == "") {
-							 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.error') . '");
-							 document.rs_userimp.importStorageFolder.style.backgroundColor = "#FFDFDF";
-							 document.rs_userimp.importStorageFolder.focus();
-							 return false;
-						  }' .
-				(($this->inData['settings']['importUserType'] == 'FE' || !($this->inData['settings']['importUserType'])) ?
-					'if (document.rs_userimp.importUserGroup.value == "") {
-							 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup.error') . '");
-							 document.rs_userimp.importUserGroup.style.backgroundColor = "#FFDFDF";
-							 document.rs_userimp.importUserGroup.focus();
-							 return false;
-						  }' :
-					'') .
-				'if (document.rs_userimp.importStorageFolder.value == "") {
-							 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.storageFolder.error') . '");
-							 document.rs_userimp.importStorageFolder.style.backgroundColor = "#FFDFDF";
-							 document.rs_userimp.importStorageFolder.focus();
-							 return false;
-						  }
-						  if (document.rs_userimp.enableUpdate.checked == true && document.rs_userimp.uniqueIdentifier.value == "") {
-							 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.uniqueIdentifier.error') . '");
-							 document.rs_userimp.uniqueIdentifier.style.backgroundColor = "#FFDFDF";
-							 document.rs_userimp.uniqueIdentifier.focus();
-							 return false;
-						   }
+					/**
+					 * JavaScript function:
+					 * toggle input options
+					 *
+					 * @param	id		the id of the session item to hide or show
+					 * @param	single		true to show only one item at a time, false the open as many as you want
+					 * @return	void
+					 */
+					function toggleOptions(id) {
+						if(document.getElementById("rsdivon_"+id).style.display == "none") {
+							showHideFields(id, true);
 						}
-
-						/**
-						 * Javascript function:
-						 * unchecks enableAutovalue checkbox if enableUpdate is checked.
-						 *
-						 * @return	void
-						 */
-						function toggle() {
-
-							if (document.rs_userimp.enableUpdate.checked == true) {
-								document.rs_userimp.enableAutoRename.checked = false;
-								document.rs_userimp.enableAutoRename.disabled = true;
-							}
-							if (document.rs_userimp.enableUpdate.checked == false) {
-								document.rs_userimp.enableAutoRename.disabled = false;
-							}' .
-				($_POST['importNow'] ? '
-							document.rs_userimp.enableAutoRename.disabled = true;'
-					: '') . '
+						else {
+							showHideFields(id, false);
 						}
+					}
 
-						/**
-						 * JavaScript function:
-						 * toggles given form fields
-						 *
-						 * @param	string		$data: coma separated list of fields which to toggle
-						 * @return	void
-						 */
-						function toggleSelector (data) {
-							var fields = data.split(",");
-							var num = fields.length;
-							for(i = 0; i < num; i++) {
-								toggleOptions(fields[i]);
-							}
+					/**
+					 * JavaScript function:
+					 * shows/hides selected form element
+					 *
+					 * @param	integer		$id: JavaScript id of the form element
+					 * @param	boolean		$status: status/visibility of form element
+					 * @return	void		...
+					 */
+					function showHideFields(id, status) {
+						if(status) {
+							document.getElementById("rsdivon_"+id).style.display = "block";
+							document.getElementById("rsdivoff_"+id).style.display = "none";
+						} else {
+							document.getElementById("rsdivon_"+id).style.display = "none";
+							document.getElementById("rsdivoff_"+id).style.display = "block";
 						}
+					}
+				</script>
+				<script src="scripts.js"></script>';
 
-						/**
-						 * JavaScript function:
-						 * toggle input options
-						 *
-						 * @param	id		the id of the session item to hide or show
-						 * @param	single		true to show only one item at a time, false the open as many as you want
-						 * @return	void
-						 */
-						function toggleOptions(id) {
-							if(document.getElementById("rsdivon_"+id).style.display == "none") {
-								showHideFields(id, true);
-							}
-							else {
-								showHideFields(id, false);
-							}
-						}
+		$this->doc->postCode = '
+				<script>
+					script_ended = 1;
+					if (top.fsMod) top.fsMod.recentIds["web"] = ' . intval($this->id) . ';
+				</script>';
 
-						/**
-						 * JavaScript function:
-						 * shows/hides selected form element
-						 *
-						 * @param	integer		$id: JavaScript id of the form element
-						 * @param	boolean		$status: status/visibility of form element
-						 * @return	void		...
-						 */
-						function showHideFields(id, status) {
-							if(status) {
-								document.getElementById("rsdivon_"+id).style.display = "block";
-								document.getElementById("rsdivoff_"+id).style.display = "none";
-							} else {
-								document.getElementById("rsdivon_"+id).style.display = "none";
-								document.getElementById("rsdivoff_"+id).style.display = "block";
-							}
-						}
-					</script>
-					<script src="scripts.js"></script>';
+		//$this->doc->JScode .= $this->doc->getDynTabMenu();
 
-			$this->doc->postCode = '
-					<script>
-						script_ended = 1;
-						if (top.fsMod) top.fsMod.recentIds["web"] = ' . intval($this->id) . ';
-					</script>';
+		$markers = array(
+			'FLASHMESSAGES' => '',
+			'CONTENT' => '',
+		);
 
-			//$this->doc->JScode .= $this->doc->getDynTabMenu();
+		$docHeaderButtons = array(
+			'SHORTCUT' => $this->getBackendUserAuthentication()->mayMakeShortcut() ? $this->doc->makeShortcutIcon("id", implode(",", array_keys($this->MOD_MENU)), $this->MCONF['name']) : ''
+		);
 
-			$markers = array(
-				'FLASHMESSAGES' => '',
-				'CONTENT' => '',
-			);
+		$markers['FUNCMENU'] = $this->doc->funcMenu('', \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']));
 
-			$docHeaderButtons = array(
-				'SHORTCUT' => $this->getBackendUserAuthentication()->mayMakeShortcut() ? $this->doc->makeShortcutIcon("id", implode(",", array_keys($this->MOD_MENU)), $this->MCONF['name']) : ''
-			);
-
-			$markers['FUNCMENU'] = $this->doc->funcMenu('', \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']));
-
-			if (is_array($this->presetContent)) {
-				$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab2.section.presets'), $this->presetContent[0], 0, 1, $this->presetContent[1]);
-			}
-
-			// Render content
-			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
-			$markers['CONTENT'] = $this->moduleContent();
-
-			$this->content = $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
-			$this->content.= $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers, array());
-
-
-		} else {
-			// If no access or if ID == zero
-			$this->doc = GeneralUtility::makeInstance("TYPO3\\CMS\\Backend\\Template\\MediumDocumentTemplate");
-			$this->doc->backPath = $GLOBALS['BACK_PATH'];
-
-			$this->content .= $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
-			$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
+		if (is_array($this->presetContent)) {
+			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab2.section.presets'), $this->presetContent[0], 0, 1, $this->presetContent[1]);
 		}
+
+		// Render content
+		$this->content .= $this->doc->header($GLOBALS['LANG']->getLL("title"));
+		$markers['CONTENT'] = $this->moduleContent();
+
+		$this->content = $this->doc->startPage($GLOBALS['LANG']->getLL("title"));
+		$this->content.= $this->doc->moduleBody($this->pageinfo, $docHeaderButtons, $markers, array());
+
 	}
 
 	/*****************************
