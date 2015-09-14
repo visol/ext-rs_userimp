@@ -52,6 +52,12 @@ class UserImporterService {
 	public $mandatoryFields = array();
 	public $additionalMandatoryFields;
 	public $enableAutoValues;
+
+	/**
+	 * If set, a value not fitting the specification (e.g. username with whitespaces) will be adjusted automatically
+	 *
+	 * @var boolean
+	 */
 	public $enableAutoRename;
 	public $enableUpdate;
 	public $defaultUserData;
@@ -574,6 +580,8 @@ class UserImporterService {
 			}
 		}
 
+		$content = '';
+
 
 		// line counter
 		$n = 0;
@@ -781,10 +789,10 @@ class UserImporterService {
 	}
 
 	/**
-	 * This function parses the the custom mapping field for allowed susbtitution patterns.
+	 * This function parses the the custom mapping field for allowed substitution patterns.
 	 * The regex used here finds patterns of the form {f(p)} where "f" is a substitution function
 	 * and "p" is the parameter passed to "f". Supports fixed strings (s), CSV fields (f), bitmasks (b),
-	 * lowercased strings (l) and md5 values of CSV fields (m).
+	 * lowercase strings (l) and md5 values of CSV fields (m).
 	 * Apart from option b(), multiple substitutions within a single value are allowed.
 	 *
 	 * @param    string $main : $main[$n][$this->inData['fieldmap'][$key]]: reference to current CSV values
@@ -793,7 +801,6 @@ class UserImporterService {
 	 * @return    string        the manipulated/substituted value
 	 */
 	public function generateCustomValue($main, $config, $row) {
-
 		$copy = $row;
 		$hit = '';
 
@@ -849,7 +856,7 @@ class UserImporterService {
 	}
 
 	/**
-	 * Checks FE user data for TYPO3 compliancy. Some FE data have limitations which we check in this function.
+	 * Checks FE user data for TYPO3 compliance. Some FE data have limitations which we check in this function.
 	 * Some values can be fixed (fx. upper/lowercase conditions), others can not be fixed (fx. empty username/password).
 	 * Each value passed is manipulated by REFERENCE.
 	 * $user is the data array for the current user.

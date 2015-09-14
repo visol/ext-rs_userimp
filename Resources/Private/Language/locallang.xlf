@@ -99,10 +99,10 @@
 				import [hold STRG to select multiple]:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoRename">
-				<source>Enable auto-rename:</source>
+				<source>Enable auto rename:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoValues">
-				<source>Enable auto-values:</source>
+				<source>Enable auto values:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldDelimiter">
 				<source>Field delimiter (data fields are separated by...):</source>

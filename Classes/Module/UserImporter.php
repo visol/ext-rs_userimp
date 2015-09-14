@@ -800,7 +800,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$menuItems[] = array(
 					'label' => $GLOBALS['LANG']->getLL('f1.tab2'),
 					'content' => file_exists($fileAbsolutePathAndName) ? '
-							<table class="typo3-dblist">
+							<table class="typo3-dblist import-settings">
 								' . implode('
 								', $row) . '
 							</table>
