@@ -264,7 +264,7 @@ class UserImporterService {
 
 	/**
 	 * Read in the given CSV file. The function is used during the final file import.
-	 * Removes first the first data row if the CSV has fieldnames.
+	 * Removes first the first data row if the CSV has field names.
 	 *
 	 * @return	array		file content in array
 	 */
@@ -334,14 +334,14 @@ class UserImporterService {
 	}
 
 	/**
-	 * Delete/unset disallowed mapping fields from passed fieldnames.
+	 * Delete/unset disallowed mapping fields from passed field names.
 	 * Not all available DB fields should be allowed for mapping. Some values are automatically computed, 
 	 * others are set during first login and others are IMHO simply too dangerous to be set during an user import.
 	 *
-	 * @param	array		$dbFields passed by REFERENCE
-	 * @return	void
+	 * @param	array		$dbFields
+	 * @return	array
 	 */
-	public function removeNoMapFields(&$dbFields) {
+	public function removeNoMapFields($dbFields) {
 		$i = 0;
 		foreach ($dbFields as $key => $value) {
 			if (in_array($value, $this->noMap)) {
@@ -349,7 +349,7 @@ class UserImporterService {
 			}
 			$i++;
 		}
-		$dbFields = array_values($dbFields);
+		return $dbFields;
 	}
 
 	/**
@@ -417,10 +417,11 @@ class UserImporterService {
 	 * @return    string        HTML content
 	 */
 	public function evaluateMappingForm() {
-		// merge mandatory and userdefined mandatory mapping fields
+		// merge mandatory and user-defined mandatory mapping fields
 		if (!empty($this->additionalMandatoryFields)) {
 			$this->mandatoryFields = array_unique(array_merge($this->mandatoryFields, $this->additionalMandatoryFields));
 		}
+
 		$this->importOK = FALSE;
 		$mandatoryFieldError = array();
 
@@ -450,14 +451,26 @@ class UserImporterService {
 
 			// do we have multiple mappings for a distinct field?
 			if ($x != $y) {
-				$content .= ' - ' . $this->getLanguageService()->getLL('f1.tab3.mapper.message.error') . $msg . '<br>';
+				$content .= ' ' . $this->getLanguageService()->getLL('f1.tab3.mapper.message.error') . $msg . '<br>';
 			} else {
 				// mapping seems to be OK, continue with import button or map additional values
 				if (!$this->inData['import']) {
 					foreach ($this->mandatoryFields as $mandatoryField) {
 						if (!in_array($mandatoryField, $this->inData['fieldmap'])) {
-							$mandatoryFieldError[] = $mandatoryField;
+							if ($mandatoryField === 'username' && array_key_exists('useEMailAsUsername', $this->inData['settings']) && $this->inData['settings']['useEMailAsUsername'] == 1) {
+								// The username field was not mapped, but we're supposed the e-mail address for it
+								if (!array_search('email', $this->inData['fieldmap'])) {
+									// If the email field is not mapped, this won't work
+									$mandatoryFieldError[] = $mandatoryField;
+								}
+							} elseif ($mandatoryField === 'password' && array_key_exists('generatePassword', $this->inData['settings']) && $this->inData['settings']['generatePassword'] == 1) {
+								// The password is supposed to be auto-generated, so we don't need it here
+								continue;
+							} else {
+								$mandatoryFieldError[] = $mandatoryField;
+							}
 						}
+
 					}
 					if (!empty($mandatoryFieldError)) {
 						$this->importOK = FALSE;
@@ -609,6 +622,14 @@ class UserImporterService {
 				// merge the 2 arrays, $sub2 takes precedence
 				$users[$n] = array_merge($users[$n], $sub2[$n]);
 			}
+			if (array_key_exists('useEMailAsUsername', $this->inData['settings']) && $this->inData['settings']['useEMailAsUsername'] == 1) {
+				// Use e-mail as username if requested
+				$users[$n]['username'] = $users[$n]['email'];
+			}
+			if (array_key_exists('generatePassword', $this->inData['settings']) && $this->inData['settings']['generatePassword'] == 1) {
+				// Generate random password if configured
+				$users[$n]['password'] = \Visol\RsUserimp\Utility\Algorithms::generateRandomString(32);
+			}
 			unset($sub);
 			$n++;
 		}
@@ -693,7 +714,7 @@ class UserImporterService {
 					$res = $this->getDatabaseConnection()->exec_UPDATEquery($this->userTypeDBTable, ($this->uniqueUserIdentifier . "='" . $main[$m][$this->uniqueUserIdentifier] . "'"), $user);
 					// set uid
 					$GLOBALS['BE_USER']->writelog(1, 1, 0, '', 'User %s [UID %s] updated by CSV import action', array($user['username'], $uid,));
-					$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userUpdated'), $user[$this->uniqueUserIdentifier], $userIDS[$m]) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
+					$content .= '<li><strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userUpdated'), $user[$this->uniqueUserIdentifier], $userIDS[$m]) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '</li>';
 					$u++;
 					// BEWARE: updated users are added to the rollback dataset!!!
 					$rollbackDataTemp[] = $uid;
@@ -709,18 +730,18 @@ class UserImporterService {
 					$GLOBALS['BE_USER']->writelog(1, 1, 0, '', 'User %s [UID %s] created by CSV import action', array($user[$this->uniqueUserIdentifier], $uid,));
 					$users[] = $user[$this->uniqueUserIdentifier];
 					$i++;
-					$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userInserted'), $user[$this->uniqueUserIdentifier], $user['name'], $uid) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
+					$content .= '<li><strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userInserted'), $user[$this->uniqueUserIdentifier], $user['name'], $uid) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '</li>';
 					$rollbackDataTemp[] = $uid;
 				}
 			} else {
 				$export[] = $CSV[$m];
-				$content .= '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userSkipped'), $user[$this->uniqueUserIdentifier], $uid) . '</strong>' . (!empty($msg) ? implode(',', $msg) : '') . '<br />';
+				$content .= '<li><strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.userSkipped'), $user[$this->uniqueUserIdentifier], $uid) . '</strong> ' . (!empty($msg) ? implode(',', $msg) : '') . '</li>';
 				$j++;
 			}
 			$m++;
 		}
 
-		$content = '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.usersImported'), $m, $i, $u, $j) . '</strong><br>' . $content;
+		$content = '<strong>' . sprintf($this->getLanguageService()->getLL('f1.tab5.usersImported'), $m, $i, $u, $j) . '</strong><ul class="import-log">' . $content . '</ul>';
 
 		/**
 		 * If createDropFile is set, create a drop file which holds all skipped users.
@@ -890,7 +911,7 @@ class UserImporterService {
 			$fatalError = TRUE;
 		}
 
-		if (strlen($user['password']) > 39) { // check for max password value
+		if (strlen($user['password']) > 99) { // check for max password value
 			$error[] = $this->getLanguageService()->getLL('f1.tab5.error.passwordTooLong');// 'password too long';
 			$importUser = FALSE;
 			$fatalError = TRUE;
@@ -910,19 +931,19 @@ class UserImporterService {
 		/* These are recoverable conditions */
 		if (!$fatalError && $this->enableAutoRename) {
 			if (strlen($user['username']) != strlen(preg_replace('/\s+/', '', $user['username']))) { // check for space in password
-				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSU'); //'corrected whitespace in username';
+				$msg[] = $this->getLanguageService()->getLL('f1.tab5.corrected.WSU'); // 'corrected whitespace in username';
 				$user['username'] = preg_replace('/\s+/', '', $user['username']); // replace spaces
 			}
 		}
 
 		/* knock out conditions if $this->enableAutoRename is NOT set*/
 		if (!$fatalError && !$this->enableAutoRename && strlen($user['username']) != strlen(preg_replace('/\s+/', '', $user['username']))) { // check for space in username
-			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.WSU'); //'whitespace in username';
+			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.WSU'); // 'whitespace in username';
 			$importUser = FALSE;
 		}
 
 		if (!$fatalError && !$this->enableAutoRename && strtolower($user['username']) != $user['username']) { // check for uppercase username values
-			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.UCU'); //'uppercase in username';
+			$msg[] = $this->getLanguageService()->getLL('f1.tab5.error.UCU'); // 'uppercase in username';
 			$importUser = FALSE;
 		}
 
@@ -992,7 +1013,7 @@ class UserImporterService {
 				$allowedColumns[] = $currentColumn;
 			}
 		}
-		$this->removeNoMapFields($allowedColumns);
+		$allowedColumns = $this->removeNoMapFields($allowedColumns);
 		$this->columnNamesFromDB = $allowedColumns;
 	}
 

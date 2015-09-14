@@ -538,10 +538,8 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$mapper->userType = isset($this->inData['settings']['importUserType']) ? $this->inData['settings']['importUserType'] : $mapper->userType;
 				$mapper->setUserTypeDefaultData();
 
-				$dbFieldsDefault = explode(',', $mapper->userTypeDB);
-
-				$mapper->removeNoMapFields($dbFieldsDefault);
-
+				$dbFieldsDefault = $mapper->columnNamesFromDB;
+				$dbFieldsDefault = $mapper->removeNoMapFields($dbFieldsDefault);
 				$dbFieldsDefault = array_unique(array_diff($dbFieldsDefault, $mapper->mandatoryFields));
 
 				$row[] = '
@@ -569,8 +567,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 				if (!empty($fileAbsolutePathAndName) && file_exists($fileAbsolutePathAndName)) {
 					$currentFileInfo = $fileObject->getStorage()->getFileInfo($fileObject);
-					$currentFileSize = \TYPO3\CMS\Core\Utility\GeneralUtility::formatSize($currentFileInfo['size']);
-					$currentFileMessage = $currentFileInfo['name'] . ' (' . $currentFileSize . ')';
+					$currentFileMessage = $currentFileInfo['name'];
 				} else {
 					$currentFileMessage = $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.emptyImportFile');
 				}
@@ -667,27 +664,45 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][importStorageFolder]', (isset($this->inData['settings']['importStorageFolder']) ? $this->inData['settings']['importStorageFolder'] : ''), $opt, 'importStorageFolder') . '</td>
 							</tr>';
 
-				$row[] = '
+				if (is_array($this->inData) && is_array($this->inData['settings']) && $this->inData['settings']['importUserType'] === 'FE') {
+					// These rows are only applicable for table fe_users
+					$row[] = '
 						<tr class="t3-row-header">
 							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup') . '</td>
 						</tr>';
 
-				$preopt = $this->getFrontendUserGroups();
+					$preopt = $this->getFrontendUserGroups();
 
-				if (!empty($preopt)) {
-					$opt = array();
-					foreach ($preopt as $key => $val) {
-						$opt = $opt + array($val['uid'] => $val['title'] . ' [UID ' . $val['uid'] . ']');
+					if (!empty($preopt)) {
+						$opt = array();
+						foreach ($preopt as $key => $val) {
+							$opt = $opt + array($val['uid'] => $val['title'] . ' [UID ' . $val['uid'] . ']');
+						}
+					} else {
+						$opt = array('' => $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup'));
 					}
-				} else {
-					$opt = array('' => $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup'));
-				}
+					$row[] = '
+								<tr class="db_list_normal">
+									<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.label') . '</strong></td>
+									<td>' . $this->renderMultipleSelector('tx_rsuserimp[settings][importUserGroup]', $opt, (isset($this->inData['settings']['importUserGroup']) ? $this->inData['settings']['importUserGroup'] : ''), 1, 'importUserGroup') . '</td>
+								</tr>';
 
-				$row[] = '
+					$row[] = '
+						<tr class="t3-row-header">
+							<td colspan="2">' . $GLOBALS['LANG']->getLL('f1.tab2.section.usernamePassword') . '</td>
+						</tr>';
+
+					$row[] = '
 							<tr class="db_list_normal">
-								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.label') . '</strong></td>
-								<td>' . $this->renderMultipleSelector('tx_rsuserimp[settings][importUserGroup]', $opt, (isset($this->inData['settings']['importUserGroup']) ? $this->inData['settings']['importUserGroup'] : ''), 1, 'importUserGroup') . '</td>
+								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.usernamePassword.useEMailAsUsername') . '</td>
+								<td><input onChange="toggle();" type="checkbox" id="enableUpdate" name="tx_rsuserimp[settings][useEMailAsUsername]" value="1"' . (isset($this->inData['settings']['useEMailAsUsername']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
+					$row[] = '
+							<tr class="db_list_normal">
+								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.usernamePassword.generatePassword') . '</td>
+								<td><input onChange="toggle();" type="checkbox" id="enableUpdate" name="tx_rsuserimp[settings][generatePassword]" value="1"' . (isset($this->inData['settings']['generatePassword']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
+							</tr>';
+				}
 
 				$row[] = '
 						<tr class="t3-row-header">
@@ -1314,7 +1329,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 * @param    string $prefix : Form element name prefix
 	 * @param    array $allValues : All possible values
 	 * @param    array $postData : Current values selected
-	 * @param    string $reverse : Alter behaviour
+	 * @param    integer $reverse : Alter behaviour
 	 * @param    string $id : An identifier for the rendered selector
 	 * @return    string        HTML select element
 	 */

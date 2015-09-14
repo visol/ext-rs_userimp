@@ -4,7 +4,7 @@
 		<header/>
 		<body>
 			<trans-unit id="title">
-				<source>Import TYPO3 users from file</source>
+				<source>Import users/addresses from file</source>
 			</trans-unit>
 			<trans-unit id="function1">
 				<source>Import Users</source>
@@ -80,7 +80,7 @@
 				<source>Usergroup</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup">
-				<source>[ERROR: no FE usergroups]</source>
+				<source>[Error: no user group selected]</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup.error">
 				<source>Error: Please select one or more user groups first!</source>
@@ -88,6 +88,16 @@
 			<trans-unit id="f1.tab2.section.defaultGroup.label">
 				<source>Please select a user group for the users to be imported:</source>
 			</trans-unit>
+			<trans-unit id="f1.tab2.section.usernamePassword">
+				<source>Username/password</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.usernamePassword.useEMailAsUsername">
+				<source>Use e-mail column as username:</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.usernamePassword.generatePassword">
+				<source>Auto-generate a random password:</source>
+			</trans-unit>
+
 			<trans-unit id="f1.tab2.section.generalSettings">
 				<source>General settings</source>
 			</trans-unit>
@@ -95,8 +105,10 @@
 				<source>Additional Mandatory Fields</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.additionalMandatoryFields.description">
-				<source>Please specify additional fields which &lt;em&gt;must&lt;/em&gt; be present for each user you want to
-				import [hold Ctrl to select multiple]:</source>
+				<source><![CDATA[
+					Please specify additional fields which <em>must</em> be present for each user you want to
+					import [hold Ctrl to select multiple]:
+				]]></source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoRename">
 				<source>Enable auto rename:</source>
@@ -246,20 +258,23 @@
 				<source>Maps to...</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.allMandatoryNo">
-				<source>, &lt;strong&gt;but not all mandatory fields mapped.&lt;/strong&gt;</source>
+				<source><![CDATA[
+					, <strong>but not all mandatory fields mapped.</strong>
+				]]></source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.allMandatoryYes">
-				<source>and all mandatory fields mapped.&lt;br /&gt; &lt;strong&gt;You may now proceed with the import or
-				continue to map more fields.&lt;/strong&gt;</source>
+				<source><![CDATA[
+					All mandatory fields mapped.<br /><strong>You may now proceed with the import or continue to map more fields.</strong>
+				]]></source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.error">
-				<source>please review your field mapping for</source>
+				<source>Please review your field mapping for</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.info">
-				<source>Mapped %s out of %s fields, %s unique</source>
+				<source>Mapped %s out of %s fields, %s unique. </source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.provideMandatory">
-				<source>- please provide mapping for the following mandatory field(s):</source>
+				<source>Please provide mapping for the following mandatory field(s):</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.values">
 				<source>Value</source>
@@ -277,19 +292,21 @@
 				<source>IMPORT</source>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.label">
-				<source>All necessary information for the import process have been entered.&lt;br /&gt;By clicking on the &lt;strong&gt;Import&lt;/strong&gt;
-				button below, you end the import workflow and the CSV file is read into the database.&lt;br /&gt;Import
-				errors are displayed in the &lt;em&gt;Messages&lt;/em&gt; tab.&lt;br /&gt; From here you may also go
-				back to the &lt;em&gt;Field mapping&lt;/em&gt; tab and correct your settings.&lt;br /&gt;&lt;br /&gt;&lt;strong&gt;Attention:&lt;/strong&gt;
-				By clicking &lt;strong&gt;Import&lt;/strong&gt; you actually end the workflow, i.e. all mapping data and
-				import settings are lost beyond this point. &lt;strong&gt;It might be a good idea to save your settings
-				as a preset!&lt;/strong&gt;</source>
+				<source><![CDATA[
+					All necessary information for the import process have been entered.<br />By clicking on the <strong>Import</strong>
+					button below, you end the import workflow and the CSV file is read into the database.<br />Import
+					errors are displayed in the <em>Messages</em> tab.<br /> From here you may also go
+					back to the <em>Field mapping</em> tab and correct your settings.<br /><br /><strong>Attention:</strong>
+					By clicking <strong>Import</strong> you actually end the workflow, i.e. all mapping data and
+					import settings are lost beyond this point. <strong>It might be a good idea to save your settings
+					as a preset!</strong>
+				]]></source>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.sure">
 				<source>Do you really want to import this file?</source>
 			</trans-unit>
 			<trans-unit id="f1.tab5">
-				<source>Errors and Messages</source>
+				<source>Messages and errors</source>
 			</trans-unit>
 			<trans-unit id="f1.tab5.corrected.UCP">
 				<source>corrected uppercase in password</source>
@@ -355,10 +372,10 @@
 				<source>Updated user %s [UID %s].</source>
 			</trans-unit>
 			<trans-unit id="f1.tab5.usersImported">
-				<source>%s users read, %s new, %s upated, %s skipped.</source>
+				<source>%s users read, %s new, %s updated, %s skipped.</source>
 			</trans-unit>
 			<trans-unit id="f1.tab5.userSkipped">
-				<source>User %s [UID %s] skipped:</source>
+				<source>Skipped user %s [UID %s]:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab5.warning">
 				<source>Warning:</source>
@@ -394,10 +411,14 @@
 				<source>Session</source>
 			</trans-unit>
 			<trans-unit id="f2.sessionExpired">
-				<source>Rollback feature expired (latest possible rollback time was &lt;strong&gt;&lt;font color=&quot;#cc0000&quot;&gt;%s&lt;/font&gt;&lt;/strong&gt;)</source>
+				<source><![CDATA[
+					Rollback feature expired (latest possible rollback time was <strong><font color="#cc0000">%s</font></strong>)
+				]]></source>
 			</trans-unit>
 			<trans-unit id="f2.sessionRollback">
-				<source>Import may be rolled back until &lt;strong&gt;&lt;font color=&quot;#00aa00&quot;&gt;%s&lt;/font&gt;&lt;/strong&gt;.</source>
+				<source><![CDATA[
+					Import may be rolled back until <strong><font color="#00aa00">%s</font></strong>.
+				]]></source>
 			</trans-unit>
 			<trans-unit id="f2.sessionRolledBack">
 				<source>Session expired or already rolled back.</source>
@@ -443,7 +464,7 @@
 					determines whether previously imported users get <em>physically deleted</em> during a
 					rollback or just get <em>marked deleted</em>. TYPO3 usernames must be unique and even if you
 					won't see marked deleted users, they are still present in the DB - hence you cannot use such a username!</p><br
-					/><p align=&quot;center&quot;><b>If you are still uncertain about any of these settings
+					/><p align="center"><b>If you are still uncertain about any of these settings
 					please read the corresponding section in the extension manual! You have been warned.</b></p>
 				]]></source>
 			</trans-unit>
