@@ -14,7 +14,6 @@ namespace Visol\RsUserimp\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
-use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -62,7 +61,19 @@ class UserImporterService {
 	public $importOK;
 	public $importNow;
 	public $map;
+
+	/**
+	 * An array containing the names of all fields in the source table
+	 *
+	 * @var array
+	 */
 	public $columnNamesFromCSV;
+
+	/**
+	 * An array containing all possible and allowed field names of the target table
+	 *
+	 * @var array
+	 */
 	public $columnNamesFromDB;
 	public $numMap;
 	public $inData = array();
@@ -80,7 +91,12 @@ class UserImporterService {
 	 * @var string
 	 */
 	public $userType;
-	public $userTypeDB;
+
+	/**
+	 * Name of the database table to import to
+	 *
+	 * @var string
+	 */
 	public $userTypeDBTable;
 	public $useRecycler;
 	public $createDropFile;
@@ -101,8 +117,6 @@ class UserImporterService {
 		$this->enableAutoRename = FALSE;
 		$this->enableAutoValues = FALSE;
 		$this->enableUpdate = FALSE;
-		$this->bg1 = '#FFEFBF';
-		$this->bg2 = '#FFE79F';
 		$this->useRecycler = 1;	// 0 = no, 1 = if available, 2 = always
 		$this->previewNum = 3;
 		$this->CSVhasTitle = TRUE;
@@ -120,7 +134,6 @@ class UserImporterService {
 		$this->CSV = $this->readSamplesFromCSV();
 		$this->columnNumCSV = count($this->CSV[0]);
 		$this->columnNamesFromCSV = $this->getColumnNamesFromCSV();
-		$this->columnNamesFromDB = $this->getColumnNamesFromDB();
 	}
 
 	/**
@@ -196,7 +209,7 @@ class UserImporterService {
 				);
 
 				$this->userTypeDBTable = 'fe_users';
-				$this->userTypeDB = $this->getAllowedFieldsForTable($this->userTypeDBTable);
+				$this->setColumnNamesFromDB($this->userTypeDBTable);
 
 				$this->uniqueUserIdentifier = 'username';
 				break;
@@ -250,7 +263,7 @@ class UserImporterService {
 	 *
 	 * @return	array		file content in array
 	 */
-	function readCSV() {
+	public function readCSV() {
 
 		$file = $this->file;
 		$mydata = array();
@@ -274,7 +287,7 @@ class UserImporterService {
 	 *
 	 * @return	array		sample file content in array	...
 	 */
-	function readSamplesFromCSV() {
+	public function readSamplesFromCSV() {
 
 		$file = $this->file;
 		$mydata = array();
@@ -303,7 +316,7 @@ class UserImporterService {
 	 *
 	 * @return	array	$myheader: array with fieldnames
 	 */
-	function getColumnNamesFromCSV() {
+	public function getColumnNamesFromCSV() {
 
 		$num = count($this->CSV[0]);
 
@@ -319,26 +332,6 @@ class UserImporterService {
 	}
 
 	/**
-	 * Reads DB columns (fieldnames) from the DB using $GLOBALS['TCA'].
-	 * Also, disallowed mapping fields are removed by calling removeNoMapFields(&$fields).
-	 * The fieldnames are needed during the mapping session to support the user some in his mapping task.
-	 *
-	 * @return	array	$dbfields: array with DB fieldnames
-	 */
-	function getColumnNamesFromDB() {
-
-		/**
-		 * This was the initial way of getting available DB table fields for table fe_users:
-		 * $dbFields = array_keys($GLOBALS['TCA']['fe_users']['columns']);
-		 * Didn't work on 3.8.0rc1 systems, so it had to be changed to the following
-		 */
-		$dbFields = explode(',',$this->userTypeDB);
-		$this->removeNoMapFields($dbFields); //passed by REFERENCE
-
-		return $dbFields;
-	}
-
-	/**
 	 * Delete/unset disallowed mapping fields from passed fieldnames.
 	 * Not all available DB fields should be allowed for mapping. Some values are automatically computed, 
 	 * others are set during first login and others are IMHO simply too dangerous to be set during an user import.
@@ -346,12 +339,11 @@ class UserImporterService {
 	 * @param	array		$dbFields passed by REFERENCE
 	 * @return	void
 	 */
-	function removeNoMapFields(&$dbFields) {
-
+	public function removeNoMapFields(&$dbFields) {
 		$i = 0;
 		foreach ($dbFields as $key => $value) {
 			if (in_array($value, $this->noMap)) {
-				unset ($dbFields[$i]);
+				unset($dbFields[$i]);
 			}
 			$i++;
 		}
@@ -559,7 +551,7 @@ class UserImporterService {
 	 *
 	 * @return	string		formated HTML to be printed
 	 */
-	function importUsers () {
+	function importUsers() {
 
 		// we need the UIDs of existing users later if we want to update users
 		// unfortunately, sql_insert_id() doesn't work for SQL UPDATE statements 
@@ -1012,10 +1004,10 @@ class UserImporterService {
 	 * @param $tableName
 	 * @return string comma-separated list of allowed fields
 	 */
-	public function getAllowedFieldsForTable($tableName) {
+	public function setColumnNamesFromDB($tableName) {
 		if (!$this->getBackendUserAuthentication()->check('tables_modify', $tableName)) {
 			// table must be writable for user
-			return '';
+			return array();
 		}
 		$allowedColumns = array();
 		foreach ($GLOBALS['TCA'][$tableName]['columns'] as $currentColumn => $config) {
@@ -1023,7 +1015,8 @@ class UserImporterService {
 				$allowedColumns[] = $currentColumn;
 			}
 		}
-		return implode(',', $allowedColumns);
+		$this->removeNoMapFields($allowedColumns);
+		$this->columnNamesFromDB = $allowedColumns;
 	}
 
 	/**
