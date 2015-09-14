@@ -748,7 +748,7 @@ class UserImporterService {
 			$newAbsFile = GeneralUtility::getFileAbsFileName('uploads/tx_rsuserimp/' . 'DROPPED_'.$fileInfo['file']); //PATH_site.'typo3temp/'.$newFileName;
 			$newRelFile = '/uploads/tx_rsuserimp/'.$newFileName;
 
-			_fputcsv($newAbsFile, $fileContent, $this->fieldDelimiter, $this->fieldEncaps);
+			fputcsv($newAbsFile, $fileContent, $this->fieldDelimiter, $this->fieldEncaps);
 
 			$content .= '<div align="center"><a href="'.$newRelFile.'">'.$GLOBALS['LANG']->getLL('f1.tab5.downloadFile').'</a>';
 		}
@@ -1040,36 +1040,4 @@ class UserImporterService {
 		return $GLOBALS['BE_USER'];
 	}
 
-}
-
-/**
- * In contrast to fgetcsv(), fputcsv() is not yet in the PHP 4 core (but in PHP5 CSV).
- * So we fake the function here. Should be interchangeable once official PHP5 is out.
- *
- * @param	string		$fileName: the file to write to
- * @param	array		$dataArray: the array to write
- * @param	string		$delimiter: the field delimiter
- * @param	string		$enclosure: the enclosure character
- * @return	void		...
- */
-function _fputcsv($fileName, $dataArray, $delimiter, $enclosure) {
-
-	// Build the string
-	$line = "";
-	$writeDelimiter = FALSE;
-	foreach($dataArray as $dataRow){
-		foreach ($dataRow as $dataElement) {
-			if($writeDelimiter) $line .= $delimiter;
-			$line .= $enclosure . $dataElement . $enclosure;
-			$writeDelimiter = TRUE;
-		} // end foreach($dataArray as $dataElement)
-	// Append new line
-	$line .= "\n";
-	$writeDelimiter = FALSE;
-	}
-	if (GeneralUtility::writeFile($fileName,$line)) {
-		//	print_r('success');
-	} else {
-		//	print_r('error');
-	}
 }
