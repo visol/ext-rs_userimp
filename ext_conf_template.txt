@@ -21,3 +21,6 @@
 
 # cat=basic/advanced/210; type=text; label= Unique Identifier - tt_address: Specify a list of comma separared DB fields which may serve as a unique identifier for imported tt_address datasets. If you choose to update existing address records, you may specify one of those values to be the unique identifier. Imported datasets are checked against this identifier and corresponding datasets are updated and all others are inserted. It should go without saying that entered fields really identify a single dataset. Reasonable default values seem to be name,email,username.
 	uniqueIdentifierListTT = email,name
+
+# cat=basic/advanced/200; type=boolean; label= User group is mandatory for fe_users: If this is set to true, a user group must be selected for fe_users
+	userGroupMandatoryFE = 1

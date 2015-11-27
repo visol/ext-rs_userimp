@@ -37,6 +37,11 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	protected $inData = array();
 	protected $presetContent;
 
+    /**
+     * @var array
+     */
+    protected $extensionConfiguration;
+
 	/**
 	 * @var \TYPO3\CMS\Core\Utility\File\ExtendedFileUtility
 	 */
@@ -82,6 +87,8 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 * @return    void
 	 */
 	function main() {
+        // get configuration values from ext_conf_template.txt
+        $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['rs_userimp']);
 
 		// Draw the header
 		$this->doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
@@ -160,7 +167,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 						 document.rs_userimp.importStorageFolder.focus();
 						 return false;
 					  }' .
-			(($this->inData['settings']['importUserType'] == 'FE' || !($this->inData['settings']['importUserType'])) ?
+			((array_key_exists('userGroupMandatoryFE', $this->extensionConfiguration) && (boolean)$this->extensionConfiguration['userGroupMandatoryFE'] === TRUE && ($this->inData['settings']['importUserType'] == 'FE' || !($this->inData['settings']['importUserType']))) ?
 				'if (document.rs_userimp.importUserGroup.value == "") {
 						 alert("' . $GLOBALS['LANG']->getLL('f1.tab2.section.defaultGroup.emptyGroup.error') . '");
 						 document.rs_userimp.importUserGroup.style.backgroundColor = "#FFDFDF";
@@ -311,14 +318,12 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 	 */
 	protected function moduleContent() {
 
-		// get configuration values from ext_conf_template.txt
-		$userimpConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['rs_userimp']);
-		$useRecycler = $userimpConf['useRecycler'];
-		$createDropFile = $userimpConf['createDropFile'];
-		$garbageCollectionTriggerTimer = $userimpConf['garbageCollectionTriggerTimer'];
-		$rollbackSafetyTimespan = $userimpConf['rollbackSafetyTimespan'];
-		$rollbackPreviewRows = $userimpConf['rollbackPreviewRows'];
-		$rollbackDeleteFromDB = $userimpConf['rollbackDeleteFromDB'];
+		$useRecycler = $this->extensionConfiguration['useRecycler'];
+		$createDropFile = $this->extensionConfiguration['createDropFile'];
+		$garbageCollectionTriggerTimer = $this->extensionConfiguration['garbageCollectionTriggerTimer'];
+		$rollbackSafetyTimespan = $this->extensionConfiguration['rollbackSafetyTimespan'];
+		$rollbackPreviewRows = $this->extensionConfiguration['rollbackPreviewRows'];
+		$rollbackDeleteFromDB = $this->extensionConfiguration['rollbackDeleteFromDB'];
 
 		// garbage collection
 		$this->gc($garbageCollectionTriggerTimer, $rollbackSafetyTimespan);
@@ -529,7 +534,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				/***** file upload ********/
 				/**** TAB 1 data *****/
 
-				$additionalMandatoryFields = isset($this->inData['settings']['extraFields']) ? $this->inData['settings']['extraFields'] : ''; //array_unique(\TYPO3\CMS\Core\Utility\GeneralUtility::trimExplode(',',$userimpConf['additionalMandatoryFields'],1));
+				$additionalMandatoryFields = isset($this->inData['settings']['extraFields']) ? $this->inData['settings']['extraFields'] : '' ;
 
 				// create and initialize instance of our import object
 				/** @var \Visol\RsUserimp\Service\UserImporterService $mapper */
@@ -716,16 +721,16 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 				$opt = array('' => '');
 				if ($mapper->userType == 'FE') {
-					if (!empty($userimpConf['uniqueIdentifierListFE'])) {
-						$preopt = explode(',', $userimpConf['uniqueIdentifierListFE']);
+					if (!empty($this->extensionConfiguration['uniqueIdentifierListFE'])) {
+						$preopt = explode(',', $this->extensionConfiguration['uniqueIdentifierListFE']);
 					} else {
 						$preopt = isset($dbFieldsDefault) ? $dbFieldsDefault : '';
 					}
 				}
 
 				if ($mapper->userType == 'TT') {
-					if (!empty($userimpConf['uniqueIdentifierListTT'])) {
-						$preopt = explode(',', $userimpConf['uniqueIdentifierListTT']);
+					if (!empty($this->extensionConfiguration['uniqueIdentifierListTT'])) {
+						$preopt = explode(',', $this->extensionConfiguration['uniqueIdentifierListTT']);
 					} else {
 						$preopt = isset($dbFieldsDefault) ? $dbFieldsDefault : '';
 					}
