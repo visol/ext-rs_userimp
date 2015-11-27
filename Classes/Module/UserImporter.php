@@ -329,7 +329,11 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		$this->gc($garbageCollectionTriggerTimer, $rollbackSafetyTimespan);
 
 		// check if we have a file upload or have an already existing file
-		$newFileObject = $this->checkUpload();
+		$newFileObjectOrErrorMessage = $this->checkUpload();
+
+        if (is_string($newFileObjectOrErrorMessage)) {
+            $this->content .= $newFileObjectOrErrorMessage;
+        }
 
 		// check if we already have an uploaded file
 		$uploadedFileUid = (int)$this->inData['settings']['uploadedFileUid'];
@@ -341,9 +345,9 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		}
 
 		// there seems to be a new upload file
-		if ($newFileObject instanceof File) {
+		if ($newFileObjectOrErrorMessage instanceof File) {
 			// set current file to new value
-			$fileObject = $newFileObject;
+			$fileObject = $newFileObjectOrErrorMessage;
 			// and wipe out old module data to start new session
 			$this->inData = '';
 		}
@@ -351,7 +355,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		// always check if the file is present
 		if (!is_object($fileObject) || !file_exists($fileObject->getForLocalProcessing(FALSE))) $this->inData = '';
 
-		if ($newFileObject instanceof File && !file_exists($newFileObject->getForLocalProcessing(FALSE))) {
+		if ($newFileObjectOrErrorMessage instanceof File && !file_exists($newFileObjectOrErrorMessage->getForLocalProcessing(FALSE))) {
 			$this->content .= $this->doc->section($GLOBALS['LANG']->getLL('f1.tab1.section.error'), $GLOBALS['LANG']->getLL('f1.tab1.section.error.description'), 0, 1, 3);
 		}
 
@@ -1119,7 +1123,17 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 		if ($newFiles[0] instanceof File) {
 			return $newFiles[0];
 		} else {
-			return NULL;
+            if (!empty($this->fileProcessor->lastError) && GeneralUtility::isFirstPartOfStr($this->fileProcessor->lastError, 'No unique filename')) {
+                /** @var $flashMessage FlashMessage */
+                $flashMessage = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+                    $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.noUniqueFilename'),
+                    '',
+                    FlashMessage::WARNING
+                );
+                return $flashMessage->render();
+            } else {
+                return null;
+            }
 		}
 	}
 

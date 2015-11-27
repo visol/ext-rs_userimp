@@ -33,6 +33,9 @@
 			<trans-unit id="f1.tab1.section.importFile.emptyImportFile">
 				<source>[no file choosen]</source>
 			</trans-unit>
+			<trans-unit id="f1.tab1.section.importFile.noUniqueFilename">
+				<source>The file could not be uploaded because a file with the same name already exists. Please rename the file or check "Overwrite existing files".</source>
+			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile.importFile">
 				<source>Choose a file from your local computer:</source>
 			</trans-unit>
