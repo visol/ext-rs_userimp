@@ -664,7 +664,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][importStorageFolder]', (isset($this->inData['settings']['importStorageFolder']) ? $this->inData['settings']['importStorageFolder'] : ''), $opt, 'importStorageFolder') . '</td>
 							</tr>';
 
-				if (is_array($this->inData) && is_array($this->inData['settings']) && $this->inData['settings']['importUserType'] === 'FE') {
+				if (empty($this->inData) || (is_array($this->inData) && is_array($this->inData['settings']) && $this->inData['settings']['importUserType'] === 'FE')) {
 					// These rows are only applicable for table fe_users
 					$row[] = '
 						<tr class="t3-row-header">
@@ -695,12 +695,12 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					$row[] = '
 							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.usernamePassword.useEMailAsUsername') . '</td>
-								<td><input onChange="toggle();" type="checkbox" id="enableUpdate" name="tx_rsuserimp[settings][useEMailAsUsername]" value="1"' . (isset($this->inData['settings']['useEMailAsUsername']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
+								<td><input type="checkbox" id="useEMailAsUsername" name="tx_rsuserimp[settings][useEMailAsUsername]" value="1"' . (isset($this->inData['settings']['useEMailAsUsername']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
 					$row[] = '
 							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.usernamePassword.generatePassword') . '</td>
-								<td><input onChange="toggle();" type="checkbox" id="enableUpdate" name="tx_rsuserimp[settings][generatePassword]" value="1"' . (isset($this->inData['settings']['generatePassword']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
+								<td><input type="checkbox" id="generatePassword" name="tx_rsuserimp[settings][generatePassword]" value="1"' . (isset($this->inData['settings']['generatePassword']) ? ' checked="checked"' : '') . ' ' . ($_POST['importNow'] ? 'disabled' : '') . '/></td>
 							</tr>';
 				}
 
