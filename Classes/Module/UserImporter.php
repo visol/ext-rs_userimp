@@ -278,7 +278,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 			'SHORTCUT' => $this->getBackendUserAuthentication()->mayMakeShortcut() ? $this->doc->makeShortcutIcon("id", implode(",", array_keys($this->MOD_MENU)), $this->MCONF['name']) : ''
 		);
 
-		$markers['FUNCMENU'] = $this->doc->funcMenu('', \TYPO3\CMS\Backend\Utility\BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']));
+		$markers['FUNCMENU'] = $this->doc->funcMenu('', BackendUtility::getFuncMenu($this->id, "SET[function]", $this->MOD_SETTINGS['function'], $this->MOD_MENU['function']));
 
 		if (is_array($this->presetContent)) {
 			$this->content .= '<h2>' . $GLOBALS['LANG']->getLL('f1.tab2.section.presets') . '</h2>';
@@ -501,21 +501,21 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 												';
 						$content .= '<tr' . $tr_params . ' id="sessionrow_' . $rowcount . '" name="sessionrow" style="cursor: pointer;">
 											<td valign="top"><strong>' . $session['uid'] . '</td>
-											<td valign="top">' . \TYPO3\CMS\Backend\Utility\BackendUtility::dateTimeAge($session['crdate'], 1) . '</td>
+											<td valign="top">' . BackendUtility::dateTimeAge($session['crdate'], 1) . '</td>
 											<td valign="top">' . $session['title'] . '</td>';
 
 						$now = mktime();
 
 						if ($now < $rollbacktime || $rollbackSafetyTimespan == 0) {
 							if ($session['active'] == 1) {
-								$content .= '<td valign="top">' . sprintf($GLOBALS['LANG']->getLL('f2.sessionRollback'), \TYPO3\CMS\Backend\Utility\BackendUtility::dateTimeAge($rollbacktime, 1)) . '</td>';
+								$content .= '<td valign="top">' . sprintf($GLOBALS['LANG']->getLL('f2.sessionRollback'), BackendUtility::dateTimeAge($rollbacktime, 1)) . '</td>';
 							}
 
 							if ($session['active'] == 0) {
 								$content .= '<td valign="top">' . $GLOBALS['LANG']->getLL('f2.sessionRolledBack') . '</td>';
 							}
 						} elseif ($now >= $rollbacktime) {
-							$content .= '<td valign="top">' . sprintf($GLOBALS['LANG']->getLL('f2.sessionExpired'), \TYPO3\CMS\Backend\Utility\BackendUtility::dateTimeAge($rollbacktime, 1)) . '</td>';
+							$content .= '<td valign="top">' . sprintf($GLOBALS['LANG']->getLL('f2.sessionExpired'), BackendUtility::dateTimeAge($rollbacktime, 1)) . '</td>';
 						}
 
 						$content .= '</tr>';
