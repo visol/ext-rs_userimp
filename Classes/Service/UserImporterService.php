@@ -970,11 +970,11 @@ class UserImporterService {
 
 		/* Generate the content string */
 		if ($fatalError) {
-			$content = !empty($error) ? $this->getLanguageService()->getLL('f1.tab5.error') . implode(', ', $error) : '';
+			$content = !empty($error) ? $this->getLanguageService()->getLL('f1.tab5.error') . ' ' . implode(', ', $error) : '';
 		}
 
 		if (!empty($msg)) {
-			$content = $this->getLanguageService()->getLL('f1.tab5.warning') . implode(', ', $msg);
+			$content = $this->getLanguageService()->getLL('f1.tab5.warning') . ' ' . implode(', ', $msg);
 		}
 
 		return $content;
