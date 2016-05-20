@@ -14,6 +14,7 @@ namespace Visol\RsUserimp\Service;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -697,6 +698,17 @@ class UserImporterService {
 							$user[$this->uniqueUserIdentifier] = $newName;
 							$main[$i][$this->uniqueUserIdentifier] = $user[$this->uniqueUserIdentifier];
 						}
+					}
+				}
+			}
+
+			// Use TCAdefaults to set default field values if the fields affected were not set by the import table
+			$targetPidTsConfig = GeneralUtility::removeDotsFromTS(BackendUtility::getPagesTSconfig($user['pid']));
+			if (array_key_exists('TCAdefaults', $targetPidTsConfig) && array_key_exists($this->userTypeDBTable, $targetPidTsConfig['TCAdefaults'])) {
+				$tcaDefaults = $targetPidTsConfig['TCAdefaults'][$this->userTypeDBTable];
+				foreach ($tcaDefaults as $key => $value) {
+					if (!array_key_exists($key, $user)) {
+						$user[$key] = $value;
 					}
 				}
 			}
