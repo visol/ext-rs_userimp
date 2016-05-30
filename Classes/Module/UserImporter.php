@@ -76,6 +76,12 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				"3" => $GLOBALS['LANG']->getLL("function3"),
 			)
 		);
+		if (!$this->getBackendUserAuthentication()->isAdmin()) {
+			// Rollback and Security settings are not available for non-admins
+			unset($this->MOD_MENU['function']['2']);
+			unset($this->MOD_MENU['function']['3']);
+		}
+
 		parent::menuConfig();
 	}
 
