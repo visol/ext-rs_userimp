@@ -4,457 +4,452 @@
 		<header/>
 		<body>
 			<trans-unit id="title">
-				<source>Import users/addresses from file</source>
+				<target>Benutzer/Adressen aus Datei importieren</target>
 			</trans-unit>
 			<trans-unit id="function1">
-				<source>Import Users</source>
+				<target>Benutzer importieren</target>
 			</trans-unit>
 			<trans-unit id="function2">
-				<source>Rollback Import</source>
+				<target>Import rückgängig machen</target>
 			</trans-unit>
 			<trans-unit id="function3">
-				<source>Security Note</source>
+				<target>Sicherheitshinweis</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1">
-				<source>Import File</source>
+				<target>Datei hochladen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.description">
-				<source>Please select an import file in CSV format.</source>
+				<target>Bitte wählen Sie eine Datei im CSV-Format aus.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.defaultSettings">
-				<source>General settings</source>
+				<target>Allgemeine Einstellungen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile">
-				<source>Import file</source>
+				<target>Datei hochladen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile.currentImportFile">
-				<source>Current file:</source>
+				<target>Aktuelle Datei:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile.emptyImportFile">
-				<source>[no file choosen]</source>
+				<target>[keine Datei ausgewählt]</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile.noUniqueFilename">
-				<source>The file could not be uploaded because a file with the same name already exists. Please rename the file or check "Overwrite existing files".</source>
+				<target>Die Datei konnte nicht hochgeladen werden, da eine gleichnamige Datei bereits existiert. Geben Sie der Datei einen anderen Namen oder setzen Sie die Option "Bestehende Dateien überschreiben".</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile.importFile">
-				<source>Choose file:</source>
+				<target>Datei auswählen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.importFile.overwriteFile">
-				<source>Overwrite existing files:</source>
+				<target>Bestehende Dateien überschreiben:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.loadSettings">
-				<source>Load preset</source>
+				<target>Voreinstellung laden</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.error">
-				<source>File upload error</source>
+				<target>Fehler beim Hochladen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.error.description">
-				<source>File upload failed, please review your user settings. Possible reasons for this error: you don't have 
-				access rights to the upload folder or the defaultUploadFolder is not set.</source>
+				<target>Der Datei-Upload ist fehlgeschlagen. Bitte überprüfen Sie Ihre Benutzereinstellungen. Mögliche Gründe für diesen Fehler:
+				Sie haben keine Rechte für den Upload-Ordner oder es ist kein defaultUploadFolder gesetzt.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2">
-				<source>Import Settings</source>
+				<target>Import-Einstellungen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.BE">
-				<source>BE (backend users)</source>
+				<target>Backend-Benutzer (Backend-Benutzer)</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.colon">
-				<source>Colon [:]</source>
+				<target>Doppelpunkt [:]</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.comma">
-				<source>Comma [,]</source>
+				<target>Komma [,]</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.FE">
-				<source>Frontend Users (fe_users)</source>
+				<target>Frontend-Benutzer (fe_users)</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.semicolon">
-				<source>Semicolon [;]</source>
+				<target>Semikolon [;]</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.tab">
-				<source>Tab character</source>
+				<target>Tabulator</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.constants.TT">
-				<source>Addresses (tt_address)</source>
+				<target>Adressen (tt_address)</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.description">
-				<source>Please review the settings for this import process. You may also load a previously saved preset.</source>
+				<target>Bitte überprüfen Sie die Einstellungen für den Import. Sie können auch bestehende Import-Voreinstellungen laden.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup">
-				<source>Usergroup</source>
+				<target>Benutzergruppe</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup">
-				<source>[Error: no user group selected]</source>
+				<target>[Fehler: Keine Benutzergruppe ausgewählt.]</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.emptyGroup.error">
-				<source>Error: Please select one or more user groups first!</source>
+				<target>Fehler: Bitte wählen Sie eine oder mehrere Benutzergruppen.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.defaultGroup.label">
-				<source>User group(s) for imported users:</source>
+				<target>Benutzergruppe(n) für importierte User:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.usernamePassword">
-				<source>Username/password</source>
+				<target>Benutzername/Kennwort</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.usernamePassword.useEMailAsUsername">
-				<source>Use e-mail column as username:</source>
+				<target>Spalte E-Mail als Benutzername verwenden:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.usernamePassword.generatePassword">
-				<source>Auto-generate a random password:</source>
+				<target>Zufälliges Kennwort automatisch generieren:</target>
 			</trans-unit>
 
 			<trans-unit id="f1.tab2.section.generalSettings">
-				<source>General settings</source>
+				<target>Allgemeine Einstellungen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.additionalMandatoryFields">
-				<source>Additional Mandatory Fields</source>
+				<target>Zusätzliche Pflichtfelder</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.additionalMandatoryFields.description">
-				<source><![CDATA[
-					Please specify additional fields which <em>must</em> be present for each user you want to
-					import [hold Ctrl to select multiple]:
-				]]></source>
+				<target><![CDATA[
+				    Zusätzliche Felder, die für jeden zu importierenden User vorhanden sein <em>müssen</em>
+				    [Ctrl-Taste gedrückt halten, um mehrere zu wählen]:
+				]]></target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoRename">
-				<source>Enable auto rename:</source>
+				<target>Automatisch umbenennen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.enableAutoValues">
-				<source>Enable auto values:</source>
+				<target>Automatische Werte:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldDelimiter">
-				<source>Field delimiter (data fields are separated by...):</source>
+				<target>Feld-Trennzeichen (Feldwerte sind getrennt durch):</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldEncaps">
-				<source>Field encapsulation character (data fields are encapsulated with...):</source>
+				<target>Felder sind umschlossen durch:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.firstRowHasFieldnames">
-				<source>First row of source file contains field names:</source>
+				<target>Erste Zeile enthält Feldnamen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.previewNum">
-				<source>Preview lines (number of preview rows for the mapping process):</source>
+				<target>Anzahl Zeilen in Vorschau:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.update">
-				<source>Update settings:</source>
+				<target>Einstellungen aktualisieren:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.update.update">
-				<source>Update</source>
+				<target>Aktualisieren</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.userupdate">
-				<source>Update existing users</source>
+				<target>Bestehende Benutzer aktualisieren</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.userupdate.description">
-				<source>Update existing users instead of adding:</source>
+				<target>Bestehende Benutzer aktualisieren, anstatt neu hinzuzufügen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets">
-				<source>Presets</source>
+				<target>Voreinstellungen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.delete.deleted">
-				<source>Preset %s [UID %s] deleted.</source>
+				<target>Voreinstellung %s [UID %s] wurde gelöscht.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.delete.noSelection">
-				<source>Error: No preset selected for deletion.</source>
+				<target>Fehler: Keine Vorsteinstellung zum Löschen ausgewählt.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.delete.notOwner">
-				<source>Error: You are not the owner of this preset.</source>
+				<target>Fehler: Sie sind nicht Eigentümer dieser Voreinstellung.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load">
-				<source>Load/delete preset:</source>
+				<target>Voreinstellung laden/löschen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.delete">
-				<source>Delete</source>
+				<target>Löschen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.delete.sure">
-				<source>Do you really want to delete this preset?</source>
+				<target>Wollen Sie diese Voreinstellung wirklich löschen?</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.load">
-				<source>Load</source>
+				<target>Laden</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.loaded">
-				<source>Preset %s [UID %s] loaded.</source>
+				<target>Voreinstellung %s [UID %s] geladen.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.noData">
-				<source>Error: The preset was empty.</source>
+				<target>Fehler: Die Voreinstellung war leer.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.noSelection">
-				<source>Error: No preset selected.</source>
+				<target>Fehler: Keine Voreinstellung gewählt.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.load.select">
-				<source>Choose a previously saved preset:</source>
+				<target>Voreinstellung wählen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save">
-				<source>Save preset:</source>
+				<target>Voreinstellung speichern:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save.created">
-				<source>Preset %s saved.</source>
+				<target>Voreinstellung %s gespeichert.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save.label">
-				<source>Save new preset:</source>
+				<target>Neue Voreinstellung:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save.name">
-				<source>Name:</source>
+				<target>Name:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save.notOwner">
-				<source>Error: You are not the owner of this preset.</source>
+				<target>Fehler: Sie sind nicht Eigentümer dieser Voreinstellung.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save.public">
-				<source>Publicly available:</source>
+				<target>Für alle Benutzer verfügbar:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.presets.save.save">
-				<source>Save</source>
+				<target>Speichern</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.storageFolder">
-				<source>Storage Folder</source>
+				<target>Ordner</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.storageFolder.error">
-				<source>Error: No storage folder selected!</source>
+				<target>Fehler: Kein Ordner ausgewählt!</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.storageFolder.label">
-				<source>Please select the storage folder for the users to be imported:</source>
+				<target>Import-Zielordner wählen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.uniqueIdentifier.error">
-				<source>Error: No unique identifier selected!</source>
+				<target>Fehler: Kein Feld für Eindeutigkeit!</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.uniqueIdentifier.label">
-				<source>Specify the field which determines the uniqueness of imported users:</source>
+				<target>Feld für die Feststellung der Eindeutigkeit eines Benutzers:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.userType">
-				<source>User type</source>
+				<target>Benutzer-Tabelle</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.userType.label">
-				<source>Which type of users do you want to import:</source>
+				<target>In welche Tabelle soll importiert werden:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3">
-				<source>Field mapping</source>
+				<target>Feldzuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.description">
-				<source>Please map CSV to DB data fields. You have to map at least all fields you marked as mandatory.</source>
+				<target>Weisen Sie die CSV-Spalten Datenbankfeldern zu. Es müssen mindestens alle Felder, die Sie zuvor als Pflichtfelder markiert haben, zugewiesen werden.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper">
-				<source>Field mapping</source>
+				<target>Feldzuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.auto">
-				<source>AV</source>
+				<target>AV</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.description">
-				<source>Description</source>
+				<target>Beschreibung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.field">
-				<source>Field</source>
+				<target>Feld</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.fieldset1">
-				<source>Field mapping</source>
+				<target>Feldzuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.fieldset2">
-				<source>Please review your field mapping</source>
+				<target>Überprüfen Sie die Feldzuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.fieldset2.error">
-				<source>Field mapping error</source>
+				<target>Fehler bei der Feldzuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.fieldset2.field">
-				<source>Field_</source>
+				<target>Feld_</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.import">
-				<source>Update and Preview</source>
+				<target>Aktualisieren und Vorschau</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.mapping">
-				<source>Mapping</source>
+				<target>Zuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.mapsTo">
-				<source>Maps to...</source>
+				<target>Zuweisen zu Feld...</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.allMandatoryNo">
-				<source><![CDATA[
-					, <strong>but not all mandatory fields mapped.</strong>
-				]]></source>
+				<target><![CDATA[
+					, <strong>aber nicht alle Pflichtfelder wurden zugewiesen.</strong>
+				]]></target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.allMandatoryYes">
-				<source><![CDATA[
-					All mandatory fields mapped.<br /><strong>You may now proceed with the import or continue to map more fields.</strong>
-				]]></source>
+				<target><![CDATA[
+					Alle Pflichtfelder wurden zu gewiesen.<br /><strong>Der Import kann fortgesetzt werden oder es können weitere Felder zugewiesen werden.</strong>
+				]]></target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.error">
-				<source>Please review your field mapping for</source>
+				<target>Feldzuweisung überprüfen für Feld </target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.info">
-				<source>Mapped %s out of %s fields, %s unique. </source>
+				<target>%s von %s Feldern zugewiesen, %s eindeutige Felder. </target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.message.provideMandatory">
-				<source>Please provide mapping for the following mandatory field(s):</source>
+				<target>Bitte nehmen Sie eine Feldzuweisung für die folgenden Pflichtfelder vor:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper.values">
-				<source>Value</source>
+				<target>Wert</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4">
-				<source>CSV Import</source>
+				<target>CSV-Import</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.description">
-				<source>Ends the workflow by importing the given CSV file to the database.</source>
+				<target>Schliesst den Importvorgang ab.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import">
-				<source>Import CSV file</source>
+				<target>CSV-Daten importieren</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.import">
-				<source>IMPORT</source>
+				<target>Import durchführen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.label">
-				<source><![CDATA[
-					All necessary information for the import process have been entered.<br />By clicking on the <strong>Import</strong>
-					button below, you end the import workflow and the CSV file is read into the database.<br />Import
-					errors are displayed in the <em>Messages</em> tab.<br /> From here you may also go
-					back to the <em>Field mapping</em> tab and correct your settings.<br /><br /><strong>Attention:</strong>
-					By clicking <strong>Import</strong> you actually end the workflow, i.e. all mapping data and
-					import settings are lost beyond this point. <strong>It might be a good idea to save your settings
-					as a preset!</strong>
-				]]></source>
+				<target><![CDATA[
+				    Alle notwendigen Einstellungen wurden durchgeführt.<br />Durch das Klicken auf <strong>"Import durchführen"</strong>
+				    werden die Daten importiert.<br />Import-Fehler werden im Tab <em>Hinweise und Fehler</em> angezeigt.<br />
+				]]></target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.sure">
-				<source>Do you really want to import this file?</source>
+				<target>Möchten Sie die Daten importieren?</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5">
-				<source>Messages and errors</source>
+				<target>Hinweise und Fehler</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.corrected.UCP">
-				<source>corrected uppercase in password</source>
+				<target>Grossschreibung im Kennwort korrigiert</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.corrected.UCU">
-				<source>corrected uppercase in username</source>
+				<target>Grossschreibung im Benutzernamen korrigiert</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.corrected.WSP">
-				<source>corrected whitespace in password</source>
+				<target>Leerzeichen im Kennwort entfernt</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.corrected.WSU">
-				<source>corrected whitespace in username</source>
+				<target>Leerzeichen im Benutzernamen korrigiert</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.corrected.renamed">
-				<source>renamed user</source>
+				<target>Benutzer umbenannt</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.description">
-				<source>Displays import messages and import errors.</source>
+				<target>Import-Hinweise und -Fehler anzeigen.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.downloadFile">
-				<source>Download drop file (Right-click, save as...)</source>
+				<target>Datei fürs nachträgliche Löschen herunterladen (Rechtsklick, speichern unter...)</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error">
-				<source>Fatal Error:</source>
+				<target>Fehler:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.duplicateUserName">
-				<source>username already exists</source>
+				<target>Benutzername existiert bereits</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.emptyMandatory">
-				<source>empty %s</source>
+				<target>leeres Feld %s</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.emptyPassword">
-				<source>empty password</source>
+				<target>Leeres Kennwort</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.emptyUserName">
-				<source>empty username</source>
+				<target>Leerer Benutzername</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.passwordTooLong">
-				<source>username too long</source>
+				<target>Benutzername zu lang</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.UCP">
-				<source>uppercase in password</source>
+				<target>Grossschreibung im Kennwort</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.UCU">
-				<source>uppercase in username</source>
+				<target>Grossschreibung im Benutzernamen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.unknownFatalError">
-				<source>Unknown fatal error...</source>
+				<target>Schwerer Ausnahmefehler...</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.userNameTooLong">
-				<source>username too long</source>
+				<target>Benutzername zu lang</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.WSP">
-				<source>whitespace in password</source>
+				<target>Leerzeichen im Kennwort</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.error.WSU">
-				<source>whitespace in username</source>
+				<target>Leerzeichen im Benutzernamen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.userInserted">
-				<source>Imported %s (%s) as user with UID %s.</source>
+				<target>%s (%s) als Benutzer mit UID %s importiert.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.userUpdated">
-				<source>Updated user %s [UID %s].</source>
+				<target>Benutzer %s [UID %s] aktualisiert.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.usersImported">
-				<source>%s users read, %s new, %s updated, %s skipped.</source>
+				<target>%s Benutzer eingelesen, %s neue Benutzer, %s Benutzer aktualisiert, %s übersprungen.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.userSkipped">
-				<source>Skipped user %s [UID %s]:</source>
+				<target>Benutzer %s [UID %s] übersprungen:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab5.warning">
-				<source>Warning:</source>
+				<target>Warnung:</target>
 			</trans-unit>
 			<trans-unit id="f2.date">
-				<source>Date</source>
+				<target>Datum</target>
 			</trans-unit>
 			<trans-unit id="f2.importedBy">
-				<source>Imported by:</source>
+				<target>Importiert durch:</target>
 			</trans-unit>
 			<trans-unit id="f2.importedBy.deleted">
-				<source>Deleted user</source>
+				<target>Gelöschter Benutzer</target>
 			</trans-unit>
 			<trans-unit id="f2.importedBy.unknown">
-				<source>Unknown user</source>
+				<target>Unbekannter Benutzer</target>
 			</trans-unit>
 			<trans-unit id="f2.importFile">
-				<source>Import file:</source>
+				<target>Import-Datei:</target>
 			</trans-unit>
 			<trans-unit id="f2.importSummary">
-				<source>Import Summary</source>
+				<target>Zusammenfassung</target>
 			</trans-unit>
 			<trans-unit id="f2.noSessionFound">
-				<source>No active import sessions found...</source>
+				<target>Keine aktiven Importe gefunden.</target>
 			</trans-unit>
 			<trans-unit id="f2.rollback.sure">
-				<source>Do you really want to roll back this import session? This cannot be undone!!!</source>
+				<target>Möchten Sie diesen Import wirklich zurückrollen? Diese Aktion kann nicht rückgängig gemacht werden.</target>
 			</trans-unit>
 			<trans-unit id="f2.sampleData">
-				<source>Sample data of imported users:</source>
+				<target>Beispieldaten des Imports:</target>
 			</trans-unit>
 			<trans-unit id="f2.session">
-				<source>Session</source>
+				<target>Import #</target>
 			</trans-unit>
 			<trans-unit id="f2.sessionExpired">
-				<source><![CDATA[
-					Rollback feature expired (latest possible rollback time was <strong><font color="#cc0000">%s</font></strong>)
-				]]></source>
+				<target><![CDATA[
+					Import-Zurückrollen nicht mehr möglich (letztes Mögliches Datum war <strong><font color="#cc0000">%s</font></strong>)
+				]]></target>
 			</trans-unit>
 			<trans-unit id="f2.sessionRollback">
-				<source><![CDATA[
-					Import may be rolled back until <strong><font color="#00aa00">%s</font></strong>.
-				]]></source>
+				<target><![CDATA[
+					Import kann zurückgerollt werden bis <strong><font color="#00aa00">%s</font></strong>.
+				]]></target>
 			</trans-unit>
 			<trans-unit id="f2.sessionRolledBack">
-				<source>Session expired or already rolled back.</source>
+				<target>Import abgelaufen oder bereits zurückgerollt.</target>
 			</trans-unit>
 			<trans-unit id="f2.status">
-				<source>Rollback Status</source>
+				<target>Status</target>
 			</trans-unit>
 			<trans-unit id="f2.title">
-				<source>Description</source>
+				<target>Beschreibung</target>
 			</trans-unit>
 			<trans-unit id="f2.unknownError">
-				<source>Unknown error.</source>
+				<target>Unbekannter Fehler.</target>
 			</trans-unit>
 			<trans-unit id="f2.userAlreadyDeleted">
-				<source>User with UID %s already deleted.</source>
+				<target>Benutzer mit UID %s bereits gelöscht.</target>
 			</trans-unit>
 			<trans-unit id="f2.usersDropped">
-				<source>Users dropped:</source>
+				<target>Übersprungene Benutzer:</target>
 			</trans-unit>
 			<trans-unit id="f2.usersImported">
-				<source>Users imported:</source>
+				<target>Importierte Benutzer:</target>
 			</trans-unit>
 			<trans-unit id="f2.usersUpdated">
-				<source>Users updated:</source>
+				<target>Aktualisierte Benutzer:</target>
 			</trans-unit>
 			<trans-unit id="f2.userType">
-				<source>User type:</source>
+				<target>Tabelle:</target>
 			</trans-unit>
 			<trans-unit id="f3.securityNote">
-				<source>Security Note</source>
+				<target>Sicherheits-Hinweis</target>
 			</trans-unit>
 			<trans-unit id="f3.securityNote.message">
-				<source><![CDATA[
+				<target><![CDATA[
 					<p>Before you use the import tool please make sure that you have really <strong>understood</strong>
 					all available safety timers and rollback settings:</p><br /><p><strong>Rollback
 					- Safety Timespan:</strong> sets the timespan [in minutes] in which you may rollback previous
@@ -469,7 +464,7 @@
 					won't see marked deleted users, they are still present in the DB - hence you cannot use such a username!</p><br
 					/><p align="center"><b>If you are still uncertain about any of these settings
 					please read the corresponding section in the extension manual! You have been warned.</b></p>
-				]]></source>
+				]]></target>
 			</trans-unit>
 		</body>
 	</file>
