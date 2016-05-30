@@ -1,0 +1,29 @@
+{
+    "name": "visol/rs-userimp",
+    "description": "Generic User Import Tool",
+    "version": "2.0.0",
+    "type": "typo3-cms-extension",
+    "homepage": "https://github.com/visol/ext-rs_userimp",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Lorenz Ulrich",
+            "email": "lorenz.ulrich@visol.ch",
+            "company": "visol digitale Dienstleistungen GmbH",
+            "homepage": "https://www.visol.ch",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">= 5.3.3, <= 5.6.99",
+        "typo3/cms-core": ">= 6.2.0, <= 6.2.99"
+    },
+    "support": {
+        "issues": "https://github.com/visol/ext-rs_userimp/issues"
+    },
+    "autoload": {
+        "psr-4": {
+            "Visol\\RsUserimp\\": "Classes"
+        }
+    }
+}
