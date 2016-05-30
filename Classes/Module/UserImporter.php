@@ -412,8 +412,8 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 				$rollbackData = $this->getRollbackDataSets();
 
 				if (!empty($rollbackData)) {
-					$content .= '<table name="sessionlist" id="sessionlist" border="0" width="100%" cellspacing="1" cellpadding="2" align="center" bgcolor="' . $this->doc->bgColor2 . '">';
-					$content .= '<tr>
+					$content .= '<table name="sessionlist" class="typo3-dblist" id="sessionlist" border="0" width="100%" align="center">';
+					$content .= '<tr class="t3-row-header">
 										<td><strong>' . $GLOBALS['LANG']->getLL('f2.session') . '</strong></td>
 										<td><strong>' . $GLOBALS['LANG']->getLL('f2.date') . '</strong></td>
 										<td><strong>' . $GLOBALS['LANG']->getLL('f2.title') . '</strong></td>
@@ -501,11 +501,8 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 
 						$colorcount = ($colorcount == 1) ? 0 : 1;
 						$color = ($colorcount == 1) ? $this->doc->bgColor5 : $this->doc->bgColor4;
-						$tr_params = ' onmouseover="setRowColor(this,\'' . $rowcount . '\',\'over\',\'' . $this->doc->bgColor6 . '\');"
-												onclick="setRowColor(this,\'' . $rowcount . '\',\'click\',\'' . $this->doc->bgColor6 . '\',\'' . $color . '\');" bgcolor="' . $color . '"
-												onmouseout="setRowColor(this,\'' . $rowcount . '\',\'out\',\'' . $color . '\',\'' . $this->doc->bgColor6 . '\');"
-												';
-						$content .= '<tr' . $tr_params . ' id="sessionrow_' . $rowcount . '" name="sessionrow" style="cursor: pointer;">
+						$tr_params = ' onclick="setRowColor(this,\'' . $rowcount . '\',\'click\',\'' . $this->doc->bgColor6 . '\',\'' . $color . '\');" bgcolor="' . $color . '");"';
+						$content .= '<tr class="db_list_normal"' . $tr_params . ' id="sessionrow_' . $rowcount . '" name="sessionrow" style="cursor: pointer;">
 											<td valign="top"><strong>' . $session['uid'] . '</td>
 											<td valign="top">' . BackendUtility::dateTimeAge($session['crdate'], 1) . '</td>
 											<td valign="top">' . $session['title'] . '</td>';
