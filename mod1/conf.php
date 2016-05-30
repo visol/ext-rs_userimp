@@ -9,5 +9,5 @@ $MCONF["name"] = "user_txrsuserimpM1";
 $MCONF["access"] = "user,group";
 $MCONF["script"] = "index.php";
 
-$MLANG["default"]["tabs_images"]["tab"] = "moduleicon.gif";
+$MLANG["default"]["tabs_images"]["tab"] = "moduleicon.png";
 $MLANG["default"]["ll_ref"] = "LLL:EXT:rs_userimp/Resources/Private/Language/locallang_mod.xlf";
