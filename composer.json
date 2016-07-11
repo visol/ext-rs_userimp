@@ -1,7 +1,7 @@
 {
     "name": "visol/rs-userimp",
     "description": "Generic User Import Tool",
-    "version": "2.0.0",
+    "version": "2.1.0",
     "type": "typo3-cms-extension",
     "homepage": "https://github.com/visol/ext-rs_userimp",
     "license": "GPL-2.0+",
