@@ -49,6 +49,7 @@ class UserImporterService {
 	public $CSVhasTitle;
 	public $fieldDelimiter;
 	public $fieldEncaps;
+	public $inputEncoding;
 	public $fieldmap;
 	public $mandatoryFields = array();
 	public $additionalMandatoryFields;
@@ -138,7 +139,7 @@ class UserImporterService {
 	 */
 	public function init() {
 		$this->setUserTypeDefaultData();
-		$this->CSV = $this->readSamplesFromCSV();
+		$this->CSV = $this->readDataFromFile(true, $this->previewNum);
 		$this->columnNumCSV = count($this->CSV[0]);
 		$this->columnNamesFromCSV = $this->getColumnNamesFromCSV();
 	}
@@ -264,51 +265,48 @@ class UserImporterService {
 	}
 
 	/**
-	 * Read in the given CSV file. The function is used during the final file import.
-	 * Removes first the first data row if the CSV has field names.
+	 * Read in sample data from file. Needed for the mapping session to display some samples.
 	 *
-	 * @return	array		file content in array
+	 * @param bool $returnFirstRow Whether the first row (possibly containing header row) should be returned
+	 * @param null $limit Only return this number of records
+	 * @return    array        sample file content in array    ...
 	 */
-	public function readCSV() {
+	public function readDataFromFile($returnFirstRow = false, $limit = null) {
 		$file = $this->file;
-		$mydata = array();
-		$handle = fopen($file, "r");
-		$i=0;
-		$delimiter = ($this->fieldDelimiter === 'TAB') ? chr(9) : $this->fieldDelimiter;
-		while (($data = fgetcsv($handle, 10000, $delimiter, $this->fieldEncaps)) !== FALSE) {
-			$mydata[] = $data;
-		}
-		fclose ($handle);
-		reset ($mydata);
-		if ($this->CSVhasTitle) {
-			$mydata = array_slice($mydata,1); //delete first row
-		}
-		return $mydata;
-	}
 
-	/**
-	 * Read in sample data from CSV file. Needed for the mapping session to display some samples.
-	 * This function could actually be merged with function readCSV =:o)
-	 *
-	 * @return	array		sample file content in array	...
-	 */
-	public function readSamplesFromCSV() {
-		$file = $this->file;
+		$inputFileType = \PHPExcel_IOFactory::identify($file);
+
+		// open file in matching reader
+		$reader = \PHPExcel_IOFactory::createReader($inputFileType);
+
+		if ($inputFileType === 'CSV') {
+			/** @var \PHPExcel_Reader_CSV $reader */
+			$delimiter = ($this->fieldDelimiter == 'TAB') ? chr(9): $this->fieldDelimiter;
+			$reader->setDelimiter($delimiter);
+			$reader->setEnclosure(empty($this->fieldEncaps) ? '\'' : $this->fieldEncaps);
+			$reader->setInputEncoding(!empty($this->inputEncoding) ? $this->inputEncoding : 'iso-8859-1');
+		}
+
+		$document = $reader->load($file);
+
+		$sheet = $document->getSheet(0);
+		$highestRow = $sheet->getHighestRow();
+		$highestColumn = $sheet->getHighestColumn();
 		$mydata = array();
-		$handle = fopen($file, "r");
-		$i=0;
-		$delimiter = ($this->fieldDelimiter == 'TAB') ? chr(9): $this->fieldDelimiter ;
-		$fieldEncaps = empty($this->fieldEncaps) ? '\'' : $this->fieldEncaps;
-		while (($data = fgetcsv($handle, 10000, $delimiter, $fieldEncaps)) !== FALSE) {
-			$mydata[] = $data;
-			if ($i == $this->previewNum) {
+
+		$startRow = 1;
+		if ($this->CSVhasTitle && !$returnFirstRow) {
+			$startRow = 2;
+		}
+
+		for ($i = $startRow; $i <= $highestRow; $i++) {
+			$row = $sheet->rangeToArray('A' . $i . ':' . $highestColumn . $i, NULL, TRUE, FALSE);
+			$mydata[] = array_pop($row);
+			if ($limit && $i == $limit + 1) {
 				break;
-			} else {
-				$i++;
 			}
 		}
-		fclose ($handle);
-		reset ($mydata);
+
 		return $mydata;
 	}
 
@@ -578,7 +576,7 @@ class UserImporterService {
 		$this->getDatabaseConnection()->sql_free_result($res);
 
 		// read the import file
-		$CSV = $this->readCSV();
+		$CSV = $this->readDataFromFile(false);
 
 		/**
 		 * Hook added on request of Franz Ripfel:

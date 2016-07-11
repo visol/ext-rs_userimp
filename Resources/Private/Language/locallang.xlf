@@ -19,7 +19,7 @@
 				<source>Import File</source>
 			</trans-unit>
 			<trans-unit id="f1.tab1.description">
-				<source>Please select an import file in CSV format.</source>
+				<source>Please select an import file. Valid formats: XLSX, XLS, CSV</source>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.defaultSettings">
 				<source>General settings</source>
@@ -76,6 +76,12 @@
 			<trans-unit id="f1.tab2.constants.TT">
 				<source>Addresses (tt_address)</source>
 			</trans-unit>
+			<trans-unit id="f1.tab2.constants.iso-8859-1">
+				<source>ANSI / ISO-8859-1</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.utf-8">
+				<source>UTF-8</source>
+			</trans-unit>
 			<trans-unit id="f1.tab2.description">
 				<source>Please review the settings for this import process. You may also load a previously saved preset.</source>
 			</trans-unit>
@@ -124,6 +130,9 @@
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldEncaps">
 				<source>Field encapsulation character (data fields are encapsulated with...):</source>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.inputEncoding">
+				<source>Encoding:</source>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.firstRowHasFieldnames">
 				<source>First row of source file contains field names:</source>
@@ -225,7 +234,7 @@
 				<source>Field mapping</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.description">
-				<source>Please map CSV to DB data fields. You have to map at least all fields you marked as mandatory.</source>
+				<source>Please map table to DB data fields. You have to map at least all fields you marked as mandatory.</source>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper">
 				<source>Field mapping</source>
@@ -283,13 +292,13 @@
 				<source>Value</source>
 			</trans-unit>
 			<trans-unit id="f1.tab4">
-				<source>CSV Import</source>
+				<source>Import</source>
 			</trans-unit>
 			<trans-unit id="f1.tab4.description">
-				<source>Ends the workflow by importing the given CSV file to the database.</source>
+				<source>Ends the workflow by importing the given file to the database.</source>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import">
-				<source>Import CSV file</source>
+				<source>Import file</source>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.import">
 				<source>IMPORT</source>
@@ -297,7 +306,7 @@
 			<trans-unit id="f1.tab4.section.import.label">
 				<source><![CDATA[
 					All necessary information for the import process have been entered.<br />By clicking on the <strong>Import</strong>
-					button below, you end the import workflow and the CSV file is read into the database.<br />Import
+					button below, you end the import workflow and the file is read into the database.<br />Import
 					errors are displayed in the <em>Messages</em> tab.<br /> From here you may also go
 					back to the <em>Field mapping</em> tab and correct your settings.<br /><br /><strong>Attention:</strong>
 					By clicking <strong>Import</strong> you actually end the workflow, i.e. all mapping data and

@@ -798,6 +798,15 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][fieldEncaps]', (isset($this->inData['settings']['fieldEncaps']) ? $this->inData['settings']['fieldEncaps'] : ''), $opt) . '</td>
 							</tr>';
 
+				// Options for input encoding
+				$opt = array('iso-8859-1' => $GLOBALS['LANG']->getLL('f1.tab2.constants.iso-8859-1'), 'UTF-8' => $GLOBALS['LANG']->getLL('f1.tab2.constants.utf-8'));
+
+				$row[] = '
+							<tr class="db_list_normal">
+								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.inputEncoding') . '</strong></td>
+								<td>' . $this->renderSelectBox('tx_rsuserimp[settings][inputEncoding]', (isset($this->inData['settings']['inputEncoding']) ? $this->inData['settings']['inputEncoding'] : ''), $opt) . '</td>
+							</tr>';
+
 				$row[] = '
 							<tr class="db_list_normal">
 								<td><strong>' . $GLOBALS['LANG']->getLL('f1.tab2.section.generalSettings.previewNum') . '</strong></td>
@@ -853,6 +862,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass {
 					$mapper->CSVhasTitle = $this->inData['settings']['firstRowHasFieldnames'];
 					$mapper->fieldDelimiter = ($this->inData['settings']['fieldDelimiter'] === 'TAB') ? chr(9) : $this->inData['settings']['fieldDelimiter'];
 					$mapper->fieldEncaps = $this->inData['settings']['fieldEncaps'];
+					$mapper->inputEncoding = $this->inData['settings']['inputEncoding'];
 					//(isset($this->inData['settings']['enableUpdate']) && !empty($this->inData['settings']['uniqueIdentifier'])) ? $mapper->uniqueUserIdentifier = $this->inData['settings']['uniqueIdentifier'] : '';
 					$mapper->enableUpdate = (isset($this->inData['settings']['enableUpdate']) && !empty($this->inData['settings']['uniqueIdentifier'])) ? TRUE : FALSE;
 					$mapper->defaultUserData['pid'] = $this->inData['settings']['importStorageFolder'];

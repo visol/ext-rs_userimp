@@ -19,7 +19,7 @@
 				<target>Datei hochladen</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.description">
-				<target>Bitte wählen Sie eine Datei im CSV-Format aus.</target>
+				<target>Bitte wählen Sie eine Datei aus. Gültige Formate: XLSX, XLS, CSV</target>
 			</trans-unit>
 			<trans-unit id="f1.tab1.section.defaultSettings">
 				<target>Allgemeine Einstellungen</target>
@@ -76,6 +76,12 @@
 			<trans-unit id="f1.tab2.constants.TT">
 				<target>Adressen (tt_address)</target>
 			</trans-unit>
+			<trans-unit id="f1.tab2.constants.iso-8859-1">
+				<target>ANSI / ISO-8859-1</target>
+			</trans-unit>
+			<trans-unit id="f1.tab2.constants.utf-8">
+				<target>UTF-8</target>
+			</trans-unit>
 			<trans-unit id="f1.tab2.description">
 				<target>Bitte überprüfen Sie die Einstellungen für den Import. Sie können auch bestehende Import-Voreinstellungen laden.</target>
 			</trans-unit>
@@ -124,6 +130,9 @@
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.fieldEncaps">
 				<target>Felder sind umschlossen durch:</target>
+			</trans-unit>
+			<trans-unit id="f1.tab2.section.generalSettings.inputEncoding">
+				<target>Zeichensatz:</target>
 			</trans-unit>
 			<trans-unit id="f1.tab2.section.generalSettings.firstRowHasFieldnames">
 				<target>Erste Zeile enthält Feldnamen:</target>
@@ -225,7 +234,7 @@
 				<target>Feldzuweisung</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.description">
-				<target>Weisen Sie die CSV-Spalten Datenbankfeldern zu. Es müssen mindestens alle Felder, die Sie zuvor als Pflichtfelder markiert haben, zugewiesen werden.</target>
+				<target>Weisen Sie die Spalten Datenbankfeldern zu. Es müssen mindestens alle Felder, die Sie zuvor als Pflichtfelder markiert haben, zugewiesen werden.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab3.mapper">
 				<target>Feldzuweisung</target>
@@ -283,13 +292,13 @@
 				<target>Wert</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4">
-				<target>CSV-Import</target>
+				<target>Import</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.description">
 				<target>Schliesst den Importvorgang ab.</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import">
-				<target>CSV-Daten importieren</target>
+				<target>Daten importieren</target>
 			</trans-unit>
 			<trans-unit id="f1.tab4.section.import.import">
 				<target>Import durchführen</target>
