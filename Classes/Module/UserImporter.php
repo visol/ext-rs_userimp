@@ -15,10 +15,14 @@ namespace Visol\RsUserimp\Module;
  * The TYPO3 project - inspiring people to share!
  */
 
+use TYPO3\CMS\Backend\Template\DocumentTemplate;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Messaging\FlashMessage;
 use TYPO3\CMS\Core\Resource\File;
+use TYPO3\CMS\Core\Resource\ResourceFactory;
+use TYPO3\CMS\Core\Utility\File\ExtendedFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use Visol\RsUserimp\Service\UserImporterService;
 
 /**
  * Module 'import' for the 'rs_userimp' extension.
@@ -104,7 +108,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass
         $this->extensionConfiguration = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['rs_userimp']);
 
         // Draw the header
-        $this->doc = GeneralUtility::makeInstance('TYPO3\\CMS\\Backend\\Template\\DocumentTemplate');
+        $this->doc = GeneralUtility::makeInstance(DocumentTemplate::class);
         $this->doc->backPath = $GLOBALS['BACK_PATH'];
         $this->doc->setModuleTemplate('EXT:rs_userimp/mod1/mod_template.html');
         $this->doc->form = '<form name="rs_userimp" action="index.php" method="post" enctype="' . $GLOBALS['TYPO3_CONF_VARS']['SYS']['form_enctype'] . '">
@@ -589,7 +593,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass
 
                 // create and initialize instance of our import object
                 /** @var \Visol\RsUserimp\Service\UserImporterService $mapper */
-                $mapper = GeneralUtility::makeInstance('Visol\\RsUserimp\\Service\\UserImporterService');
+                $mapper = GeneralUtility::makeInstance(UserImporterService::class);
 
                 $mapper->userType = isset($this->inData['settings']['importUserType']) ? $this->inData['settings']['importUserType'] : $mapper->userType;
                 $mapper->setUserTypeDefaultData();
@@ -1109,7 +1113,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass
         $severity = $data[1] === 1 ? FlashMessage::OK : FlashMessage::ERROR;
         /** @var $flashMessage FlashMessage */
         $flashMessage = GeneralUtility::makeInstance(
-            'TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+            FlashMessage::class,
             $data[0],
             '',
             $severity
@@ -1243,7 +1247,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass
         $file = GeneralUtility::_GP('file');
 
         // Initializing:
-        $this->fileProcessor = GeneralUtility::makeInstance('TYPO3\CMS\Core\Utility\File\ExtendedFileUtility');
+        $this->fileProcessor = GeneralUtility::makeInstance(ExtendedFileUtility::class);
         $this->fileProcessor->init([], $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
         $this->fileProcessor->setActionPermissions();
 
@@ -1273,7 +1277,7 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass
             if (!empty($this->fileProcessor->lastError) && GeneralUtility::isFirstPartOfStr($this->fileProcessor->lastError, 'No unique filename')) {
                 /** @var $flashMessage FlashMessage */
                 $flashMessage = GeneralUtility::makeInstance(
-                    'TYPO3\\CMS\\Core\\Messaging\\FlashMessage',
+                    FlashMessage::class,
                     $GLOBALS['LANG']->getLL('f1.tab1.section.importFile.noUniqueFilename'),
                     '',
                     FlashMessage::WARNING
@@ -1715,6 +1719,6 @@ class UserImporter extends \TYPO3\CMS\Backend\Module\BaseScriptClass
      */
     protected function getResourceFactory()
     {
-        return GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\Resource\\ResourceFactory');
+        return GeneralUtility::makeInstance(ResourceFactory::class);
     }
 }

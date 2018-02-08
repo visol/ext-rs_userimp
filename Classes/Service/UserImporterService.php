@@ -16,6 +16,7 @@ namespace Visol\RsUserimp\Service;
  */
 
 use TYPO3\CMS\Backend\Utility\BackendUtility;
+use TYPO3\CMS\Core\Utility\File\ExtendedFileUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -906,7 +907,7 @@ class UserImporterService
         $FILE = [];
 
         $FILE['delete'][] = ['data' => $this->file];
-        $fileProcessor = GeneralUtility::makeInstance('TYPO3\CMS\Core\Utility\File\ExtendedFileUtility');
+        $fileProcessor = GeneralUtility::makeInstance(ExtendedFileUtility::class);
         $fileProcessor->init($this->getBackendUserAuthentication()->getFileMountRecords(), $GLOBALS['TYPO3_CONF_VARS']['BE']['fileExtensions']);
         $fileProcessor->init_actionPerms($GLOBALS['BE_USER']->user['fileoper_perms']);
         // use recycler: 0 = no, 1 = if available, 2 = always

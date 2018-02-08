@@ -22,7 +22,7 @@ $GLOBALS['BE_USER']->modAccess($MCONF, 1);    // This checks permissions and exi
 
 // Make instance:
 /** @var \Visol\RsUserimp\Module\UserImporter $SOBE */
-$SOBE = GeneralUtility::makeInstance('Visol\\RsUserimp\\Module\\UserImporter');
+$SOBE = GeneralUtility::makeInstance(\Visol\RsUserimp\Module\UserImporter::class);
 $SOBE->init();
 $SOBE->main();
 $SOBE->printContent();
