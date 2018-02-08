@@ -14,7 +14,7 @@ $EM_CONF[$_EXTKEY] = [
     'title' => 'Generic User Import Tool',
     'description' => 'The User Import Tool lets you import TYPO3 users from CSV or formated text files. The import settings are highly customizable and may be saved as presets for later re-use.',
     'category' => 'module',
-    'version' => '2.1.0',
+    'version' => '3.0.0',
     'dependencies' => '',
     'conflicts' => '',
     'priority' => '',
@@ -35,4 +35,3 @@ $EM_CONF[$_EXTKEY] = [
     'CGLcompliance_note' => '',
 ];
 
-?>
