@@ -1,5 +1,7 @@
 <?php
 
+namespace Visol\RsUserimp\Utility;
+
 /**
  * A security library for PHP.
  *
@@ -17,7 +19,7 @@
  *
  * @since 1.00
  */
-class Security_Randomizer
+class SecurityRandomizer
 {
 
     private static $chiSquareZMax = 6.0;

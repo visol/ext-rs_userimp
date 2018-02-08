@@ -11,7 +11,7 @@ namespace Visol\RsUserimp\Utility;
  *                                                                        *
  * The TYPO3 project - inspiring people to share!                         *
  *                                                                        */
-require_once(\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath('rs_userimp') . 'Resources/PHP/iSecurity/Security_Randomizer.php');
+use \Visol\RsUserimp\Utility\SecurityRandomizer;
 
 /**
  * A utility class for various algorithms.
@@ -29,7 +29,7 @@ class Algorithms implements \TYPO3\CMS\Core\SingletonInterface
      */
     static public function generateUUID()
     {
-        return strtolower(\Security_Randomizer::getRandomGUID());
+        return strtolower(SecurityRandomizer::getRandomGUID());
     }
 
     /**
@@ -41,7 +41,7 @@ class Algorithms implements \TYPO3\CMS\Core\SingletonInterface
      */
     static public function generateRandomBytes($count)
     {
-        return \Security_Randomizer::getRandomBytes($count);
+        return SecurityRandomizer::getRandomBytes($count);
     }
 
     /**
@@ -53,7 +53,7 @@ class Algorithms implements \TYPO3\CMS\Core\SingletonInterface
      */
     static public function generateRandomToken($count)
     {
-        return \Security_Randomizer::getRandomToken($count);
+        return SecurityRandomizer::getRandomToken($count);
     }
 
     /**
@@ -66,6 +66,6 @@ class Algorithms implements \TYPO3\CMS\Core\SingletonInterface
      */
     static public function generateRandomString($count, $characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')
     {
-        return \Security_Randomizer::getRandomString($count, $characters);
+        return SecurityRandomizer::getRandomString($count, $characters);
     }
 }
