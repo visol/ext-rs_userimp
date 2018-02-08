@@ -16,8 +16,8 @@
         }
     ],
     "require": {
-        "php": ">= 5.3.3, <= 5.6.99",
-        "typo3/cms-core": ">= 6.2.0, <= 6.2.99"
+        "typo3/cms-core": "~8.7.0",
+        "phpoffice/phpspreadsheet": "~1.1"
     },
     "support": {
         "issues": "https://github.com/visol/ext-rs_userimp/issues"
